@@ -51,6 +51,7 @@ class MenuRepository extends BaseRepository implements MenuInterface
 
         $registro = <<<PHP
                                     [
+                                        'id' => '{$menu->id}',
                                         'nombre' => '{$nombre}',
                                         'orden' => {$orden},
                                         'padre_id' => {$padreId},
@@ -73,9 +74,7 @@ class MenuRepository extends BaseRepository implements MenuInterface
                         {
                             public function run(): void
                             {
-                                \$menus = [
-                        {$registro}
-                                ];
+                                \$menus = [{$registro}];
                         
                                 foreach (\$menus as \$data) {
                                     Menu::firstOrCreate(
@@ -132,10 +131,70 @@ class MenuRepository extends BaseRepository implements MenuInterface
                 'accion_usuario' => Auth::user()->name,
             ]
         );
-
+        $this->guardarEnSeederSeccion($seccion);
         $this->permisoRepository->Store_Permiso($seccion->titulo, 'seccion', $seccion->id);
 
     }
+
+    protected function guardarEnSeederSeccion(Seccion $seccion): void
+    {
+        $fecha = now()->format('Ymd');
+        $nombreSeeder = "SeederSeccion_{$fecha}.php";
+        $rutaSeeder = database_path("seeders/{$nombreSeeder}");
+
+        // Preparar los valores
+        $titulo = addslashes($seccion->titulo);
+        $icono = addslashes($seccion->icono);
+        $posicion = (int) $seccion->posicion;
+        $accionUsuario = addslashes($seccion->accion_usuario);
+
+        $registro = <<<PHP
+                                [
+                                    'id' => '{$seccion->id}',
+                                    'titulo' => '{$titulo}',
+                                    'icono' => '{$icono}',
+                                    'posicion' => {$posicion},
+                                    'accion_usuario' => '{$accionUsuario}',
+                                ],
+                    PHP;
+
+        if (!File::exists($rutaSeeder)) {
+            $plantilla = <<<PHP
+                    <?php
+                    
+                    namespace Database\Seeders;
+                    
+                    use Illuminate\Database\Seeder;
+                    use App\Models\Seccion;
+                    
+                    class SeederSeccion_{$fecha} extends Seeder
+                    {
+                        public function run(): void
+                        {
+                            \$secciones = [{$registro}];
+                    
+                            foreach (\$secciones as \$data) {
+                                Seccion::firstOrCreate(
+                                    ['titulo' => \$data['titulo']],
+                                    \$data
+                                );
+                            }
+                        }
+                    }
+                    PHP;
+
+            File::put($rutaSeeder, $plantilla);
+            return;
+        }
+
+        // Evitar duplicados si ya existe
+        $contenido = File::get($rutaSeeder);
+        if (!Str::contains($contenido, "'titulo' => '{$titulo}'")) {
+            $contenido = str_replace('        $secciones = [', "        \$secciones = [\n{$registro}", $contenido);
+            File::put($rutaSeeder, $contenido);
+        }
+    }
+
 
     public function ObtenerMenuPorSeccion($seccion_id)
     {

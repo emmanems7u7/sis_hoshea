@@ -34,13 +34,18 @@ class UserRepository extends BaseRepository implements UserInterface
             'accion_fecha' => now(),
             'accion_usuario' => Auth::user()->name,
             'usuario_activo' => 1,
+            'fecha_nacimiento' => $this->cleanHtml($request->input('fecha_nacimiento')),
+            'genero' => $this->cleanHtml($request->input('genero')),
+            'documento_identidad' => $this->cleanHtml($request->input('documento_identidad')),
+            'pais' => $this->cleanHtml($request->input('pais')),
+            'ciudad' => $this->cleanHtml($request->input('ciudad')),
         ]);
         return $user;
     }
     public function EditarUsuario($request, $id, $perfil)
     {
 
-        $this->validar_datos($request, $id);
+        $this->validar_datos($request, $id, $perfil);
         $user = User::findOrFail($id);
         if ($perfil == 1) {
 
@@ -88,6 +93,11 @@ class UserRepository extends BaseRepository implements UserInterface
             'accion_usuario' => Auth::user()->name,
             'usuario_activo' => 1,
             'foto_perfil' => $foto_perfil,
+            'fecha_nacimiento' => $request->input('fecha_nacimiento'),
+            'genero' => $request->input('genero'),
+            'documento_identidad' => $request->input('documento_identidad'),
+            'pais' => $request->input('pais'),
+            'ciudad' => $request->input('ciudad'),
         ]);
         return $user;
     }
@@ -138,7 +148,7 @@ class UserRepository extends BaseRepository implements UserInterface
 
     }
 
-    function validar_datos($request, $user_id = null)
+    function validar_datos($request, $user_id = null, $perfil = 0)
     {
         $email_validacion = 'required|email|not_regex:/<\s*script/i';
 
@@ -156,8 +166,20 @@ class UserRepository extends BaseRepository implements UserInterface
             'usuario_apm' => 'required|string|max:50|not_regex:/<\s*script/i',
             'usuario_telefono' => 'required|regex:/^[1-9][0-9]*$/',
             'usuario_direccion' => 'required|string|max:1000|not_regex:/<\s*script/i',
-            'role' => 'required|exists:roles,name',
+
+            'fecha_nacimiento' => ['nullable', 'date', 'before_or_equal:today'],
+            'genero' => ['nullable', 'string', 'in:M,F,O'],
+            'documento_identidad' => ['nullable', 'string', 'max:20'],
+            'pais' => ['nullable', 'string', 'exists:catalogos,catalogo_codigo'],
+            'ciudad' => ['nullable', 'string', 'exists:catalogos,catalogo_codigo'],
         ]);
+
+
+        if ($perfil == 0) {
+            $validated = $request->validate([
+                'role' => 'required|exists:roles,name',
+            ]);
+        }
 
     }
 

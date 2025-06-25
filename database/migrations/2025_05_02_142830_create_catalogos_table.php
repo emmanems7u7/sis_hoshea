@@ -12,10 +12,9 @@ return new class extends Migration {
     {
         Schema::create('catalogos', function (Blueprint $table) {
             $table->id();
-            $table->integer('catalogo_parent')->nullable()
+            $table->string('catalogo_parent')->nullable()
                 ->comment('Si la lista depende de algún registro (p.ej. Departamento => Ciudad), se registra el ID del registro padre');
             $table->string('catalogo_codigo', 50)->unique()
-
                 ->comment('Código identificador del elemento dentro del catálogo');
             $table->string('catalogo_descripcion', 100)
                 ->comment('Descripción del elemento del catálogo');

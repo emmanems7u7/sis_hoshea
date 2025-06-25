@@ -14,6 +14,7 @@ use App\Http\Controllers\TwoFactorController;
 use App\Http\Controllers\CatalogoController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ConfiguracionCredencialesController;
+use App\Http\Controllers\PacienteController;
 
 
 Route::get('/', function () {
@@ -246,6 +247,26 @@ Route::middleware(['auth', 'can:Administración y Parametrización'])->group(fun
 
 
 
+//------------------------LOGICA DE NEGOCIO--------------------------------
 
 
+Route::get('/pacientes', [PacienteController::class, 'index'])->name('pacientes.index')->middleware('can:pacientes.ver');
+Route::get('/pacientes/create', [PacienteController::class, 'create'])->name('pacientes.create')->middleware('can:pacientes.crear');
+Route::post('/pacientes', [PacienteController::class, 'store'])->name('pacientes.store')->middleware('can:pacientes.guardar');
+Route::get('/pacientes/{paciente}', [PacienteController::class, 'show'])->name('pacientes.show')->middleware('can:pacientes.ver_detalle');
+Route::get('/pacientes/{paciente}/edit', [PacienteController::class, 'edit'])->name('pacientes.edit')->middleware('can:pacientes.editar');
+Route::put('/pacientes/{paciente}', [PacienteController::class, 'update'])->name('pacientes.update')->middleware('can:pacientes.actualizar');
+Route::delete('/pacientes/{paciente}', [PacienteController::class, 'destroy'])->name('pacientes.destroy')->middleware('can:pacientes.eliminar');
 
+
+Route::get('/departamentos/{paisCodigo}', function ($paisCodigo) {
+    return \App\Models\Catalogo::where('catalogo_parent', $paisCodigo)
+        ->where('catalogo_estado', 1)
+        ->get(['catalogo_codigo', 'catalogo_descripcion']);
+});
+
+Route::get('/ciudades/{departamentoCodigo}', function ($departamentoCodigo) {
+    return \App\Models\Catalogo::where('catalogo_parent', $departamentoCodigo)
+        ->where('catalogo_estado', 1)
+        ->get(['catalogo_codigo', 'catalogo_descripcion']);
+});

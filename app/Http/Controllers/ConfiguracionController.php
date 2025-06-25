@@ -18,13 +18,14 @@ class ConfiguracionController extends Controller
 
     public function update(Request $request)
     {
-
         $config = Configuracion::first();
 
         $config->update([
             'doble_factor_autenticacion' => $request->has('doble_factor_autenticacion'),
             'limite_de_sesiones' => $request->input('limite_de_sesiones'),
             'GROQ_API_KEY' => $request->input('GROQ_API_KEY'),
+            'mantenimiento' => $request->has('mantenimiento'),
+
         ]);
 
         return redirect()->back()->with('success', 'Configuración actualizada.');
