@@ -10,6 +10,7 @@ class SeederPermisos_20250625 extends Seeder
     public function run()
     {
         $permisos = [
+            ['id' => 79, 'name' => 'Categorias', 'tipo' => 'menu', 'guard_name' => 'web' ],
             ['id' => 78, 'name' => 'Ver Pacientes', 'tipo' => 'menu', 'guard_name' => 'web' ],
             ['id' => 77, 'name' => 'Pacientes', 'tipo' => 'seccion', 'guard_name' => 'web' ],
             ['id' => 76, 'name' => 'pacientes.eliminar', 'tipo' => 'permiso', 'guard_name' => 'web' ],

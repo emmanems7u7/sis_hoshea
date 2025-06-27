@@ -33,6 +33,11 @@ class Paciente extends Model
         'activo' => 'boolean',
     ];
 
+    public function getNombreCompletoAttribute(): string
+    {
+        return "{$this->nombres} {$this->apellido_paterno} {$this->apellido_materno}";
+    }
+
     public function paisCatalogo()
     {
         return $this->belongsTo(Catalogo::class, 'pais', 'catalogo_codigo');
@@ -41,5 +46,15 @@ class Paciente extends Model
     public function ciudadCatalogo()
     {
         return $this->belongsTo(Catalogo::class, 'ciudad', 'catalogo_codigo');
+    }
+
+    public function tratamientos()
+    {
+        return $this->hasMany(Tratamiento::class);
+    }
+
+    public function citas()
+    {
+        return $this->hasMany(Cita::class);
     }
 }

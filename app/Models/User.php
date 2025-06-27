@@ -83,4 +83,11 @@ class User extends Authenticatable
         $this->two_factor_expires_at = null;
         $this->save();
     }
+
+    public function citas()
+    {
+        return $this->belongsToMany(Cita::class, 'cita_user')
+            ->withPivot('rol_en_cita')
+            ->withTimestamps();
+    }
 }

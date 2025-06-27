@@ -15,8 +15,8 @@
 
             @if($pacientes->count())
                 <div class="table-responsive">
-                    <table class="table table-striped table-hover align-middle">
-                        <thead>
+                    <table class="table table-striped table-bordered align-middle">
+                        <thead class="table-dark">
                             <tr>
                                 <th>Nombre Completo</th>
                                 <th>Documento</th>

@@ -4,9 +4,8 @@
     <div class="card shadow-lg mx-4 card-profile-bottom">
         <div class="card-body">
             <div class="container">
-                <h2><i class="fas fa-edit"></i> {{ __('ui.edit_text') }} {{ __('lo.categoria') }}</h2>
-                <form action="{{ route('categorias.update', [$id, 0]) }}" method="POST">
-                    @method('PUT')
+                <h2><i class="fas fa-plus-circle"></i> {{ __('ui.create_text') }} {{ __('lo.categoria') }}</h2>
+                <form action="{{ route('categorias.store', 1) }}" method="POST">
                     @include('catalogo._formCategoria')
                 </form>
             </div>

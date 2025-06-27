@@ -5,7 +5,7 @@
         <div class="card-body">
             <div class="container">
                 <h2><i class="fas fa-edit"></i> {{ __('ui.edit_text') }} {{ __('lo.categoria') }}</h2>
-                <form action="{{ route('categorias.update', [$id, 0]) }}" method="POST">
+                <form action="{{ route('categorias.update', [$id, 1]) }}" method="POST">
                     @method('PUT')
                     @include('catalogo._formCategoria')
                 </form>

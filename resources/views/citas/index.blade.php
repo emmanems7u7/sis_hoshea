@@ -1,0 +1,68 @@
+@extends('layouts.argon')
+
+@section('content')
+    <div class="card">
+        <div class="card-body">
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h1>Citas</h1>
+                <a href="{{ route('citas.create') }}" class="btn btn-primary">Crear Cita</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-3">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Paciente</th>
+                            <th>Tratamiento</th>
+                            <th>Fecha y Hora</th>
+                            <th>Duración (min)</th>
+                            <th>Estado</th>
+                            <th>Usuarios asignados</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($citas as $cita)
+                            <tr>
+                                <td>{{ $cita->id }}</td>
+                                <td>{{ $cita->paciente->nombres }} {{ $cita->paciente->apellidos }}</td>
+                                <td>{{ $cita->tratamiento ? $cita->tratamiento->nombre : '-' }}</td>
+                                <td>{{ $cita->fecha_hora->format('Y-m-d H:i') }}</td>
+                                <td>{{ $cita->duracion ?? '-' }}</td>
+                                <td>{{ ucfirst($cita->estado) }}</td>
+                                <td>
+                                    @foreach($cita->usuarios as $usuario)
+                                        <span class="badge bg-secondary">{{ $usuario->name }}
+                                            ({{ $usuario->pivot->rol_en_cita ?? 'N/A' }})</span><br>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    <a href="{{ route('citas.edit', $cita) }}" class="btn btn-sm btn-primary">Editar</a>
+
+                                    <a type="button" class="btn btn-danger btn-sm"
+                                        onclick="confirmarEliminacion('eliminarCitaForm{{ $cita->id }}', '¿Seguro que deseas eliminar esta cita?')">
+                                        Eliminar
+                                    </a>
+                                    <form id="eliminarCitaForm{{ $cita->id }}" method="POST"
+                                        action="{{ route('citas.destroy', $cita) }}" style="display:none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            {{ $citas->links() }}
+        </div>
+    </div>
+
+@endsection

@@ -15,6 +15,10 @@ use App\Http\Controllers\CatalogoController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\ConfiguracionCredencialesController;
 use App\Http\Controllers\PacienteController;
+use App\Http\Controllers\InventarioController;
+use App\Http\Controllers\TratamientoController;
+use App\Http\Controllers\CitaController;
+
 
 
 Route::get('/', function () {
@@ -236,20 +240,29 @@ Route::middleware(['auth', 'can:Administración y Parametrización'])->group(fun
     Route::delete('/catalogos/{id}', [CatalogoController::class, 'destroy'])->name('catalogos.destroy')->middleware('can:catalogo.eliminar');
 
     // Rutas para categorias
+
+    Route::get('cat/categorias/create', [CategoriaController::class, 'create'])->name('cat_categorias.create')->middleware('can:categoria.crear');
+    Route::post('cat/categorias', [CategoriaController::class, 'store'])->name('cat_categorias.store')->middleware('can:categoria.guardar');
+    Route::get('cat/categorias/{id}', [CategoriaController::class, 'show'])->name('cat_categorias.show')->middleware('can:categoria.ver_detalle');
+    Route::get('cat/categorias/{id}/edit', [CategoriaController::class, 'edit'])->name('cat_categorias.edit')->middleware('can:categoria.editar');
+    Route::put('cat/categorias/{id}', [CategoriaController::class, 'update'])->name('cat_categorias.update')->middleware('can:categoria.actualizar');
+    Route::delete('cat/categorias/{id}', [CategoriaController::class, 'destroy'])->name('cat_categorias.destroy')->middleware('can:categoria.eliminar');
+
     Route::get('/categorias', [CategoriaController::class, 'index'])->name('categorias.index')->middleware('can:categoria.ver');
-    Route::get('/categorias/create', [CategoriaController::class, 'create'])->name('categorias.create')->middleware('can:categoria.crear');
-    Route::post('/categorias', [CategoriaController::class, 'store'])->name('categorias.store')->middleware('can:categoria.guardar');
-    Route::get('/categorias/{id}', [CategoriaController::class, 'show'])->name('categorias.show')->middleware('can:categoria.ver_detalle');
-    Route::get('/categorias/{id}/edit', [CategoriaController::class, 'edit'])->name('categorias.edit')->middleware('can:categoria.editar');
-    Route::put('/categorias/{id}', [CategoriaController::class, 'update'])->name('categorias.update')->middleware('can:categoria.actualizar');
-    Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy'])->name('categorias.destroy')->middleware('can:categoria.eliminar');
+    Route::get('/categorias/create', [CategoriaController::class, 'create_'])->name('categorias.create')->middleware('can:categoria.crear');
+    Route::post('/categorias', [CategoriaController::class, 'store_'])->name('categorias.store')->middleware('can:categoria.guardar');
+    Route::get('/categorias/{id}', [CategoriaController::class, 'show_'])->name('categorias.show')->middleware('can:categoria.ver_detalle');
+    Route::get('/categorias/{id}/edit', [CategoriaController::class, 'edit_'])->name('categorias.edit')->middleware('can:categoria.editar');
+    Route::put('/categorias/{id}', [CategoriaController::class, 'update_'])->name('categorias.update')->middleware('can:categoria.actualizar');
+    Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy_'])->name('categorias.destroy')->middleware('can:categoria.eliminar');
+
 });
 
 
 
 //------------------------LOGICA DE NEGOCIO--------------------------------
 
-
+/* -------------------- PACIENTES -------------------- */
 Route::get('/pacientes', [PacienteController::class, 'index'])->name('pacientes.index')->middleware('can:pacientes.ver');
 Route::get('/pacientes/create', [PacienteController::class, 'create'])->name('pacientes.create')->middleware('can:pacientes.crear');
 Route::post('/pacientes', [PacienteController::class, 'store'])->name('pacientes.store')->middleware('can:pacientes.guardar');
@@ -257,6 +270,38 @@ Route::get('/pacientes/{paciente}', [PacienteController::class, 'show'])->name('
 Route::get('/pacientes/{paciente}/edit', [PacienteController::class, 'edit'])->name('pacientes.edit')->middleware('can:pacientes.editar');
 Route::put('/pacientes/{paciente}', [PacienteController::class, 'update'])->name('pacientes.update')->middleware('can:pacientes.actualizar');
 Route::delete('/pacientes/{paciente}', [PacienteController::class, 'destroy'])->name('pacientes.destroy')->middleware('can:pacientes.eliminar');
+
+
+/* -------------------- INVENTARIO -------------------- */
+Route::prefix('inventario')->group(function () {
+    Route::get('/', [InventarioController::class, 'index'])->name('inventario.index')->middleware('can:inventario.ver');
+    Route::get('/crear', [InventarioController::class, 'create'])->name('inventario.create')->middleware('can:inventario.crear');
+    Route::post('/', [InventarioController::class, 'store'])->name('inventario.store')->middleware('can:inventario.guardar');
+    Route::get('/{inventario}/editar', [InventarioController::class, 'edit'])->name('inventario.edit')->middleware('can:inventario.editar');
+    Route::put('/{inventario}', [InventarioController::class, 'update'])->name('inventario.update')->middleware('can:inventario.actualizar');
+    Route::delete('/{inventario}', [InventarioController::class, 'destroy'])->name('inventario.destroy')->middleware('can:inventario.eliminar');
+});
+
+
+/* -------------------- TRATAMIENTOS -------------------- */
+Route::prefix('tratamientos')->name('tratamientos.')->group(function () {
+    Route::get('/', [TratamientoController::class, 'index'])->name('index')->middleware('can:tratamientos.ver');
+    Route::get('/crear', [TratamientoController::class, 'create'])->name('create')->middleware('can:tratamientos.crear');
+    Route::post('/', [TratamientoController::class, 'store'])->name('store')->middleware('can:tratamientos.guardar');
+    Route::get('/{tratamiento}/editar', [TratamientoController::class, 'edit'])->name('edit')->middleware('can:tratamientos.editar');
+    Route::put('/{tratamiento}', [TratamientoController::class, 'update'])->name('update')->middleware('can:tratamientos.actualizar');
+    Route::delete('/{tratamiento}', [TratamientoController::class, 'destroy'])->name('destroy')->middleware('can:tratamientos.eliminar');
+});
+
+/* -------------------- CITAS -------------------- */
+Route::prefix('citas')->name('citas.')->group(function () {
+    Route::get('/', [CitaController::class, 'index'])->name('index')->middleware('can:citas.ver');
+    Route::get('/crear', [CitaController::class, 'create'])->name('create')->middleware('can:citas.crear');
+    Route::post('/', [CitaController::class, 'store'])->name('store')->middleware('can:citas.guardar');
+    Route::get('/{cita}/editar', [CitaController::class, 'edit'])->name('edit')->middleware('can:citas.editar');
+    Route::put('/{cita}', [CitaController::class, 'update'])->name('update')->middleware('can:citas.actualizar');
+    Route::delete('/{cita}', [CitaController::class, 'destroy'])->name('destroy')->middleware('can:citas.eliminar');
+});
 
 
 Route::get('/departamentos/{paisCodigo}', function ($paisCodigo) {
