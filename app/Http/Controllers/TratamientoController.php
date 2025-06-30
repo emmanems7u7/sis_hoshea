@@ -11,7 +11,8 @@ class TratamientoController extends Controller
 {
     public function index()
     {
-        $tratamientos = Tratamiento::with('paciente')->orderByDesc('fecha_inicio')->paginate(15);
+        $tratamientos = Tratamiento::with('paciente', 'citas')->orderByDesc('fecha_inicio')->paginate(15);
+
         $breadcrumb = [
             ['name' => 'Tratamientos', 'url' => route('tratamientos.index')],
         ];

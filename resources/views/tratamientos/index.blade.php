@@ -24,18 +24,35 @@
                             <th>Fecha Inicio</th>
                             <th>Fecha Fin</th>
                             <th>Estado</th>
+                            <th>Citas</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($tratamientos as $tratamiento)
+                        @foreach($tratamientos as $index => $tratamiento)
                             <tr>
-                                <td>{{ $tratamiento->id }}</td>
+                                <td>{{$index + 1 }}</td>
                                 <td>{{ $tratamiento->paciente->nombres }} {{ $tratamiento->paciente->apellidos }}</td>
                                 <td>{{ $tratamiento->nombre }}</td>
                                 <td>{{ $tratamiento->fecha_inicio->format('Y-m-d') }}</td>
                                 <td>{{ $tratamiento->fecha_fin ? $tratamiento->fecha_fin->format('Y-m-d') : '-' }}</td>
                                 <td>{{ ucfirst($tratamiento->estado) }}</td>
+                                <td>
+                                    @foreach($tratamiento->citas as $cita)
+
+                                        <p>{{ $cita->id }}</p>
+                                        <p>{{ $cita->paciente->nombres }} {{ $cita->paciente->apellidos }}</p>
+                                        <p>{{ $cita->tratamiento ? $cita->tratamiento->nombre : '-' }}</p>
+                                        <p>{{ $cita->fecha_hora->format('Y-m-d H:i') }}</p>
+                                        <p>{{ $cita->duracion ?? '-' }}</p>
+                                        <p>{{ ucfirst($cita->estado) }}</p>
+                                        <p>
+                                            @foreach($cita->usuarios as $usuario)
+                                                <span class="badge bg-secondary">{{ $usuario->name }}
+                                                    ({{ $usuario->pivot->rol_en_cita ?? 'N/A' }})</span><br>
+                                            @endforeach
+                                        </p>
+                                    @endforeach
                                 <td>
                                     <a href="{{ route('tratamientos.edit', $tratamiento) }}"
                                         class="btn btn-sm btn-primary">Editar</a>
