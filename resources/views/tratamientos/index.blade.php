@@ -40,7 +40,7 @@
                                 <td>
                                     @foreach($tratamiento->citas as $cita)
 
-                                        <p>{{ $cita->id }}</p>
+
                                         <p>{{ $cita->paciente->nombres }} {{ $cita->paciente->apellidos }}</p>
                                         <p>{{ $cita->tratamiento ? $cita->tratamiento->nombre : '-' }}</p>
                                         <p>{{ $cita->fecha_hora->format('Y-m-d H:i') }}</p>

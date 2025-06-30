@@ -1,13 +1,21 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
-use App\Models\Menu;
+use App\Models\Cita;
+use App\Models\Tratamiento;
+use App\Models\Paciente;
+
+use App\Models\User;
+
+
+
 use Illuminate\Support\Facades\Route;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ConfiguracionCredenciales;
+use App\Models\Inventario;
+
 class HomeController extends Controller
 {
     /**
@@ -46,7 +54,27 @@ class HomeController extends Controller
             $tiempo_cambio_contraseña = 1;
         }
 
-        return view('home', compact('breadcrumb', 'tiempo_cambio_contraseña'));
+        $citas = Cita::with(['paciente', 'tratamiento', 'usuarios'])->orderBy('fecha_hora', 'desc')->paginate(15);
+        $tratamientos = Tratamiento::with('paciente', 'citas')->orderByDesc('fecha_inicio')->paginate(15);
+
+
+        $totalPacientes = Paciente::all()->count();
+        $tratamientosActivos = Tratamiento::where('estado', 'Activo')->count();
+        $citasActivas = Cita::where('estado', 'confirmado')->count();
+        $personalActivo = User::all()->count();
+
+
+
+        return view('home', compact(
+            'tratamientos',
+            'citas',
+            'breadcrumb',
+            'tiempo_cambio_contraseña',
+            'totalPacientes',
+            'tratamientosActivos',
+            'citasActivas',
+            'personalActivo',
+        ));
     }
 
 }
