@@ -150,7 +150,7 @@ class MenuRepository extends BaseRepository implements MenuInterface
 
         $registro = <<<PHP
                                 [
-                                    'id' => '{$seccion->id}',
+                                    'id' => {$seccion->id},
                                     'titulo' => '{$titulo}',
                                     'icono' => '{$icono}',
                                     'posicion' => {$posicion},

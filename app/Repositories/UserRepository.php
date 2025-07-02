@@ -39,6 +39,9 @@ class UserRepository extends BaseRepository implements UserInterface
             'documento_identidad' => $this->cleanHtml($request->input('documento_identidad')),
             'pais' => $this->cleanHtml($request->input('pais')),
             'ciudad' => $this->cleanHtml($request->input('ciudad')),
+            'departamento' => $this->cleanHtml($request->input('departamento')),
+
+
         ]);
         return $user;
     }
@@ -98,6 +101,8 @@ class UserRepository extends BaseRepository implements UserInterface
             'documento_identidad' => $request->input('documento_identidad'),
             'pais' => $request->input('pais'),
             'ciudad' => $request->input('ciudad'),
+            'departamento' => $request->input('departamento'),
+
         ]);
         return $user;
     }
@@ -170,8 +175,10 @@ class UserRepository extends BaseRepository implements UserInterface
             'fecha_nacimiento' => ['nullable', 'date', 'before_or_equal:today'],
             'genero' => ['nullable', 'string', 'in:M,F,O'],
             'documento_identidad' => ['nullable', 'string', 'max:20'],
-            'pais' => ['nullable', 'string', 'exists:catalogos,catalogo_codigo'],
-            'ciudad' => ['nullable', 'string', 'exists:catalogos,catalogo_codigo'],
+
+            'pais' => 'nullable|string|exists:catalogos,catalogo_codigo',
+            'departamento' => 'nullable|string|exists:catalogos,catalogo_codigo',
+            'ciudad' => 'nullable|string|exists:catalogos,catalogo_codigo',
         ]);
 
 

@@ -110,17 +110,37 @@
 
         <div class="mb-3">
             <label for="pais">País</label>
-            <input type="text" class="form-control @error('pais') is-invalid @enderror" id="pais" name="pais"
-                placeholder="Código país" value="{{ old('pais', $user->pais ?? '') }}">
+            <select class="form-select @error('pais') is-invalid @enderror" id="pais" name="pais">
+                <option value="" selected>Seleccione un pais</option>
+                @foreach ($paises as $pais)
+                    <option value="{{ $pais->catalogo_codigo }}" {{ old('pais', $user?->pais ?? '') == $pais->catalogo_codigo ? 'selected' : '' }}>
+                        {{ $pais->catalogo_descripcion }}
+                    </option>
+                @endforeach
+            </select>
             @error('pais')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
 
         <div class="mb-3">
+            <label for="departamento">Departamento</label>
+            <select class="form-select @error('departamento') is-invalid @enderror" id="departamento"
+                name="departamento">
+                <option value="" selected>Seleccione un departamento</option>
+
+            </select>
+            @error('departamento')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
+
+
+        <div class="mb-3">
             <label for="ciudad">Ciudad</label>
-            <input type="text" class="form-control @error('ciudad') is-invalid @enderror" id="ciudad" name="ciudad"
-                placeholder="Código ciudad" value="{{ old('ciudad', $user->ciudad ?? '') }}">
+            <select class="form-select @error('ciudad') is-invalid @enderror" id="ciudad" name="ciudad">
+                <option value="" selected>Seleccione una ciudad</option>
+            </select>
             @error('ciudad')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
@@ -145,3 +165,69 @@
         </button>
     </div>
 </div>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const paisSelect = document.getElementById('pais');
+        const departamentoSelect = document.getElementById('departamento');
+        const ciudadSelect = document.getElementById('ciudad');
+
+        function clearOptions(selectElement, defaultText) {
+            selectElement.innerHTML = `<option value="" selected>${defaultText}</option>`;
+        }
+
+        function loadOptions(url, selectElement, selectedValue = '') {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    clearOptions(selectElement, selectElement.options[0].text);
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.catalogo_codigo;
+                        option.textContent = item.catalogo_descripcion;
+                        if (item.catalogo_codigo === selectedValue) {
+                            option.selected = true;
+                        }
+                        selectElement.appendChild(option);
+                    });
+                })
+                .catch(() => clearOptions(selectElement, selectElement.options[0].text));
+        }
+
+        // Al cambiar país, cargar departamentos y limpiar ciudad
+        paisSelect.addEventListener('change', function () {
+            const paisCodigo = this.value;
+            if (!paisCodigo) {
+                clearOptions(departamentoSelect, 'Seleccione un departamento');
+                clearOptions(ciudadSelect, 'Seleccione una ciudad');
+                return;
+            }
+            loadOptions(`/departamentos/${paisCodigo}`, departamentoSelect);
+            clearOptions(ciudadSelect, 'Seleccione una ciudad');
+        });
+
+        // Al cambiar departamento, cargar ciudades
+        departamentoSelect.addEventListener('change', function () {
+            const departamentoCodigo = this.value;
+            if (!departamentoCodigo) {
+                clearOptions(ciudadSelect, 'Seleccione una ciudad');
+                return;
+            }
+            loadOptions(`/ciudades/${departamentoCodigo}`, ciudadSelect);
+        });
+
+        // Al cargar la página, cargar departamentos y ciudades si hay valores previos (editar)
+        const paisInicial = paisSelect.value;
+        const departamentoInicial = '{{ old('departamento', $user?->departamento ?? '') }}';
+        const ciudadInicial = '{{ old('ciudad', $user?->ciudad ?? '') }}';
+
+        if (paisInicial) {
+            loadOptions(`/departamentos/${paisInicial}`, departamentoSelect, departamentoInicial);
+        }
+        if (departamentoInicial) {
+            loadOptions(`/ciudades/${departamentoInicial}`, ciudadSelect, ciudadInicial);
+        }
+    });
+</script>

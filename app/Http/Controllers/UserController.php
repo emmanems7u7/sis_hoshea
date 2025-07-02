@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Interfaces\UserInterface;
 use App\Models\User;
+use App\Models\Catalogo;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -39,7 +41,9 @@ class UserController extends Controller
             ['name' => 'Usuarios', 'url' => route('users.index')],
             ['name' => 'Crear', 'url' => route('users.create')],
         ];
-        return view('usuarios.create', compact('breadcrumb'));
+        $paises = Catalogo::where('categoria_id', 5)->get();
+
+        return view('usuarios.create', compact('paises', 'breadcrumb'));
     }
     public function Perfil()
     {
@@ -63,7 +67,7 @@ class UserController extends Controller
 
         $user->assignRole($request->input('role'));
         // Redirigir al usuario con un mensaje de éxito
-        return redirect()->route('users.index')->with('success', 'Usuario registrado exitosamente!');
+        return redirect()->route('users.index')->with('status', 'Usuario registrado exitosamente!');
     }
 
 
@@ -83,8 +87,9 @@ class UserController extends Controller
             ['name' => 'Usuarios', 'url' => route('users.index')],
             ['name' => 'Ecitar ' . $user->name, 'url' => route('users.index')],
         ];
+        $paises = Catalogo::where('categoria_id', 5)->get();
 
-        return view('usuarios.edit', compact('user', 'breadcrumb'));
+        return view('usuarios.edit', compact('user', 'breadcrumb', 'paises'));
     }
 
     // Actualizar un usuario
@@ -104,10 +109,10 @@ class UserController extends Controller
         // Asignar el nuevo rol
         $user->assignRole($request->input('role'));
         if ($perfil == 1) {
-            return redirect()->back()->with('success', 'Usuario actualizado exitosamente!');
+            return redirect()->back()->with('status', 'Usuario actualizado exitosamente!');
 
         } else {
-            return redirect()->route('users.index')->with('success', 'Usuario actualizado exitosamente!');
+            return redirect()->route('users.index')->with('status', 'Usuario actualizado exitosamente!');
 
         }
 
@@ -119,14 +124,14 @@ class UserController extends Controller
 
         $this->userRepository->EditarDatosPersonales($request, $id);
 
-        return redirect()->route('users.index')->with('success', 'Usuario actualizado exitosamente!');
+        return redirect()->route('users.index')->with('status', 'Usuario actualizado exitosamente!');
     }
     // Eliminar un usuario
     public function destroy(User $user)
     {
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'Usuario eliminado exitosamente');
+        return redirect()->route('users.index')->with('status', 'Usuario eliminado exitosamente');
     }
 
     public function exportExcel()
