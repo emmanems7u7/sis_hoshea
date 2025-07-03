@@ -84,6 +84,10 @@ class User extends Authenticatable
         $this->save();
     }
 
+    public function getNombreCompletoAttribute(): string
+    {
+        return "{$this->usuario_nombres} {$this->usuario_app} {$this->usuario_apm}";
+    }
     public function citas()
     {
         return $this->belongsToMany(Cita::class, 'cita_user')

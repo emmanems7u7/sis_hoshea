@@ -58,20 +58,15 @@
                             <ul class="navbar-nav mx-auto">
                                 <li class="nav-item">
                                     <a class="nav-link d-flex align-items-center me-2 active" aria-current="page"
-                                        href="../pages/dashboard.html">
+                                        href="{{ route('login') }}">
                                         <i class="fa fa-chart-pie opacity-6 text-dark me-1"></i>
                                         Inicio
                                     </a>
                                 </li>
 
+
                                 <li class="nav-item">
-                                    <a class="nav-link me-2" href="../pages/sign-up.html">
-                                        <i class="fas fa-user-circle opacity-6 text-dark me-1"></i>
-                                        Registrarse
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a class="nav-link me-2" href="../pages/sign-in.html">
+                                    <a class="nav-link me-2" href="{{ route('login') }}">
                                         <i class="fas fa-key opacity-6 text-dark me-1"></i>
                                         Ingresar
                                     </a>
@@ -144,14 +139,11 @@
                         </div>
                         <div
                             class="col-6 d-lg-flex d-none h-100 my-auto pe-0 position-absolute top-0 end-0 text-center justify-content-center flex-column">
-                            <div class="position-relative bg-gradient-primary h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden"
-                                style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/signin-ill.jpg');
+                            <div class="position-relative  h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden"
+                                style="background-image: url('{{ asset('logo_inicio.jpg') }}');
       background-size: cover;">
-                                <span class="mask bg-gradient-primary opacity-6"></span>
-                                <h4 class="mt-5 text-white font-weight-bolder position-relative">"La atención es la
-                                    nueva moneda"</h4>
-                                <p class="text-white position-relative">Cuanto más fácil parece escribir, más esfuerzo
-                                    ha puesto el escritor en el proceso.</p>
+                                <span class="mask bg-gradient-primary opacity-2"></span>
+
                             </div>
                         </div>
                     </div>
