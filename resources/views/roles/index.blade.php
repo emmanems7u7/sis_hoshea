@@ -1,19 +1,34 @@
 @extends('layouts.argon')
 
 @section('content')
-    <div class="card shadow-lg mx-4 card-profile-bottom bg-green_tarjetas text-green ">
-        <div class="card-body p-3">
-            <p>Roles</p>
-            <div class="row mt-3">
-                <div class="col">
-
-                    <a href="{{ route('roles.create') }}" class="btn btn-primary">Crear Nuevo Rol</a>
-
+    <div class="row">
+        <!-- Columna de botones -->
+        <div class="col-md-5 shadow-sm mb-2">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5>Módulo de Roles</h5>
+                    <a href="{{ route('roles.create') }}" class="btn btn-primary mb-1">Crear Nuevo Rol</a>
                 </div>
             </div>
         </div>
 
+        <!-- Columna de descripción -->
+        <div class="col-md-7 shadow-sm mb-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Información sobre Roles</h5>
+                    <small>- Aquí puedes gestionar los <strong>roles del sistema</strong>, cada uno con sus respectivos
+                        permisos.</small><br>
+                    <small>- Los roles definen lo que un usuario puede o no puede hacer dentro de la plataforma.</small><br>
+                    <small>- Puedes asignar múltiples permisos a un rol, editar su configuración o eliminarlo si ya no es
+                        necesario.</small><br>
+                    <small>- Utiliza el botón <strong>"Crear Nuevo Rol"</strong> para agregar uno nuevo con los permisos
+                        correspondientes.</small>
+                </div>
+            </div>
+        </div>
     </div>
+
     <div class="row mt-3">
         @foreach($roles as $role)
             <div class="col-md-4 mb-4">
