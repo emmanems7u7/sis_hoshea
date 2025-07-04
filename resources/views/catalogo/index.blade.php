@@ -3,7 +3,7 @@
 @section('content')
 
 
-    <div class="card shadow-lg mx-4 card-profile-bottom">
+    <div class="card shadow-lg mx-4 card-profile-bottom bg-green_tarjetas text-green">
         <div class="card-body p-3">
             <p>{{ __('lo.catalogo') }}</p>
             <div class="row mt-3">
@@ -16,7 +16,7 @@
                 </div>
 
                 <div class="col-md-8">
-                    <h5> {{ __('lo.categorias') }} {{ __('ui.availables_text') }}</h5>
+                    <h5 class="text-green"> {{ __('lo.categorias') }} {{ __('ui.availables_text') }}</h5>
 
                     <div class="accordion" id="accordionCategorias">
                         <div class="row">
@@ -28,7 +28,8 @@
                                                 type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ $index }}"
                                                 aria-expanded="false" aria-controls="collapse{{ $index }}">
                                                 <div class="d-flex w-100 justify-content-between">
-                                                    <span class="me-auto"><strong>{{ $categoria->nombre }}</strong></span>
+                                                    <span
+                                                        class="me-auto text-green"><strong>{{ $categoria->nombre }}</strong></span>
                                                     <span class="badge bg-{{ $categoria->estado ? 'success' : 'secondary' }}">
                                                         {{ $categoria->estado ? 'Activo' : 'Inactivo' }}
                                                     </span>
@@ -39,7 +40,7 @@
 
                                         <div id="collapse{{ $index }}" class="accordion-collapse collapse"
                                             aria-labelledby="heading{{ $index }}" data-bs-parent="#accordionCategorias">
-                                            <div class="accordion-body">
+                                            <div class="accordion-body text-green">
                                                 <p><strong>{{ __('ui.description_text') }}:</strong>
                                                     {{ $categoria->descripcion }}</p>
 
@@ -74,7 +75,7 @@
 
     </div>
 
-    <div class="card shadow-lg mx-4 card-profile-bottom">
+    <div class="card shadow-lg mx-4 card-profile-bottom bg-green_tarjetas text-green">
         <div class="card-body">
             <!-- Formulario de búsqueda -->
             <form action="{{ route('catalogos.index') }}" method="GET" class="mb-3">
@@ -110,17 +111,17 @@
                         <tbody>
                             @foreach ($catalogos as $index => $catalogo)
                                 <tr>
-                                    <td>{{ $index + 1}}</td>
-                                    <td>{{ $catalogo->categoria->nombre }}</td>
-                                    <td>{{ $catalogo->catalogo_parent ?? 'No tiene Dependencia'}}</td>
-                                    <td>{{ $catalogo->catalogo_codigo }}</td>
-                                    <td>{{ $catalogo->catalogo_descripcion }}</td>
-                                    <td>
+                                    <td class="text-green">{{ $index + 1}}</td>
+                                    <td class="text-green">{{ $catalogo->categoria->nombre }}</td>
+                                    <td class="text-green">{{ $catalogo->catalogo_parent ?? 'No tiene Dependencia'}}</td>
+                                    <td class="text-green">{{ $catalogo->catalogo_codigo }}</td>
+                                    <td class="text-green">{{ $catalogo->catalogo_descripcion }}</td>
+                                    <td class="text-green">
                                         <span class="badge bg-{{ $catalogo->catalogo_estado ? 'success' : 'secondary' }}">
                                             {{ $catalogo->catalogo_estado ? 'Activo' : 'Inactivo' }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td class="text-green">
                                         <a href="{{ route('catalogos.edit', $catalogo->id) }}"
                                             class="btn btn-sm btn-warning text-white" title="Editar">
                                             {!! __('ui.edit_icon') !!}

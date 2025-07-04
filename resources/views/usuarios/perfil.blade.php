@@ -4,7 +4,7 @@
 
     
 
-        <div class="card shadow-lg mx-4 card-profile-bottom">
+        <div class="card bg-green_tarjetas text-green shadow-lg mx-4 card-profile-bottom">
             <div class="card-body p-3">
                 <div class="row gx-4">
                     <div class="col-auto">
@@ -20,7 +20,7 @@
                     </div>
                     <div class="col-auto my-auto">
                         <div class="h-100">
-                            <h5 class="mb-1">
+                            <h5 class="mb-1 text-green">
                                 {{ $user->usuario_nombres }} {{ $user->usuario_app }} {{ $user->usuario_apm }}
                             </h5>
                             @foreach($user->roles as $role) 
@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-6 my-sm-auto ms-sm-auto me-sm-0 mx-auto mt-3">
-                    <div class="nav-wrapper position-relative end-0">
+                    <div class="nav-wrapper position-relative end-0 bg-green_tarjetas text-green">
                         <ul class="nav nav-pills nav-fill p-1" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link mb-0 px-0 py-1 active d-flex align-items-center justify-content-center" data-bs-toggle="tab" href="javascript:;" role="tab" aria-selected="true">
@@ -64,11 +64,11 @@
         <div class="container-fluid py-4">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card">
+                    <div class="card bg-green_tarjetas text-green">
                     <form action="{{ route('users.update',['id'=>  Auth::user()->id, 'perfil' => 1]) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
-                        <div class="card-header pb-0">
+                        <div class="card-header bg-green_tarjetas text-green pb-0">
                             <div class="d-flex align-items-center">
                                 <p class="mb-0">Editar Perfil</p>
                                 <button type="submit" class="btn btn-primary btn-sm ms-auto">Actualizar Datos</button>
@@ -80,7 +80,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="profile_picture" class="form-control-label">Foto de Perfil</label>
+                                    <label for="profile_picture" class="form-control-label text-green">Foto de Perfil</label>
                                     <div class="d-flex align-items-center">
                                         <!-- Campo para cargar imagen -->
                                         <input type="file" id="profile_picture" name="profile_picture" class="form-control @error('profile_picture') is-invalid @enderror" accept="image/*" onchange="previewImage(event)">
@@ -101,7 +101,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="name" class="form-control-label">Nombre de usuario</label>
+                                        <label for="name" class="form-control-label text-green">Nombre de usuario</label>
                                         <input id="name" class="form-control @error('name') is-invalid @enderror" name="name" type="text" value="{{ old('name', $user->name) }}">
                                         @error('name')
                                             <div class="invalid-feedback" style="display: block !important;">{{ $message }}</div>
@@ -111,7 +111,7 @@
                                 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="email" class="form-control-label">Email</label>
+                                        <label for="email" class="form-control-label text-green">Email</label>
                                         <input id="email" class="form-control @error('email') is-invalid @enderror" type="email" name="email" value="{{ old('email', $user->email) }}">
                                         @error('email')
                                             <div class="invalid-feedback" style="display: block !important;">{{ $message }}</div>
@@ -121,7 +121,7 @@
                                 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="usuario_nombres" class="form-control-label">Nombre</label>
+                                        <label for="usuario_nombres" class="form-control-label text-green">Nombre</label>
                                         <input id="usuario_nombres" class="form-control @error('usuario_nombres') is-invalid @enderror" type="text" name="usuario_nombres" value="{{ old('usuario_nombres', $user->usuario_nombres) }}">
                                         @error('usuario_nombres')
                                             <div class="invalid-feedback" style="display: block !important;">{{ $message }}</div>
@@ -131,7 +131,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="usuario_app" class="form-control-label">Apellido Paterno</label>
+                                        <label for="usuario_app" class="form-control-label text-green">Apellido Paterno</label>
                                         <input id="usuario_app" class="form-control @error('usuario_app') is-invalid @enderror" name="usuario_app" type="text" value="{{ old('usuario_app', $user->usuario_app) }}">
                                         @error('usuario_app')
                                             <div class="invalid-feedback" style="display: block !important;">{{ $message }}</div>
@@ -141,7 +141,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="usuario_apm" class="form-control-label">Apellido Materno</label>
+                                        <label for="usuario_apm" class="form-control-label text-green">Apellido Materno</label>
                                         <input id="usuario_apm" class="form-control @error('usuario_apm') is-invalid @enderror" name="usuario_apm" type="text" value="{{ old('usuario_apm', $user->usuario_apm) }}">
                                         @error('usuario_apm')
                                             <div class="invalid-feedback" style="display: block !important;">{{ $message }}</div>
@@ -151,7 +151,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="usuario_telefono" class="form-control-label">Teléfono</label>
+                                        <label for="usuario_telefono" class="form-control-label text-green">Teléfono</label>
                                         <input id="usuario_telefono" class="form-control @error('usuario_telefono') is-invalid @enderror" name="usuario_telefono" type="text" value="{{ old('usuario_telefono', $user->usuario_telefono) }}">
                                         @error('usuario_telefono')
                                             <div class="invalid-feedback" style="display: block !important;">{{ $message }}</div>
@@ -161,7 +161,7 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="usuario_direccion" class="form-control-label">Dirección</label>
+                                        <label for="usuario_direccion" class="form-control-label text-green">Dirección</label>
                                         <input id="usuario_direccion" class="form-control @error('usuario_direccion') is-invalid @enderror" name="usuario_direccion" type="text" value="{{ old('usuario_direccion', $user->usuario_direccion) }}">
                                         @error('usuario_direccion')
                                             <div class="invalid-feedback" style="display: block !important;">{{ $message }}</div>
@@ -177,26 +177,26 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="example-text-input" class="form-control-label">Address</label>
+                                        <label for="example-text-input" class="form-control-label text-green">Address</label>
                                         <input class="form-control" type="text"
                                             value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="example-text-input" class="form-control-label">City</label>
+                                        <label for="example-text-input" class="form-control-label text-green">City</label>
                                         <input class="form-control" type="text" value="New York">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="example-text-input" class="form-control-label">Country</label>
+                                        <label for="example-text-input" class="form-control-label text-green">Country</label>
                                         <input class="form-control" type="text" value="United States">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="example-text-input" class="form-control-label">Postal code</label>
+                                        <label for="example-text-input" class="form-control-label text-green">Postal code</label>
                                         <input class="form-control" type="text" value="437300">
                                     </div>
                                 </div>
@@ -208,7 +208,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="example-text-input" class="form-control-label">About me</label>
+                                        <label for="example-text-input" class="form-control-label text-green">About me</label>
                                         <input class="form-control" type="text"
                                             value="A beautiful Dashboard for Bootstrap 5. It is Free and Open Source.">
                                     </div>
@@ -219,48 +219,8 @@
                 </div>
                
             </div>
-            <footer class="footer pt-3  ">
-                <div class="container-fluid">
-                    <div class="row align-items-center justify-content-lg-between">
-                        <div class="col-lg-6 mb-lg-0 mb-4">
-                            <div class="copyright text-center text-sm text-muted text-lg-start">
-                                ©
-                                <script>
-                                    document.write(new Date().getFullYear())
-                                </script>,
-                                made with <i class="fa fa-heart"></i> by
-                                <a href="https://www.creative-tim.com" class="font-weight-bold" target="_blank">Creative
-                                    Tim</a>
-                                for a better web.
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <ul class="nav nav-footer justify-content-center justify-content-lg-end">
-                                <li class="nav-item">
-                                    <a href="https://www.creative-tim.com" class="nav-link text-muted"
-                                        target="_blank">Creative Tim</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="https://www.creative-tim.com/presentation" class="nav-link text-muted"
-                                        target="_blank">About Us</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="https://www.creative-tim.com/blog" class="nav-link text-muted"
-                                        target="_blank">Blog</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="https://www.creative-tim.com/license" class="nav-link pe-0 text-muted"
-                                        target="_blank">License</a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </footer>
-       
-    
+          
 
-   
 
 
     <script>

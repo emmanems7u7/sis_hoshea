@@ -1,7 +1,7 @@
 @extends('layouts.argon')
 
 @section('content')
-    <div class="card shadow-lg mx-4 card-profile-bottom">
+    <div class="card shadow-lg mx-4 card-profile-bottom bg-green_tarjetas text-green ">
         <div class="card-body p-3">
             <p>Roles</p>
             <div class="row mt-3">
@@ -17,13 +17,13 @@
     <div class="row mt-3">
         @foreach($roles as $role)
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm border">
+                <div class="card shadow-sm border bg-green_tarjetas text-green">
                     <div class="card-body">
-                        <h5 class="card-title text-primary">
+                        <h5 class="card-title text-green">
                             <i class="fas fa-user-tag me-2"></i> {{ $role->name }}
                         </h5>
 
-                        <p class="mb-2 text-muted"><strong>Permisos:</strong></p>
+                        <p class="mb-2 text-green"><strong>Permisos:</strong></p>
                         <div style="max-height: 122px; overflow-y: auto; padding-right: 10px;">
                             @foreach($role->permissions as $permission)
                                 <span class="badge bg-info me-1 mb-1">{{ $permission->name }}</span>

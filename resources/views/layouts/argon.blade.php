@@ -72,9 +72,9 @@
 </head>
 
 <body class="g-sidenav-show   bg-gray-100">
-    <div class="min-height-300 bg-dark position-absolute w-100"></div>
+    <div class="min-height-300 bg-green_fondo text-green position-absolute w-100"></div>
     <aside
-        class="sidenav bg-white navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 "
+        class="sidenav bg-green_tarjetas text-green navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 "
         id="sidenav-main">
         <div class="sidenav-header">
             <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
@@ -85,7 +85,7 @@
             </a>
         </div>
         
-        <div class="collapse navbar-collapse w-auto" id="sidenav-collapse-main">
+        <div class="collapse text-green navbar-collapse w-auto" id="sidenav-collapse-main">
             <ul class="navbar-nav">
             <li class="nav-item d-flex flex-column align-items-center">
 
@@ -107,31 +107,31 @@
                  @endforeach
 
         
-            <li class="nav-item">
+            <li class="nav-item text-green">
                     <a class="nav-link active" href="{{ route('home') }}">
 
-                        <span class="ps-3 ms-3 nav-link-text ms-1">Inicio</span>
+                        <span class="ps-3 ms-3 nav-link-text ms-1 text-green">Inicio</span>
                     </a>
                 </li>
                 
                 <li class="nav-item">
                         <a class="nav-link" href="{{ route('user.actualizar.contraseña') }}">
 
-                            <span class="ps-3 ms-3 nav-link-text ms-1">Actualizar contraseña</span>
+                            <span class="ps-3 ms-3 nav-link-text ms-1 text-green">Actualizar contraseña</span>
                         </a>
                 </li>
             @if( $tiempo_cambio_contraseña != 1)
      
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('perfil') }}">
-                        <span class="ps-3 ms-3 nav-link-text ms-1">Perfil</span>
+                        <span class="ps-3 ms-3 nav-link-text ms-1 text-green">Perfil</span>
                     </a>
                 </li>
                 @role('admin')
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('menus.index') }}">
 
-                        <span class="ps-3 ms-3 nav-link-text ms-1">Gestión de menus</span>
+                        <span class="ps-3 ms-3 nav-link-text ms-1 text-green">Gestión de menus</span>
                     </a>
                 </li>
                 @endrole
@@ -139,18 +139,18 @@
                 <ul id="secciones-list" class="list-unstyled" {{ $configuracion->mantenimiento ? 'data-draggable="false"' : 'data-draggable="true"' }}>
                     @foreach ($secciones as $seccion)
                         @can($seccion->titulo)
-                            <li class="seccion-item mb-3 p-2" data-id="{{ $seccion->id }}">
-                                <div class="d-flex align-items-center {{ $configuracion->mantenimiento ? 'text-warning' : '' }}">
+                            <li class="seccion-item mb-3 p-2 text-green" data-id="{{ $seccion->id }}">
+                                <div class=" text-green d-flex align-items-center {{ $configuracion->mantenimiento ? 'text-warning' : '' }}">
                                     <i class="{{ $seccion->icono }} me-2"></i>
-                                    <h6 class="m-0 text-uppercase text-xs font-weight-bolder  {{ $configuracion->mantenimiento ? 'text-warning' : '' }}">{{ $seccion->titulo }}</h6>
+                                    <h6 class=" text-green m-0 text-uppercase text-xs font-weight-bolder  {{ $configuracion->mantenimiento ? 'text-warning' : '' }}">{{ $seccion->titulo }}</h6>
                                 </div>
 
                                 <ul class="list-unstyled ms-4 mt-2">
                                     @foreach ($seccion->menus as $menu)
                                         @can($menu->nombre)
-                                            <li class="nav-item">
+                                            <li class="nav-item text-green">
                                                 <a class="nav-link" href="{{ route($menu->ruta) }}">
-                                                    <span class="nav-link-text">{{ $menu->nombre }}</span>
+                                                    <span class="text-green nav-link-text">{{ $menu->nombre }}</span>
                                                 </a>
                                             </li>
                                         @endcan
@@ -169,7 +169,7 @@
                                     class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
                                     <i class="fas fa-sign-out-alt text-dark text-sm opacity-10"></i>
                                 </div>
-                                <span class="nav-link-text ms-1">Salir</span>
+                                <span class="nav-link-text ms-1 text-greenv">Salir</span>
                             </a>
 
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">

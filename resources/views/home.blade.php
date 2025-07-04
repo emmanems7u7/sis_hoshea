@@ -5,8 +5,8 @@
 
         <div class="row">
             {{-- Pacientes registrados --}}
-            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                <div class="card">
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4  ">
+                <div class="card bg-green_tarjetas text-green">
                     <div class="card-body p-3">
                         <div class="row">
                             <div class="col-8">
@@ -15,7 +15,7 @@
                                     <h5 class="font-weight-bolder">
                                         {{ $totalPacientes }}
                                     </h5>
-                                    <p class="mb-0 text-muted">Total en el sistema</p>
+                                    <p class="mb-0 text-green">Total en el sistema</p>
                                 </div>
                             </div>
                             <div class="col-4 text-end">
@@ -30,7 +30,7 @@
 
             {{-- Tratamientos activos --}}
             <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                <div class="card">
+                <div class="card bg-green_tarjetas text-green">
                     <div class="card-body p-3">
                         <div class="row">
                             <div class="col-8">
@@ -39,7 +39,7 @@
                                     <h5 class="font-weight-bolder">
                                         {{ $tratamientosActivos }}
                                     </h5>
-                                    <p class="mb-0 text-muted">En curso actualmente</p>
+                                    <p class="mb-0 text-green">En curso actualmente</p>
                                 </div>
                             </div>
                             <div class="col-4 text-end">
@@ -54,7 +54,7 @@
 
             {{-- Citas activas --}}
             <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                <div class="card">
+                <div class="card bg-green_tarjetas text-green">
                     <div class="card-body p-3">
                         <div class="row">
                             <div class="col-8">
@@ -63,7 +63,7 @@
                                     <h5 class="font-weight-bolder">
                                         {{ $citasActivas }}
                                     </h5>
-                                    <p class="mb-0 text-muted">Confirmadas</p>
+                                    <p class="mb-0 text-green">Confirmadas</p>
                                 </div>
                             </div>
                             <div class="col-4 text-end">
@@ -78,7 +78,7 @@
 
             {{-- Personal activo --}}
             <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
-                <div class="card">
+                <div class="card bg-green_tarjetas text-green">
                     <div class="card-body p-3">
                         <div class="row">
                             <div class="col-8">
@@ -87,7 +87,7 @@
                                     <h5 class="font-weight-bolder">
                                         {{ $personalActivo }}
                                     </h5>
-                                    <p class="mb-0 text-muted">Usuarios con acceso</p>
+                                    <p class="mb-0 text-green">Usuarios con acceso</p>
                                 </div>
                             </div>
                             <div class="col-4 text-end">
@@ -105,13 +105,13 @@
 
         <div class="row">
             <div class="col-md-6">
-                <div class="card mt-3">
+                <div class="card mt-3 bg-green_tarjetas text-green">
                     <div class="card-body">
                         Proximas Citas
                         <div class="row g-3">
                             @foreach ($citas as $cita)
                                 <div class="col-md-12">
-                                    <div class="card shadow-sm h-100">
+                                    <div class="card shadow-sm h-100 bg-green_tarjetas_claro text-green">
                                         <div class="card-body d-flex justify-content-between align-items-start">
                                             <div>
                                                 <h5 class="mb-1">
@@ -132,7 +132,7 @@
                                                     <strong>Estado:</strong>
                                                     {{ ucfirst($cita->estado) }}
                                                 </p>
-                                                <p class="text-muted small ms-2">Personal Asignado</p>
+                                                <p class="text-green small ms-2">Personal Asignado</p>
 
                                                 @foreach ($cita->usuarios as $usuario)
                                                     <span class="badge bg-secondary me-1 mb-1">
@@ -141,7 +141,7 @@
                                                 @endforeach
                                             </div>
 
-                                            <span class="text-muted small ms-2">
+                                            <span class="text-green small ms-2">
                                                 {{ $cita->fecha_hora->format('Y-m-d H:i') }}
                                             </span>
                                         </div>
@@ -154,13 +154,13 @@
                 </div>
             </div>
             <div class="col-md-6 mt-3">
-                <div class="card">
+                <div class="card  bg-green_tarjetas text-green shadow-sm">
                     <div class="card-body">
                         Tratamientos Activos
                         <div class="row g-3">
                             @foreach ($tratamientos as $tratamiento)
                                 <div class="col-md-6">
-                                    <div class="card h-100 position-relative shadow-sm">
+                                    <div class="card h-100 position-relative shadow-sm  bg-green_tarjetas_claro text-green">
 
 
                                         <span class="badge bg-primary position-absolute top-0 end-0 m-2">
@@ -168,7 +168,7 @@
                                         </span>
 
                                         <div class="card-body">
-                                            <h5 class="mb-1">
+                                            <h5 class="mb-1 text-green">
                                                 Paciente: {{ $tratamiento->paciente->nombre_completo }}
                                             </h5>
 

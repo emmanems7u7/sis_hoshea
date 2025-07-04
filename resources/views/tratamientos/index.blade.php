@@ -4,9 +4,9 @@
 
     <div class="row">
         <div class="col-md-5 shadow-sm mb-2">
-            <div class="card mb-3">
+            <div class="card mb-3 bg-green_tarjetas ">
                 <div class="card-body">
-                    <h5>Modulo de Tratamientos</h5>
+                    <h5 class="text-green">Modulo de Tratamientos</h5>
                     <a href="{{ route('tratamientos.create') }}" class="btn btn-primary">Crear tratamiento</a>
                     <a href="{{ route('tratamientos.exportPDF') }}" class="btn btn-danger" target="_blank">Exportar en
                         PDF</a>
@@ -19,9 +19,9 @@
             </div>
         </div>
         <div class="col-md-7 shadow-sm mb-2">
-            <div class="card">
-                <div class="card-body">
-                    <h5>Información de Tratamientos</h5>
+            <div class="card bg-green_tarjetas ">
+                <div class="card-body text-green">
+                    <h5 class="text-green">Información de Tratamientos</h5>
                     <small>- En esta sección puedes gestionar los tratamientos de los pacientes. Puedes crear, editar y
                         eliminar
                         tratamientos, así como ver las citas asociadas a cada tratamiento.</small>
@@ -37,9 +37,9 @@
         </div>
     </div>
 
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="mb-3">Filtrar tratamientos</h5>
+    <div class="card mb-3 bg-green_tarjetas">
+        <div class="card-body ">
+            <h5 class="mb-3 text-green">Filtrar tratamientos</h5>
 
 
             <div class="d-flex flex-wrap align-items-end gap-2">
@@ -69,10 +69,11 @@
 
         @foreach($tratamientos as $tratamiento)
             <div class="col-md-6 tratamiento-item">
-                <div class="card mb-4 border-0 shadow-sm">
-                    <div class="card-header  text-black d-flex justify-content-between align-items-center rounded-top">
+                <div class="card mb-4  bg-green_tarjetas">
+                    <div
+                        class="card-header bg-green_tarjetas text-green d-flex justify-content-between align-items-center rounded-top">
                         <div>
-                            <h4 class="mb-0 fw-bold text-black">Tratamiento: {{ $tratamiento->nombre }}</h4>
+                            <h4 class="mb-0 fw-bold text-green">Tratamiento: {{ $tratamiento->nombre }}</h4>
                             <small>Paciente: <strong>{{ $tratamiento->paciente->nombres }}
                                     {{ $tratamiento->paciente->apellidos }}</strong></small>
                         </div>
@@ -93,7 +94,7 @@
                         </div>
                     </div>
 
-                    <div class="card-body bg-white rounded-bottom">
+                    <div class="card-body  rounded-bottom text-green">
                         <div class="mb-2">
                             <span class="me-3"><strong>Fecha Inicio:</strong>
                                 {{ $tratamiento->fecha_inicio->format('Y-m-d') }}</span>
@@ -114,12 +115,11 @@
 
                         @if($tratamiento->citas->count())
                             <div class="mt-3">
-                                <h6 class="text-muted">Citas Asociadas:</h6>
-                                <div class="row">
+                                <h6 class="text-green">Citas Asociadas:</h6>
+                                <div class="row text-green">
                                     @foreach($tratamiento->citas as $cita)
                                         <div class="col-md-12 mb-3">
-                                            <div class="border rounded p-3 bg-light position-relative">
-
+                                            <div class="border bg-green_tarjetas_claro  rounded p-3 bg-light position-relative">
 
                                                 @php
                                                     $estadoClass = match ($cita->estado) {
@@ -166,7 +166,7 @@
                                 </div>
                             </div>
                         @else
-                            <p class="text-muted">No hay citas asociadas.</p>
+                            <p class="text-green">No hay citas asociadas.</p>
                         @endif
                     </div>
                 </div>
