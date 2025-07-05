@@ -59,12 +59,12 @@
 
                 <td class="align-middle">
                     @can('usuarios.editar')
-                        <a href="{{ route('users.edit', ['id' => $usuario->id]) }}" class="text-black font-weight-bold text-xs"
+                        <a href="{{ route('users.edit', ['id' => $usuario->id]) }}" class="btn btn-sm btn-warning"
                             id="modal_edit_usuario_button">Editar
                             Usuario</a>
                     @endcan
                     @can('usuarios.eliminar')
-                        <a type="button" class="text-black font-weight-bold text-xs" id="modal_edit_usuario_button"
+                        <a type="button" class="btn btn-sm btn-danger" id="modal_edit_usuario_button"
                             onclick="confirmarEliminacion('eliminarUsuarioForm', '¿Estás seguro de que deseas eliminar este usuario?')">Eliminar
                             Usuario</a>
 
