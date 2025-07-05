@@ -134,7 +134,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     Route::get('/roles', [RoleController::class, 'index'])
         ->name('roles.index')
