@@ -2,14 +2,35 @@
 
 @section('content')
 
-    <div class="card">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h1 class="mb-0">Listado de Pacientes</h1>
-                <a href="{{ route('pacientes.create') }}" class="btn btn-primary">Nuevo Paciente</a>
+
+<div class="row">
+    <!-- Columna de botones -->
+    <div class="col-md-5 shadow-sm mb-2">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>Módulo de Pacientes</h5>
+                <a href="{{ route('pacientes.create') }}" class="btn btn-primary mb-1">Nuevo Paciente</a>
             </div>
         </div>
     </div>
+
+    <!-- Columna de descripción -->
+    <div class="col-md-7 shadow-sm mb-2">
+        <div class="card">
+            <div class="card-body">
+                <h5>Información sobre Pacientes</h5>
+                <small>- En este módulo puedes gestionar la información de los pacientes registrados en el sistema.</small><br>
+                <small>- Puedes registrar nuevos pacientes con el botón <strong>"Nuevo Paciente"</strong>.</small><br>
+                <small>- Desde el listado puedes <strong>ver, editar o eliminar</strong> los datos de un paciente fácilmente.</small><br>
+                <small>- El estado <strong>"Activo"</strong> indica que el paciente puede tener citas o tratamientos activos.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+  
+
+
     <div class="card mt-3">
         <div class="card-body">
 

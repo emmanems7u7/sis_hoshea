@@ -1,15 +1,32 @@
 @extends('layouts.argon')
 
 @section('content')
-    <div class="card">
-        <div class="card-body">
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h1>Citas</h1>
-                <a href="{{ route('citas.create') }}" class="btn btn-primary">Crear Cita</a>
+    <div class="row">
+    <!-- Columna de botones -->
+    <div class="col-md-5 shadow-sm mb-2">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5>Módulo de Citas</h5>
+                <a href="{{ route('citas.create') }}" class="btn btn-primary mb-1">Crear Cita</a>
+                {{-- Puedes añadir más botones si es necesario --}}
             </div>
         </div>
     </div>
+
+    <!-- Columna de descripción -->
+    <div class="col-md-7 shadow-sm mb-2">
+        <div class="card">
+            <div class="card-body">
+                <h5>Información sobre Citas</h5>
+                <small>- En esta sección puedes gestionar las citas agendadas para tus pacientes.</small><br>
+                <small>- Utiliza el botón <strong>"Crear Cita"</strong> para programar una nueva.</small><br>
+                <small>- Cada cita puede tener varios usuarios asignados (como médicos o asistentes), y está asociada a un paciente y un tratamiento.</small><br>
+                <small>- Puedes editar o eliminar citas según corresponda desde el listado inferior.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
 
     <div class="card mt-3">
         <div class="card-body">
