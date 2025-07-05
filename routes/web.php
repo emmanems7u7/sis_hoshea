@@ -206,7 +206,7 @@ Route::middleware(['auth', 'role:admin', 'can:Configuración General'])->group(f
 
 });
 
-Route::middleware(['auth', 'role:admin', 'can:Configuración Credenciales'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/configuracion/credenciales', [ConfiguracionCredencialesController::class, 'index'])->name('configuracion.credenciales.index')->middleware('can:configuracion.credenciales_ver');
     Route::post('/configuracion/credenciales/actualizar', [ConfiguracionCredencialesController::class, 'actualizar'])->name('configuracion.credenciales.actualizar')->middleware('can:configuracion.credenciales_actualizar');
@@ -306,6 +306,10 @@ Route::prefix('citas')->name('citas.')->group(function () {
     Route::get('/{cita}/editar', [CitaController::class, 'edit'])->name('edit')->middleware('can:citas.editar');
     Route::put('/{cita}', [CitaController::class, 'update'])->name('update')->middleware('can:citas.actualizar');
     Route::delete('/{cita}', [CitaController::class, 'destroy'])->name('destroy')->middleware('can:citas.eliminar');
+    Route::put('/', [CitaController::class, 'cambiar_estado'])->name('cambiarEstado')->middleware('can:citas.cambiar_estado');
+
+
+
 });
 
 

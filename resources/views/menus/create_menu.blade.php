@@ -1,9 +1,9 @@
 <div class="modal fade " id="crearMenuModal" tabindex="-1" aria-labelledby="crearMenuModalLabel" aria-hidden="true"
     data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog ">
-        <div class="modal-content bg-green_tarjetas text-green">
+        <div class="modal-content  text-black">
             <div class="modal-header">
-                <h5 class="modal-title text-green" id="crearMenuModalLabel">Crear Menú</h5>
+                <h5 class="modal-title text-black" id="crearMenuModalLabel">Crear Menú</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -12,7 +12,7 @@
                     @csrf
                     <div class="mb-3">
                         <label for="seccion_id"
-                            class="form-label text-green @error('seccion_id') is-invalid @enderror">Sección</label>
+                            class="form-label text-black @error('seccion_id') is-invalid @enderror">Sección</label>
                         <select name="seccion_id" id="seccion_id" class="form-select" required onchange="enviarId()">
                             <option value="" selected disabled>Selecciona una sección</option>
                             @foreach ($secciones as $seccion)
@@ -26,7 +26,7 @@
                         @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="nombre" class="form-label text-green @error('nombre') is-invalid @enderror">Título
+                        <label for="nombre" class="form-label text-black @error('nombre') is-invalid @enderror">Título
                             del
                             Menú</label>
                         <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}" class="form-control"
@@ -37,7 +37,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="orden" class="form-label text-green @error('orden') is-invalid @enderror">Orden del
+                        <label for="orden" class="form-label text-black @error('orden') is-invalid @enderror">Orden del
                             Menú</label>
                         <input type="text" name="orden" id="orden" value="{{ old('orden') }}" class="form-control"
                             required placeholder="1..">
@@ -47,7 +47,7 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="ruta" class="form-label text-green @error('ruta') is-invalid @enderror">Ruta del
+                        <label for="ruta" class="form-label text-black @error('ruta') is-invalid @enderror">Ruta del
                             Menú</label>
                         <select name="ruta" id="ruta" class="form-control" required>
                             <option value="">Seleccione una ruta</option>

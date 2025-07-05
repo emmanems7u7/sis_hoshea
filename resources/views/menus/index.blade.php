@@ -5,8 +5,8 @@
     @include('menus.create_seccion')
     @include('menus.create_menu')
     <!-- Sección de Secciones -->
-    <div class="card mt-3 bg-green_tarjetas text-green">
-        <div class="card-header bg-green_tarjetas text-green">
+    <div class="card mt-3 text-black">
+        <div class="card-header text-black">
 
             <h2 class="text-green">Secciones disponibles</h2>
 
@@ -15,13 +15,13 @@
             </button>
 
         </div>
-        <div class="card-body bg-green_tarjetas text-green">
+        <div class="card-body text-black">
 
             @if($secciones->isEmpty())
                 <p>No hay secciones disponibles.</p>
             @else
                 <p>Lista de Secciones disponibles en el sistema.</p>
-                <table class="table table-bordered text-green">
+                <table class="table table-bordered text-black">
                     <thead>
                         <tr>
                             <th class="text-green">Nª</th>
@@ -33,7 +33,7 @@
                     <tbody>
                         @foreach($secciones as $seccion)
                             <tr>
-                                <td class="text-center text-green">{{ $loop->iteration }}</td>
+                                <td class="text-center text-black">{{ $loop->iteration }}</td>
                                 <td class="text-green">{{ $seccion->titulo }}</td>
 
                                 <td class="text-green">
@@ -55,8 +55,8 @@
         </div>
     </div>
     <hr>
-    <div class="card bg-green_tarjetas text-green">
-        <div class="card-header bg-green_tarjetas text-green">
+    <div class="card text-black">
+        <div class="card-header text-black">
             <h2 class="text-green">Menús</h2>
         </div>
         <div class="card-body">
@@ -72,7 +72,7 @@
                 <div class="row">
                     @foreach($menus as $menu)
                         <div class="col-md-4 mb-3">
-                            <div class="card shadow-sm bg-green_tarjetas_claro text-green">
+                            <div class="card shadow-sm_claro text-black">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $menu->nombre }}</h5>
                                     <p class="card-text">Sección: {{ $menu->seccion->titulo }}</p>
@@ -97,7 +97,7 @@
                     @endforeach
                 </div>
                 <div class="d-flex justify-content-center">
-                    {{ $menus->links() }} <!-- Enlaces de paginación para los menús -->
+                    {{ $menus->links('pagination::bootstrap-4') }} <!-- Enlaces de paginación para los menús -->
                 </div>
             @endif
         </div>

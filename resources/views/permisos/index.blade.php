@@ -7,7 +7,7 @@
 
 
 
-    <div class="card shadow-lg mx-4 card-profile-bottom bg-green_tarjetas text-green">
+    <div class="card shadow-lg mx-4 card-profile-bottom text-black">
         <div class="card-body p-3">
             <p>Permisos</p>
             <div class="row mt-3">
@@ -33,7 +33,7 @@
     </div>
 
 
-    <div class="card shadow-lg mx-4 card-profile-bottom bg-green_tarjetas text-green">
+    <div class="card shadow-lg mx-4 card-profile-bottom text-black">
         <div class="card-body p-3 ">
             <p>Permisos Disponibles</p>
             <div class="row mt-3">
@@ -54,7 +54,7 @@
     <div class="row mt-3">
         @forelse($permissions as $permiso)
             <div class="col-md-4">
-                <div class="card mb-3 shadow-sm border-0 bg-green_tarjetas text-green">
+                <div class="card mb-3 shadow-sm border-0 text-black">
                     <div class="card-body">
                         <h5 class="card-title">
                             <i class="fas fa-key text-primary"></i> {{ $permiso->name }}

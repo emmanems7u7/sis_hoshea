@@ -2,7 +2,7 @@
 
 @section('content')
 
-        <div class="card shadow-lg mx-4 card-profile-bottom bg-green_tarjetas text-green">
+        <div class="card shadow-lg mx-4 card-profile-bottom text-black">
             <div class="card-body p-3">
                 <p>Configuración General del Sistema</p>
             </div>
@@ -10,7 +10,7 @@
         <div class="container-fluid py-4">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card bg-green_tarjetas text-green">
+                    <div class="card text-black">
 
                         <div class="card-body">
 
@@ -19,7 +19,7 @@
                                 @method('PUT')
                                   <!-- API KEY IA GROQ -->
                                   <div class="mb-3">
-                                    <label for="GROQ_API_KEY" class="form-label text-green"> API KEY IA GROQ</label>
+                                    <label for="GROQ_API_KEY" class="form-label text-black"> API KEY IA GROQ</label>
                                     <input type="text" class="form-control" id="GROQ_API_KEY"
                                         name="GROQ_API_KEY" value="{{ $config->GROQ_API_KEY }}">
                                 </div>
@@ -28,7 +28,7 @@
                                 <div class="form-check form-switch mb-3">
                                     <input class="form-check-input" type="checkbox" id="2faSwitch"
                                         name="doble_factor_autenticacion" {{ $config->doble_factor_autenticacion ? 'checked' : '' }}>
-                                    <label class="form-check-label text-green" for="2faSwitch">
+                                    <label class="form-check-label text-black" for="2faSwitch">
                                         Activar verificación en dos pasos (2FA)
                                     </label>
                                 </div>
@@ -36,14 +36,14 @@
                                 <div class="form-check form-switch mb-3">
                                     <input class="form-check-input" type="checkbox" id="mant"
                                         name="mantenimiento" {{ $config->mantenimiento ? 'checked' : '' }}>
-                                    <label class="form-check-label text-green" for="mant">
+                                    <label class="form-check-label text-black" for="mant">
                                         Activar modo Mantenimiento
                                     </label>
                                 </div>
                                 
                                 <!-- Límite de sesiones -->
                                 <div class="mb-3">
-                                    <label for="limite_de_sesiones" class="form-label text-green">Límite de sesiones</label>
+                                    <label for="limite_de_sesiones" class="form-label text-black">Límite de sesiones</label>
                                     <input type="number" class="form-control" id="limite_de_sesiones"
                                         name="limite_de_sesiones" value="{{ $config->limite_de_sesiones }}">
                                 </div>

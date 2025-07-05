@@ -121,6 +121,9 @@
 
             <div class="card shadow-lg mx-4 mt-3">
     <div class="card-body p-3">
+    <div class="mt-4 text-end">
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+        </div>
         <div class="row">
             {{-- Columna izquierda: permisos que NO son tipo "permiso" --}}
             <div class="col-md-6">
@@ -199,9 +202,7 @@
 
         </div>
 
-        <div class="mt-4 text-center">
-            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        </div>
+     
     </div>
 </div>
 

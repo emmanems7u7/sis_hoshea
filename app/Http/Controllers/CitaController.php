@@ -149,4 +149,43 @@ class CitaController extends Controller
 
         return redirect()->route('citas.index')->with('success', 'Cita eliminada correctamente.');
     }
+
+    function cambiar_estado(Request $request)
+    {
+
+        $validated = $request->validate([
+            'cita_id' => 'required|exists:citas,id',
+            'nuevo_estado' => 'required|in:pendiente,confirmada,cancelada,completada',
+            'notificar' => 'nullable|boolean',
+        ]);
+
+
+        $cita = Cita::findOrFail($validated['cita_id']);
+
+
+        $cita->estado = $validated['nuevo_estado'];
+        $cita->save();
+
+
+        if ($request->has('notificar') && $request->boolean('notificar')) {
+
+            switch ($cita->estado) {
+                case 'pendiente':
+
+                    break;
+                case 'confirmada':
+
+                    break;
+                case 'cancelada':
+                    break;
+                case 'completada':
+                    break;
+                default:
+                    break;
+            }
+
+        }
+
+        return redirect()->back()->with('status', 'Estado de la cita actualizado correctamente.');
+    }
 }

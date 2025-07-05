@@ -1,17 +1,17 @@
 <div class="modal fade" id="crearSeccionModal" tabindex="-1" aria-labelledby="crearSeccionModalLabel" aria-hidden="true"
     data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-green_tarjetas text-green">
+        <div class="modal-content  text-black">
             <div class="modal-header">
-                <h5 class="modal-title text-green" id="crearSeccionModalLabel">Crear Sección</h5>
-                <button type="button" class="btn-close text-green" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title text-black" id="crearSeccionModalLabel">Crear Sección</h5>
+                <button type="button" class="btn-close text-black" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form action="{{ route('secciones.store') }}" method="POST">
                     @csrf
                     <div class="mb-3">
                         <label for="titulo"
-                            class="form-label text-green  @error('titulo') is-invalid @enderror">Título</label>
+                            class="form-label text-black  @error('titulo') is-invalid @enderror">Título</label>
                         <input type="text" name="titulo" id="titulo" value="{{ old('titulo') }}" class="form-control"
                             required>
                         @error('titulo')
@@ -20,7 +20,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="icono"
-                            class="form-label  text-green @error('icono') is-invalid @enderror">Icono</label>
+                            class="form-label  text-black @error('icono') is-invalid @enderror">Icono</label>
                         <div class="input-group">
                             <input type="text" name="icono" id="icono" value="{{ old('icono') }}" class="form-control"
                                 required placeholder="fas fa-user">

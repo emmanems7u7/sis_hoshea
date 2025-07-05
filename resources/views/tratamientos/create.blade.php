@@ -1,10 +1,23 @@
 @extends('layouts.argon')
 
 @section('content')
-    <div class="card">
-        <div class="card-body">
 
-            <h1>Crear Tratamiento</h1>
+
+    <div class="card">
+        <div class="card-body ">
+
+            <h5 class="">Crear Tratamiento</h5>
+            <small>- En esta sección puedes crear un tratamiento asociado a un paciente.</small>
+            <br>
+            <small>- Es <strong>Importante</strong> que agregues al menos una cita al tratamiento de otra forma no podras
+                guardar el tratamiento</small>
+            <small>- Cada cita que agregues se visualizará en el contenedor que esta al final del formulario, puedes
+                eliminar una cita si lo requieres</small>
+            <br>
+
+            <small>- Las observaciones son opcionales tanto como para el tratamiento y las citas que vayas a crear</small>
+            <small>- Los tratamientos tienen una fecha de inicio y de fin las citas que agregue deben estar dentro de ese
+                rango de fechas</small>
 
         </div>
     </div>
@@ -15,11 +28,7 @@
                 @csrf
                 @include('tratamientos._form')
 
-                <input type="hidden" name="citas_json" id="citas_json">
-
-
-
-
+                <input type="hidden" id="citas_json" name="citas_json" value="{{ old('citas_json') }}">
         </div>
     </div>
 
@@ -30,7 +39,7 @@
         <div class="card-body">
 
             @include('citas._form')
-            <a onclick="agregar_cita()" class="btn btn-success">Agregar Cita</a>
+            <a onclick="agregar_cita()" class="btn btn-primary">Agregar Cita</a>
 
         </div>
     </div>
@@ -42,9 +51,10 @@
     </div>
     <div class="d-flex justify-content-center gap-3 mt-4">
         <a href="{{ route('tratamientos.index') }}" class="btn btn-secondary" style="min-width: 140px;">Cancelar</a>
-        <button type="submit" class="btn btn-success" style="min-width: 140px;">Crear</button>
+        <button type="submit" class="btn btn-primary" style="min-width: 140px;">Crear</button>
 
     </div>
+
     </form>
 
     <script>
@@ -53,7 +63,7 @@
             @foreach($usuarios as $id => $nombre)
                 '{{ $id }}': '{{ addslashes($nombre) }}',
             @endforeach
-                                                                                                                                                                        };
+                                                                                                                                                                                                                                                                    };
     </script>
 
     <script>
@@ -122,6 +132,35 @@
                 }
             }
 
+
+            // --- Validar que la cita esté dentro del rango del tratamiento ---
+            const inicioTratamiento = $('#fecha_inicio').val();
+            const finTratamiento = $('#fecha_fin').val();
+
+            const fechaCita = new Date(nuevaCita.fecha_hora);
+
+            // 1) Debe ser >= fecha_inicio
+            if (inicioTratamiento) {
+                const dInicio = new Date(inicioTratamiento);
+                if (fechaCita < dInicio) {
+                    alertify.error('La cita no puede ser anterior al inicio del tratamiento.');
+                    return;
+                }
+            }
+
+            // 2) Debe ser <= fecha_fin (si existe)
+            if (finTratamiento) {
+                const dFin = new Date(finTratamiento);
+                // agregar 23:59:59 para incluir todo el día fin
+                dFin.setHours(23, 59, 59, 999);
+
+                if (fechaCita > dFin) {
+                    alertify.error('La cita no puede ser posterior al fin del tratamiento.');
+                    return;
+                }
+            }
+            // --- Fin de validación de rango ---
+
             citasData.push(nuevaCita);
             alertify.success('Cita Agregada Correctamente');
 
@@ -133,6 +172,15 @@
 
         let citasData = [];
 
+
+        const oldCitas = document.getElementById('citas_json').value;
+        if (oldCitas) {
+            try { citasData = JSON.parse(oldCitas); } catch (e) { citasData = []; }
+        }
+
+
+        renderTabla();
+
         // Render tabla
         function renderTabla() {
             if (citasData.length === 0) {
@@ -141,21 +189,21 @@
             }
 
             let html = `
-                                                                                                                                                                                    <div class="table-responsive">
-                                                                                                                                                                                        <table class="table table-striped table-bordered align-middle">
-                                                                                                                                                                                            <thead class="table-dark">
-                                                                                                                                                                                                <tr>
+                                                                                                                                                                                                                                                                                <div class="table-responsive">
+                                                                                                                                                                                                                                                                                    <table class="table table-striped table-bordered align-middle">
+                                                                                                                                                                                                                                                                                        <thead class="table-dark">
+                                                                                                                                                                                                                                                                                            <tr>
 
-                                                                                                                                                                                                    <th>Fecha y Hora</th>
-                                                                                                                                                                                                    <th>Duración</th>
-                                                                                                                                                                                                    <th>Estado</th>
-                                                                                                                                                                                                    <th>Observaciones</th>
-                                                                                                                                                                                                    <th>Usuarios asignados</th>
-                                                                                                                                                                                                <th>Acciones</th>
-                                                                                                                                                                                                </tr>
-                                                                                                                                                                                            </thead>
-                                                                                                                                                                                            <tbody>
-                                                                                                                                                                                `;
+                                                                                                                                                                                                                                                                                                <th>Fecha y Hora</th>
+                                                                                                                                                                                                                                                                                                <th>Duración</th>
+                                                                                                                                                                                                                                                                                                <th>Estado</th>
+                                                                                                                                                                                                                                                                                                <th>Observaciones</th>
+                                                                                                                                                                                                                                                                                                <th>Usuarios asignados</th>
+                                                                                                                                                                                                                                                                                            <th>Acciones</th>
+                                                                                                                                                                                                                                                                                            </tr>
+                                                                                                                                                                                                                                                                                        </thead>
+                                                                                                                                                                                                                                                                                        <tbody>
+                                                                                                                                                                                                                                                                            `;
 
             citasData.forEach((cita, i) => {
                 // Usuarios y roles concatenados
@@ -167,24 +215,24 @@
                 }).join(', ');
 
                 html += `
-                                                                                                                                                                                        <tr data-index="${i}">
+                                                                                                                                                                                                                                                                                    <tr data-index="${i}">
 
-                                                                                                                                                                                            <td>${cita.fecha_hora}</td>
-                                                                                                                                                                                            <td>${cita.duracion || '-'}</td>
-                                                                                                                                                                                            <td>${cita.estado}</td>
-                                                                                                                                                                                            <td>${cita.observaciones || '-'}</td>
-                                                                                                                                                                                            <td>${usuariosConRoles}</td>
+                                                                                                                                                                                                                                                                                        <td>${cita.fecha_hora}</td>
+                                                                                                                                                                                                                                                                                        <td>${cita.duracion || '-'}</td>
+                                                                                                                                                                                                                                                                                        <td>${cita.estado}</td>
+                                                                                                                                                                                                                                                                                        <td>${cita.observaciones || '-'}</td>
+                                                                                                                                                                                                                                                                                        <td>${usuariosConRoles}</td>
 
-                                                                                                                                                                                            <td><button class="btn btn-danger btn-sm btn-eliminar" data-index="${i}">Eliminar</button></td>
-                                                                                                                                                                                        </tr>
-                                                                                                                                                                                    `;
+                                                                                                                                                                                                                                                                                        <td><button class="btn btn-danger btn-sm btn-eliminar" data-index="${i}">Eliminar</button></td>
+                                                                                                                                                                                                                                                                                    </tr>
+                                                                                                                                                                                                                                                                                `;
             });
 
             html += `
-                                                                                                                                                                                            </tbody>
-                                                                                                                                                                                        </table>
-                                                                                                                                                                                    </div>
-                                                                                                                                                                                `;
+                                                                                                                                                                                                                                                                                        </tbody>
+                                                                                                                                                                                                                                                                                    </table>
+                                                                                                                                                                                                                                                                                </div>
+                                                                                                                                                                                                                                                                            `;
 
             $('#citas').html(html);
             $('#citas_json').val(JSON.stringify(citasData));

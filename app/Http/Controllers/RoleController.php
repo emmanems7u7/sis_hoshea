@@ -53,6 +53,7 @@ class RoleController extends Controller
         $breadcrumb = [
             ['name' => 'Inicio', 'url' => route('home')],
             ['name' => 'Roles', 'url' => route('roles.index')],
+            ['name' => 'Crear Rol', 'url' => route('roles.index')],
         ];
 
         return view('roles.create', compact('role', 'permisosPorTipo', 'breadcrumb'));
@@ -70,9 +71,11 @@ class RoleController extends Controller
             'seccion' => $this->PermisoRepository->GetPermisosTipo('seccion'),
         ];
 
+
         $breadcrumb = [
             ['name' => 'Inicio', 'url' => route('home')],
             ['name' => 'Roles', 'url' => route('roles.index')],
+            ['name' => 'Crear Rol', 'url' => route('roles.index')],
         ];
         return view('roles.edit', compact('role', 'permisosPorTipo', 'breadcrumb'));
     }

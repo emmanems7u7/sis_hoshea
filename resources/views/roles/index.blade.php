@@ -3,8 +3,8 @@
 @section('content')
     <div class="row">
         <!-- Columna de botones -->
-        <div class="col-md-5 shadow-sm mb-2">
-            <div class="card mb-3">
+        <div class="col-md-5">
+            <div class="card mb-3  shadow-sm mb-2">
                 <div class="card-body">
                     <h5>Módulo de Roles</h5>
                     <a href="{{ route('roles.create') }}" class="btn btn-primary mb-1">Crear Nuevo Rol</a>
@@ -13,8 +13,8 @@
         </div>
 
         <!-- Columna de descripción -->
-        <div class="col-md-7 shadow-sm mb-2">
-            <div class="card">
+        <div class="col-md-7 ">
+            <div class="card shadow-sm mb-2">
                 <div class="card-body">
                     <h5>Información sobre Roles</h5>
                     <small>- Aquí puedes gestionar los <strong>roles del sistema</strong>, cada uno con sus respectivos
@@ -32,16 +32,16 @@
     <div class="row mt-3">
         @foreach($roles as $role)
             <div class="col-md-4 mb-4">
-                <div class="card shadow-sm border bg-green_tarjetas text-green">
+                <div class="card shadow-sm border  text-black">
                     <div class="card-body">
-                        <h5 class="card-title text-green">
+                        <h5 class="card-title text-black">
                             <i class="fas fa-user-tag me-2"></i> {{ $role->name }}
                         </h5>
 
-                        <p class="mb-2 text-green"><strong>Permisos:</strong></p>
+                        <p class="mb-2 text-black"><strong>Permisos:</strong></p>
                         <div style="max-height: 122px; overflow-y: auto; padding-right: 10px;">
                             @foreach($role->permissions as $permission)
-                                <span class="badge bg-info me-1 mb-1">{{ $permission->name }}</span>
+                                <span class="badge bg-dark me-1 mb-1">{{ $permission->name }}</span>
                             @endforeach
                         </div>
 

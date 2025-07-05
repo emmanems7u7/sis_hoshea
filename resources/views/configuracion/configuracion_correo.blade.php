@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="card shadow-lg mx-4 card-profile-bottom bg-green_tarjetas text-green">
+    <div class="card shadow-lg mx-4 card-profile-bottom text-black">
         <div class="card-body p-3">
             <p>{{ __('ui.settings_text') }} de {{ __('ui.email_text') }}</p>
         </div>
@@ -10,7 +10,7 @@
     <div class="container-fluid py-4">
         <div class="row">
             <div class="col-md-12">
-                <div class="card bg-green_tarjetas text-green">
+                <div class="card text-black">
 
                     <div class="card-body">
                         <h3 class="text-green">{{ __('ui.register_text') }} {{ __('ui.settings_text') }} de
@@ -31,7 +31,7 @@
                             @endif
 
                             <div class="mb-3">
-                                <label for="conf_correo_protocol" class="form-label text-green">Protocolo</label>
+                                <label for="conf_correo_protocol" class="form-label text-black">Protocolo</label>
                                 <select id="conf_correo_protocol" name="conf_correo_protocol"
                                     class="form-select @error('conf_correo_protocol') is-invalid @enderror">
                                     <option value="-1" {{ (isset($conf_correo) && $conf_correo->conf_protocol == -1) ? 'selected' : '' }}>--Seleccionar--</option>
@@ -48,7 +48,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="conf_smtp_host" class="form-label text-green">Servidor SMTP</label>
+                                <label for="conf_smtp_host" class="form-label text-black">Servidor SMTP</label>
                                 <input type="text" class="form-control @error('conf_smtp_host') is-invalid @enderror"
                                     id="conf_smtp_host" name="conf_smtp_host"
                                     value="{{ $conf_correo->conf_smtp_host ?? '' }}" required>
@@ -58,7 +58,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="conf_smtp_port" class="form-label text-green">Puerto SMTP</label>
+                                <label for="conf_smtp_port" class="form-label text-black">Puerto SMTP</label>
                                 <input type="number" class="form-control @error('conf_smtp_port') is-invalid @enderror"
                                     id="conf_smtp_port" name="conf_smtp_port"
                                     value="{{ $conf_correo->conf_smtp_port ?? '' }}" required>
@@ -68,7 +68,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="conf_smtp_user" class="form-label text-green">Usuario SMTP</label>
+                                <label for="conf_smtp_user" class="form-label text-black">Usuario SMTP</label>
                                 <input type="text" class="form-control @error('conf_smtp_user') is-invalid @enderror"
                                     id="conf_smtp_user" name="conf_smtp_user"
                                     value="{{ $conf_correo->conf_smtp_user ?? '' }}" required>
@@ -78,7 +78,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="conf_smtp_pass" class="form-label text-green">Contraseña SMTP</label>
+                                <label for="conf_smtp_pass" class="form-label text-black">Contraseña SMTP</label>
                                 <input type="password" class="form-control @error('conf_smtp_pass') is-invalid @enderror"
                                     id="conf_smtp_pass" name="conf_smtp_pass"
                                     value="{{ $conf_correo->conf_smtp_pass ?? '' }}" required>
@@ -88,7 +88,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="conf_mailtype" class="form-label text-green">Tipo de
+                                <label for="conf_mailtype" class="form-label text-black">Tipo de
                                     {{ __('ui.email_text') }}</label>
                                 <select class="form-select @error('conf_mailtype') is-invalid @enderror" id="conf_mailtype"
                                     name="conf_mailtype" required>
@@ -103,7 +103,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="conf_charset" class="form-label text-green">Charset</label>
+                                <label for="conf_charset" class="form-label text-black">Charset</label>
                                 <input type="text" class="form-control @error('conf_charset') is-invalid @enderror"
                                     id="conf_charset" name="conf_charset" value="{{ $conf_correo->conf_charset ?? '' }}"
                                     required>
@@ -113,7 +113,7 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="conf_in_background" class="form-label text-green">¿Enviar en segundo
+                                <label for="conf_in_background" class="form-label text-black">¿Enviar en segundo
                                     plano?</label>
                                 <select class="form-select @error('conf_in_background') is-invalid @enderror"
                                     id="conf_in_background" name="conf_in_background">
