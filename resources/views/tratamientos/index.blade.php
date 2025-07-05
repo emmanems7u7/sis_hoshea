@@ -93,13 +93,13 @@
                         <div class="mb-2">
                             <span
                                 class="me-3
-                                                                                            {{ $tratamiento->fecha_inicio->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
+                                                                                                    {{ $tratamiento->fecha_inicio->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
                                 <strong>Fecha Inicio:</strong> {{ $tratamiento->fecha_inicio->format('Y-m-d') }}
                             </span>
 
                             <span
                                 class="me-3
-                                                                                            {{ $tratamiento->fecha_fin && $tratamiento->fecha_fin->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
+                                                                                                    {{ $tratamiento->fecha_fin && $tratamiento->fecha_fin->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
                                 <strong>Fecha Fin:</strong>
                                 {{ $tratamiento->fecha_fin ? $tratamiento->fecha_fin->format('Y-m-d') : '-' }}
                             </span>
@@ -160,6 +160,7 @@
                                                         <div class="col-md-3">
                                                             <span class="badge bg-secondary me-1">{{ $usuario->name }}
                                                                 ({{ $usuario->pivot->rol_en_cita ?? 'N/A' }})</span>
+                                                            <br>
                                                         </div>
                                                     @endforeach
 
