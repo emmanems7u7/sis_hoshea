@@ -93,13 +93,13 @@
                         <div class="mb-2">
                             <span
                                 class="me-3
-                                                                                                    {{ $tratamiento->fecha_inicio->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
+                                                                                                            {{ $tratamiento->fecha_inicio->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
                                 <strong>Fecha Inicio:</strong> {{ $tratamiento->fecha_inicio->format('Y-m-d') }}
                             </span>
 
                             <span
                                 class="me-3
-                                                                                                    {{ $tratamiento->fecha_fin && $tratamiento->fecha_fin->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
+                                                                                                            {{ $tratamiento->fecha_fin && $tratamiento->fecha_fin->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
                                 <strong>Fecha Fin:</strong>
                                 {{ $tratamiento->fecha_fin ? $tratamiento->fecha_fin->format('Y-m-d') : '-' }}
                             </span>
@@ -155,15 +155,12 @@
 
 
                                                 <small class="mb-1"><strong>Personal asignado a la cita:</strong></small>
-                                                <div class="row mb-1">
-                                                    @foreach($cita->usuarios as $usuario)
-                                                        <div class="col-md-3">
-                                                            <span class="badge bg-secondary me-1">{{ $usuario->name }}
-                                                                ({{ $usuario->pivot->rol_en_cita ?? 'N/A' }})</span>
-                                                            <br>
-                                                        </div>
+                                                <div class="d-flex flex-wrap gap-1 mb-1">
+                                                    @foreach ($cita->usuarios as $usuario)
+                                                        <span class="badge bg-secondary">
+                                                            {{ $usuario->name }} ({{ $usuario->pivot->rol_en_cita ?? 'N/A' }})
+                                                        </span>
                                                     @endforeach
-
                                                 </div>
 
                                             </div>
