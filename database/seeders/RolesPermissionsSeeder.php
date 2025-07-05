@@ -20,7 +20,8 @@ class RolesPermissionsSeeder extends Seeder
 
         $roleAdmin = Role::create(['name' => 'admin']);
         $roleEditor = Role::create(['name' => 'editor']);
-
+        $roleEditor = Role::create(['name' => 'Medico']);
+        $roleEditor = Role::create(['name' => 'Enfermero']);
 
         $roleAdmin->givePermissionTo($permissionManageSecciones);
         $roleAdmin->givePermissionTo($permissionManageMenus);
