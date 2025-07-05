@@ -194,7 +194,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 //Rutas configuracion general
 
-Route::middleware(['auth', 'role:admin', 'can:Configuración General'])->group(function () {
+Route::middleware(['auth', 'can:Configuración General'])->group(function () {
 
     Route::get('/admin/configuracion', [ConfiguracionController::class, 'edit'])
         ->name('admin.configuracion.edit')
