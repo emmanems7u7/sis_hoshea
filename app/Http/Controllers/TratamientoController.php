@@ -52,6 +52,7 @@ class TratamientoController extends Controller
     {
         $pacientes = Paciente::all()->pluck('nombre_completo', 'id');
         $breadcrumb = [
+            ['name' => 'Inicio', 'url' => route('home')],
             ['name' => 'Tratamientos', 'url' => route('tratamientos.index')],
             ['name' => 'Crear tratamiento', 'url' => '#'],
         ];
@@ -82,13 +83,38 @@ class TratamientoController extends Controller
             'observaciones' => $validated['observaciones_tratamiento'] ?? null,
         ]);
 
+        $fechaInicio = Carbon::parse($validated['fecha_inicio']);
+        $fechaFin = $validated['fecha_fin'] ? Carbon::parse($validated['fecha_fin']) : null;
+
+
 
         $citasArray = json_decode($request->input('citas_json'), true);
 
+
         if (is_null($citasArray) || !is_array($citasArray) || empty($citasArray)) {
-            return redirect()->back()->with('error', 'Debe agregar al menos una cita');
+            return redirect()->back()
+                ->withInput()                // <-- mantiene todos los campos, incluido citas_json
+                ->with('error', 'Debe agregar al menos una cita');
         }
-        // Iterar y crear cada cita
+
+        foreach ($citasArray as $citaData) {
+            $fechaCita = Carbon::parse($citaData['fecha_hora']);
+
+            // Validar fecha mínima
+            if ($fechaCita->lt($fechaInicio)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'La fecha de la cita (' . $fechaCita->format('d/m/Y H:i') . ') no puede ser anterior al inicio del tratamiento.');
+            }
+
+            // Validar fecha máxima (si existe)
+            if ($fechaFin && $fechaCita->gt($fechaFin)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'La fecha de la cita (' . $fechaCita->format('d/m/Y H:i') . ') no puede ser posterior al fin del tratamiento.');
+            }
+        }
+
         foreach ($citasArray as $citaData) {
             $cita = Cita::create([
                 'paciente_id' => $tratamiento->paciente_id,
@@ -97,6 +123,7 @@ class TratamientoController extends Controller
                 'duracion' => $citaData['duracion'] ?? null,
                 'estado' => $citaData['estado'],
                 'observaciones' => $citaData['observaciones'] ?? null,
+                'primera_cita' => $citaData['primera_cita'] ?? null,
             ]);
 
 
@@ -116,18 +143,50 @@ class TratamientoController extends Controller
 
     public function edit(Tratamiento $tratamiento)
     {
+        // Listado de pacientes (select)
         $pacientes = Paciente::all()->pluck('nombre_completo', 'id');
 
+        // Usuarios (médicos y enfermeros) para asignar a cada cita
+        $usuarios = User::role(['medico', 'enfermero'])
+            ->orderBy('name')
+            ->pluck('name', 'id');
+
+        // Citas del tratamiento serializadas para precargar el JS
+        $citasJson = $tratamiento->citas    // relación hasMany
+            ->map(function ($cita) {
+                return [
+                    'fecha_hora' => $cita->fecha_hora->format('Y-m-d\TH:i'),
+                    'duracion' => $cita->duracion,
+                    'estado' => $cita->estado,
+                    'observaciones' => $cita->observaciones,
+                    'primera_cita' => $cita->primera_cita,
+                    'usuarios' => $cita->usuarios->pluck('id'),               // relación belongsToMany
+                    'roles' => $cita->usuarios->pluck('pivot.rol_en_cita'),
+                ];
+            })
+            ->values()
+            ->toJson();
+
+        // Breadcrumb
         $breadcrumb = [
+            ['name' => 'Inicio', 'url' => route('home')],
             ['name' => 'Tratamientos', 'url' => route('tratamientos.index')],
             ['name' => 'Editar tratamiento', 'url' => '#'],
         ];
-        $cita = Cita::where('tratamiento_id', $tratamiento->id)->first();
 
-        $usuariosAsignados = $cita->usuarios->pluck('pivot.rol_en_cita', 'id')->toArray();
+
         $pac = 0;
-        return view('tratamientos.edit', compact('pac', 'tratamiento', 'pacientes', 'breadcrumb'));
+
+        return view('tratamientos.edit', compact(
+            'tratamiento',
+            'pacientes',
+            'usuarios',
+            'citasJson',
+            'breadcrumb',
+            'pac'
+        ));
     }
+
 
     public function update(Request $request, Tratamiento $tratamiento)
     {
@@ -140,10 +199,68 @@ class TratamientoController extends Controller
             'observaciones' => 'nullable|string',
         ]);
 
-        $tratamiento->update($validated);
+        $tratamiento->update([
+            'paciente_id' => $validated['paciente_id'],
+            'nombre' => $validated['nombre'],
+            'fecha_inicio' => $validated['fecha_inicio'],
+            'fecha_fin' => $validated['fecha_fin'] ?? null,
+            'estado' => $validated['estado'],
+            'observaciones' => $validated['observaciones'] ?? null,
+        ]);
+
+        $fechaInicio = Carbon::parse($validated['fecha_inicio']);
+        $fechaFin = $validated['fecha_fin'] ? Carbon::parse($validated['fecha_fin']) : null;
+
+        $citasArray = json_decode($request->input('citas_json'), true);
+
+        if (is_null($citasArray) || !is_array($citasArray) || empty($citasArray)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Debe agregar al menos una cita');
+        }
+
+
+        $tratamiento->citas()->delete();
+
+        foreach ($citasArray as $citaData) {
+            $fechaCita = Carbon::parse($citaData['fecha_hora']);
+
+            if ($fechaCita->lt($fechaInicio)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'La fecha de la cita (' . $fechaCita->format('d/m/Y H:i') . ') no puede ser anterior al inicio del tratamiento.');
+            }
+
+            if ($fechaFin && $fechaCita->gt($fechaFin)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'La fecha de la cita (' . $fechaCita->format('d/m/Y H:i') . ') no puede ser posterior al fin del tratamiento.');
+            }
+
+            $cita = Cita::create([
+                'paciente_id' => $tratamiento->paciente_id,
+                'tratamiento_id' => $tratamiento->id,
+                'fecha_hora' => $citaData['fecha_hora'],
+                'duracion' => $citaData['duracion'] ?? null,
+                'estado' => $citaData['estado'],
+                'observaciones' => $citaData['observaciones'] ?? null,
+                'primera_cita' => $citaData['primera_cita'] ?? 0,
+            ]);
+
+            if (!empty($citaData['usuarios']) && !empty($citaData['roles'])) {
+                $syncData = [];
+                foreach ($citaData['usuarios'] as $index => $userId) {
+                    $rol = $citaData['roles'][$index] ?? null;
+                    $syncData[$userId] = ['rol_en_cita' => $rol];
+                }
+                $cita->usuarios()->sync($syncData);
+            }
+        }
 
         return redirect()->route('tratamientos.index')->with('status', 'Tratamiento actualizado correctamente.');
     }
+
+
 
     public function destroy(Tratamiento $tratamiento)
     {
@@ -172,7 +289,7 @@ class TratamientoController extends Controller
             }
 
         }
-        dd($tratamientos);
+
         return $tratamientos;
     }
 
@@ -203,5 +320,17 @@ class TratamientoController extends Controller
             'tratamientos',
             false
         );
+    }
+
+    function administrar(Tratamiento $tratamiento)
+    {
+        // Breadcrumb
+        $breadcrumb = [
+            ['name' => 'Inicio', 'url' => route('home')],
+            ['name' => 'Tratamientos', 'url' => route('tratamientos.index')],
+            ['name' => 'Administrar tratamiento', 'url' => '#'],
+        ];
+
+        return view('tratamientos.administrar', compact('breadcrumb', 'tratamiento'));
     }
 }

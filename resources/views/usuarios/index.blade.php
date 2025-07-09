@@ -5,7 +5,7 @@
 
     <script src="{{ asset('js/app.js') }}"></script>
 
-    <div class="card card-frame card-profile-bottom">
+    <div class="card card-frame card-profile-bottom  text-black">
         <div class="card-body">
             <div class="row">
                 <div class="col">
@@ -35,7 +35,7 @@
         </div>
     </div>
 
-    <div class="card mt-3">
+    <div class="card mt-3  text-black">
         <div class="table-responsive">
             @include('usuarios.tabla_usuarios', ['usuarios' => $users])
         </div>

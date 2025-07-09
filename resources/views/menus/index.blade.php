@@ -5,38 +5,38 @@
     @include('menus.create_seccion')
     @include('menus.create_menu')
     <!-- Sección de Secciones -->
-    <div class="card mt-3">
-        <div class="card-header">
+    <div class="card mt-3 text-black">
+        <div class="card-header text-black">
 
-            <h2>Secciones disponibles</h2>
+            <h2 class="text-green">Secciones disponibles</h2>
 
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#crearSeccionModal">
                 Crear Sección
             </button>
 
         </div>
-        <div class="card-body">
+        <div class="card-body text-black">
 
             @if($secciones->isEmpty())
                 <p>No hay secciones disponibles.</p>
             @else
                 <p>Lista de Secciones disponibles en el sistema.</p>
-                <table class="table table-bordered">
+                <table class="table table-bordered text-black">
                     <thead>
                         <tr>
-                            <th>Nª</th>
-                            <th>Título</th>
+                            <th class="text-green">Nª</th>
+                            <th class="text-green">Título</th>
 
-                            <th>Acciones</th>
+                            <th class="text-green">Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($secciones as $seccion)
                             <tr>
-                                <td class="text-center">{{ $loop->iteration }}</td>
-                                <td>{{ $seccion->titulo }}</td>
+                                <td class="text-center text-black">{{ $loop->iteration }}</td>
+                                <td class="text-green">{{ $seccion->titulo }}</td>
 
-                                <td>
+                                <td class="text-green">
                                     <a href="{{ route('secciones.edit', $seccion->id) }}" class="btn btn-warning">Editar</a>
                                     <form action="{{ route('secciones.destroy', $seccion->id) }}" method="POST"
                                         id="delete-form-{{ $seccion->id }}" style="display:inline;">
@@ -55,9 +55,9 @@
         </div>
     </div>
     <hr>
-    <div class="card">
-        <div class="card-header">
-            <h2>Menús</h2>
+    <div class="card text-black">
+        <div class="card-header text-black">
+            <h2 class="text-green">Menús</h2>
         </div>
         <div class="card-body">
             <!-- Botón para crear menú -->
@@ -72,7 +72,7 @@
                 <div class="row">
                     @foreach($menus as $menu)
                         <div class="col-md-4 mb-3">
-                            <div class="card shadow-sm">
+                            <div class="card shadow-sm_claro text-black">
                                 <div class="card-body">
                                     <h5 class="card-title">{{ $menu->nombre }}</h5>
                                     <p class="card-text">Sección: {{ $menu->seccion->titulo }}</p>
@@ -97,7 +97,7 @@
                     @endforeach
                 </div>
                 <div class="d-flex justify-content-center">
-                    {{ $menus->links() }} <!-- Enlaces de paginación para los menús -->
+                    {{ $menus->links('pagination::bootstrap-4') }} <!-- Enlaces de paginación para los menús -->
                 </div>
             @endif
         </div>

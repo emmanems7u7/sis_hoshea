@@ -22,7 +22,7 @@ class ConfCorreoController extends Controller
 
     function index()
     {
-        $conf_correo = ConfCorreo::find(env('CONF_CORREO_ID'));
+        $conf_correo = ConfCorreo::first();
 
 
         $breadcrumb = [

@@ -7,7 +7,7 @@
 
 
 
-    <div class="card shadow-lg mx-4 card-profile-bottom">
+    <div class="card shadow-lg mx-4 card-profile-bottom text-black">
         <div class="card-body p-3">
             <p>Permisos</p>
             <div class="row mt-3">
@@ -22,7 +22,7 @@
                     <form method="GET" action="{{ route('permissions.index') }}" class="mb-3 d-flex justify-content-end">
                         <input type="text" name="search" class="form-control  me-2" placeholder="Buscar permiso..."
                             value="{{ request('search') }}">
-                        <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i>
+                        <button class="btn btn-primary" type="submit"><i class="fas fa-search"></i>
                             Buscar</button>
                     </form>
                 </div>
@@ -33,8 +33,8 @@
     </div>
 
 
-    <div class="card shadow-lg mx-4 card-profile-bottom">
-        <div class="card-body p-3">
+    <div class="card shadow-lg mx-4 card-profile-bottom text-black">
+        <div class="card-body p-3 ">
             <p>Permisos Disponibles</p>
             <div class="row mt-3">
                 @foreach ($cat_permisos as $modulo)
@@ -54,7 +54,7 @@
     <div class="row mt-3">
         @forelse($permissions as $permiso)
             <div class="col-md-4">
-                <div class="card mb-3 shadow-sm border-0">
+                <div class="card mb-3 shadow-sm border-0 text-black">
                     <div class="card-body">
                         <h5 class="card-title">
                             <i class="fas fa-key text-primary"></i> {{ $permiso->name }}

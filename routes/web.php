@@ -134,7 +134,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 
-Route::middleware(['auth', 'role:admin'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     Route::get('/roles', [RoleController::class, 'index'])
         ->name('roles.index')
@@ -194,7 +194,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
 //Rutas configuracion general
 
-Route::middleware(['auth', 'role:admin', 'can:Configuración General'])->group(function () {
+Route::middleware(['auth', 'can:Configuración General'])->group(function () {
 
     Route::get('/admin/configuracion', [ConfiguracionController::class, 'edit'])
         ->name('admin.configuracion.edit')
@@ -206,7 +206,7 @@ Route::middleware(['auth', 'role:admin', 'can:Configuración General'])->group(f
 
 });
 
-Route::middleware(['auth', 'role:admin', 'can:Configuración Credenciales'])->group(function () {
+Route::middleware(['auth'])->group(function () {
 
     Route::get('/configuracion/credenciales', [ConfiguracionCredencialesController::class, 'index'])->name('configuracion.credenciales.index')->middleware('can:configuracion.credenciales_ver');
     Route::post('/configuracion/credenciales/actualizar', [ConfiguracionCredencialesController::class, 'actualizar'])->name('configuracion.credenciales.actualizar')->middleware('can:configuracion.credenciales_actualizar');
@@ -292,6 +292,7 @@ Route::prefix('tratamientos')->name('tratamientos.')->group(function () {
     Route::put('/{tratamiento}', [TratamientoController::class, 'update'])->name('update')->middleware('can:tratamientos.actualizar');
     Route::delete('/{tratamiento}', [TratamientoController::class, 'destroy'])->name('destroy')->middleware('can:tratamientos.eliminar');
     Route::get('/actuales', [TratamientoController::class, 'tratamientosFechaHoy'])->name('actuales');
+    Route::get('/administrar/{tratamiento}', [TratamientoController::class, 'administrar'])->name('administrar');
 
     Route::get('/export/pdf', [TratamientoController::class, 'exportPDF'])->name('exportPDF');
 
@@ -306,6 +307,10 @@ Route::prefix('citas')->name('citas.')->group(function () {
     Route::get('/{cita}/editar', [CitaController::class, 'edit'])->name('edit')->middleware('can:citas.editar');
     Route::put('/{cita}', [CitaController::class, 'update'])->name('update')->middleware('can:citas.actualizar');
     Route::delete('/{cita}', [CitaController::class, 'destroy'])->name('destroy')->middleware('can:citas.eliminar');
+    Route::put('/', [CitaController::class, 'cambiar_estado'])->name('cambiarEstado')->middleware('can:citas.cambiar_estado');
+
+
+
 });
 Route::prefix('tratamientos')->group(function () {
     Route::get('diagnosticos', [DiagnosticoController::class, 'index'])->name('diagnosticos.index');

@@ -2,30 +2,31 @@
 
 @section('content')
     <div class="row">
-    <!-- Columna de botones -->
-    <div class="col-md-5 shadow-sm mb-2">
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5>Módulo de Citas</h5>
-                <a href="{{ route('citas.create') }}" class="btn btn-primary mb-1">Crear Cita</a>
-                {{-- Puedes añadir más botones si es necesario --}}
+        <!-- Columna de botones -->
+        <div class="col-md-5 ">
+            <div class="card mb-3 shadow-sm mb-2">
+                <div class="card-body">
+                    <h5>Módulo de Citas</h5>
+                    <a href="{{ route('citas.create') }}" class="btn btn-primary mb-1">Crear Cita</a>
+                    {{-- Puedes añadir más botones si es necesario --}}
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Columna de descripción -->
-    <div class="col-md-7 shadow-sm mb-2">
-        <div class="card">
-            <div class="card-body">
-                <h5>Información sobre Citas</h5>
-                <small>- En esta sección puedes gestionar las citas agendadas para tus pacientes.</small><br>
-                <small>- Utiliza el botón <strong>"Crear Cita"</strong> para programar una nueva.</small><br>
-                <small>- Cada cita puede tener varios usuarios asignados (como médicos o asistentes), y está asociada a un paciente y un tratamiento.</small><br>
-                <small>- Puedes editar o eliminar citas según corresponda desde el listado inferior.</small>
+        <!-- Columna de descripción -->
+        <div class="col-md-7 ">
+            <div class="card shadow-sm mb-2">
+                <div class="card-body">
+                    <h5>Información sobre Citas</h5>
+                    <small>- En esta sección puedes gestionar las citas agendadas para tus pacientes.</small><br>
+                    <small>- Utiliza el botón <strong>"Crear Cita"</strong> para programar una nueva.</small><br>
+                    <small>- Cada cita puede tener varios usuarios asignados (como médicos o asistentes), y está asociada a
+                        un paciente y un tratamiento.</small><br>
+                    <small>- Puedes editar o eliminar citas según corresponda desde el listado inferior.</small>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
     <div class="card mt-3">
@@ -60,7 +61,7 @@
                                     @endforeach
                                 </td>
                                 <td>
-                                    <a href="{{ route('citas.edit', $cita) }}" class="btn btn-sm btn-primary">Editar</a>
+                                    <a href="{{ route('citas.edit', $cita) }}" class="btn btn-sm btn-warning">Editar</a>
 
                                     <a type="button" class="btn btn-danger btn-sm"
                                         onclick="confirmarEliminacion('eliminarCitaForm{{ $cita->id }}', '¿Seguro que deseas eliminar esta cita?')">

@@ -12,6 +12,6 @@ Artisan::command('inspire', function () {
 
 
 Schedule::command(NotificarTratamientosDelDia::class)
-    ->dailyAt('23:00')
+    ->dailyAt('20:57')
     ->withoutOverlapping()
     ->onOneServer();

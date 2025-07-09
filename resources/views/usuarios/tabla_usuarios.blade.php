@@ -1,17 +1,17 @@
 <table class="table align-items-center mb-0">
     <thead>
         <tr>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Usuario</th>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nombres</th>
-            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Rol</th>
+            <th class="text-uppercase text-xxs font-weight-bolder opacity-7">Usuario</th>
+            <th class="text-uppercase text-xxs font-weight-bolder opacity-7 ps-2">Nombres</th>
+            <th class="text-uppercase text-xxs font-weight-bolder opacity-7 ps-2">Rol</th>
 
-            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+            <th class="text-center text-uppercase text-xxs font-weight-bolder opacity-7">
                 Telefono</th>
-            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Ultimo
+            <th class="text-center text-uppercase text-xxs font-weight-bolder opacity-7">Ultimo
                 acceso
             </th>
 
-            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+            <th class="text-center text-uppercase text-xxs font-weight-bolder opacity-7">
                 Acciones
             </th>
 
@@ -29,7 +29,7 @@
                         <div class="d-flex flex-column justify-content-center">
                             <h6 class="mb-0 text-xs">{{ $usuario->name }}
                             </h6>
-                            <p class="text-xs text-secondary mb-0">{{ $usuario->email }}</p>
+                            <p class="text-xs mb-0">{{ $usuario->email }}</p>
                         </div>
                     </div>
                 </td>
@@ -53,18 +53,18 @@
                 </td>
 
                 <td class="align-middle text-center">
-                    <span class="text-secondary text-xs font-weight-bold">{{ $usuario->usuario_fecha_ultimo_acceso }}</span>
+                    <span class="text-black text-xs font-weight-bold">{{ $usuario->usuario_fecha_ultimo_acceso }}</span>
                 </td>
 
 
                 <td class="align-middle">
                     @can('usuarios.editar')
-                        <a href="{{ route('users.edit', ['id' => $usuario->id]) }}"
-                            class="text-secondary font-weight-bold text-xs" id="modal_edit_usuario_button">Editar
+                        <a href="{{ route('users.edit', ['id' => $usuario->id]) }}" class="btn btn-sm btn-warning"
+                            id="modal_edit_usuario_button">Editar
                             Usuario</a>
                     @endcan
                     @can('usuarios.eliminar')
-                        <a type="button" class="text-secondary font-weight-bold text-xs" id="modal_edit_usuario_button"
+                        <a type="button" class="btn btn-sm btn-danger" id="modal_edit_usuario_button"
                             onclick="confirmarEliminacion('eliminarUsuarioForm', '¿Estás seguro de que deseas eliminar este usuario?')">Eliminar
                             Usuario</a>
 

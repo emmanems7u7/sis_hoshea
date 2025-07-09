@@ -2,11 +2,21 @@
 
 @section('content')
 
+    @php
+
+        $estados = [
+            'pendiente' => 'Pendiente',
+            'confirmada' => 'Confirmada',
+            'cancelada' => 'Cancelada',
+            'completada' => 'Completada'
+        ];
+        $hoy = \Illuminate\Support\Carbon::today();
+    @endphp
     <div class="row">
-        <div class="col-md-5 shadow-sm mb-2">
-            <div class="card mb-3">
+        <div class="col-md-5 ">
+            <div class="card mb-3 shadow-sm mb-2">
                 <div class="card-body">
-                    <h5>Modulo de Tratamientos</h5>
+                    <h5 class="text-green">Modulo de Tratamientos</h5>
                     <a href="{{ route('tratamientos.create') }}" class="btn btn-primary">Crear tratamiento</a>
                     <a href="{{ route('tratamientos.exportPDF') }}" class="btn btn-danger" target="_blank">Exportar en
                         PDF</a>
@@ -18,10 +28,10 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-7 shadow-sm mb-2">
-            <div class="card">
-                <div class="card-body">
-                    <h5>Información de Tratamientos</h5>
+        <div class="col-md-7 ">
+            <div class="card shadow-sm mb-2 ">
+                <div class="card-body  text-black">
+                    <h5 class="">Información de Tratamientos</h5>
                     <small>- En esta sección puedes gestionar los tratamientos de los pacientes. Puedes crear, editar y
                         eliminar
                         tratamientos, así como ver las citas asociadas a cada tratamiento.</small>
@@ -37,9 +47,9 @@
         </div>
     </div>
 
-    <div class="card mb-3">
-        <div class="card-body">
-            <h5 class="mb-3">Filtrar tratamientos</h5>
+    <div class="card mb-3 ">
+        <div class="card-body ">
+            <h5 class="mb-3 text-black">Filtrar tratamientos</h5>
 
 
             <div class="d-flex flex-wrap align-items-end gap-2">
@@ -69,15 +79,49 @@
 
         @foreach($tratamientos as $tratamiento)
             <div class="col-md-6 tratamiento-item">
-                <div class="card mb-4 border-0 shadow-sm">
+                <div class="card mb-4 shadow-sm ">
                     <div class="card-header  text-black d-flex justify-content-between align-items-center rounded-top">
                         <div>
                             <h4 class="mb-0 fw-bold text-black">Tratamiento: {{ $tratamiento->nombre }}</h4>
-                            <small>Paciente: <strong>{{ $tratamiento->paciente->nombres }}
-                                    {{ $tratamiento->paciente->apellidos }}</strong></small>
+                            <small>Paciente: <strong>{{ $tratamiento->paciente->nombre_completo }}
+                                </strong></small>
                         </div>
+
+                    </div>
+
+                    <div class="card-body  rounded-bottom  text-black">
+                        <div class="mb-2">
+                            <span
+                                class="me-3
+                                                                                                                                            {{ $tratamiento->fecha_inicio->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
+                                <strong>Fecha Inicio:</strong> {{ $tratamiento->fecha_inicio->format('Y-m-d') }}
+                            </span>
+
+                            <span
+                                class="me-3
+                                                                                                                                            {{ $tratamiento->fecha_fin && $tratamiento->fecha_fin->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
+                                <strong>Fecha Fin:</strong>
+                                {{ $tratamiento->fecha_fin ? $tratamiento->fecha_fin->format('Y-m-d') : '-' }}
+                            </span>
+                            <span><strong>Estado:</strong>
+                                @php
+                                    $estadoColor = match ($tratamiento->estado) {
+                                        'activo' => 'success',
+                                        'finalizado' => 'secondary',
+                                        'cancelado' => 'danger',
+                                        default => 'dark'
+                                    };
+                                @endphp
+                                <span class="badge bg-{{ $estadoColor }}">{{ ucfirst($tratamiento->estado) }}</span>
+                            </span>
+                        </div>
+
+                        @include('tratamientos.tarjetas_citas', ['botones' => false])
+                    </div>
+
+                    <div class="card-footer">
                         <div>
-                            <a href="{{ route('tratamientos.edit', $tratamiento) }}"
+                            <a href="{{ route('tratamientos.administrar', $tratamiento) }}"
                                 class="btn btn-sm btn-dark me-2">Administrar</a>
                             <a href="{{ route('tratamientos.edit', $tratamiento) }}"
                                 class="btn btn-sm btn-warning me-2">Editar</a>
@@ -92,83 +136,6 @@
                             </form>
                         </div>
                     </div>
-
-                    <div class="card-body bg-white rounded-bottom">
-                        <div class="mb-2">
-                            <span class="me-3"><strong>Fecha Inicio:</strong>
-                                {{ $tratamiento->fecha_inicio->format('Y-m-d') }}</span>
-                            <span class="me-3"><strong>Fecha Fin:</strong>
-                                {{ $tratamiento->fecha_fin ? $tratamiento->fecha_fin->format('Y-m-d') : '-' }}</span>
-                            <span><strong>Estado:</strong>
-                                @php
-                                    $estadoColor = match ($tratamiento->estado) {
-                                        'activo' => 'success',
-                                        'finalizado' => 'secondary',
-                                        'cancelado' => 'danger',
-                                        default => 'dark'
-                                    };
-                                @endphp
-                                <span class="badge bg-{{ $estadoColor }}">{{ ucfirst($tratamiento->estado) }}</span>
-                            </span>
-                        </div>
-
-                        @if($tratamiento->citas->count())
-                            <div class="mt-3">
-                                <h6 class="text-muted">Citas Asociadas:</h6>
-                                <div class="row">
-                                    @foreach($tratamiento->citas as $cita)
-                                        <div class="col-md-12 mb-3">
-                                            <div class="border rounded p-3 bg-light position-relative">
-
-
-                                                @php
-                                                    $estadoClass = match ($cita->estado) {
-                                                        'pendiente' => 'bg-warning text-white',
-                                                        'confirmada' => 'bg-primary',
-                                                        'cancelada' => 'bg-danger',
-                                                        'completada' => 'bg-success',
-                                                        default => 'bg-secondary'
-                                                    };
-                                                @endphp
-
-                                                <span class="badge {{ $estadoClass }} position-absolute top-0 end-0 m-2">
-                                                    {{ ucfirst($cita->estado) }}
-                                                </span>
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <small class="mb-1"><strong>Fecha y hora:</strong>
-                                                            {{ $cita->fecha_hora->format('Y-m-d H:i') }}</small>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <small class="mb-1"><strong>Duración:</strong>
-                                                            {{ $cita->duracion ?? '-' }} min.</small>
-
-                                                    </div>
-                                                </div>
-
-
-
-                                                <small class="mb-1"><strong>Personal asignado a la cita:</strong></small>
-                                                <div class="row mb-1">
-                                                    @foreach($cita->usuarios as $usuario)
-                                                        <div class="col-md-3">
-                                                            <span class="badge bg-secondary me-1">{{ $usuario->name }}
-                                                                ({{ $usuario->pivot->rol_en_cita ?? 'N/A' }})</span>
-                                                        </div>
-                                                    @endforeach
-
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    @endforeach
-
-                                </div>
-                            </div>
-                        @else
-                            <p class="text-muted">No hay citas asociadas.</p>
-                        @endif
-                    </div>
                 </div>
             </div>
         @endforeach
@@ -179,5 +146,59 @@
     <div class="mt-4">
         {{ $tratamientos->links('pagination::bootstrap-4') }}
     </div>
+
+    <div class="modal fade" id="estadoModal" tabindex="-1" aria-hidden="true" id="estadoModal" tabindex="-1"
+        aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <form id="formEstado" method="POST" action="{{ route('citas.cambiarEstado') }}">
+                @csrf
+                @method('PUT')
+                <input type="hidden" name="cita_id" id="cita_id">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cambiar estado de la cita</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nuevo_estado" class="form-label">Estado</label>
+                            <select class="form-select" name="nuevo_estado" id="nuevo_estado" required>
+                                <option value="-1" selected disabled>--Seleccione </option>
+
+                                @foreach($estados as $valor => $texto)
+                                    <option value="{{ $valor }}">{{ $texto }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="notificar" name="notificar" value="1">
+                            <label class="form-check-label" for="notificar">
+                                Enviar notificación al paciente
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+
+        document.addEventListener('show.bs.modal', function (event) {
+            const trigger = event.relatedTarget;
+            const modal = event.target;
+
+            modal.querySelector('#cita_id').value = trigger.dataset.cita;
+            modal.querySelector('#nuevo_estado').value = trigger.dataset.estado;
+        });
+
+    </script>
 
 @endsection
