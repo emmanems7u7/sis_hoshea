@@ -292,6 +292,7 @@ Route::prefix('tratamientos')->name('tratamientos.')->group(function () {
     Route::put('/{tratamiento}', [TratamientoController::class, 'update'])->name('update')->middleware('can:tratamientos.actualizar');
     Route::delete('/{tratamiento}', [TratamientoController::class, 'destroy'])->name('destroy')->middleware('can:tratamientos.eliminar');
     Route::get('/actuales', [TratamientoController::class, 'tratamientosFechaHoy'])->name('actuales');
+    Route::get('/administrar/{tratamiento}', [TratamientoController::class, 'administrar'])->name('administrar');
 
     Route::get('/export/pdf', [TratamientoController::class, 'exportPDF'])->name('exportPDF');
 

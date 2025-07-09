@@ -34,6 +34,29 @@
         </div>
     @endif
 
+    @if($pac != 1)
+    <div class="col-12">
+        <div class="form-check">
+            <!-- Este input hidden asegura que siempre se envíe algo (0 por defecto) -->
+            <input type="hidden" name="primera_cita" value="0">
+
+            <!-- Este checkbox solo sobrescribe si está marcado -->
+            <input class="form-check-input" type="checkbox"
+                id="primera_cita"
+                name="primera_cita"
+                value="1"
+                {{ old('primera_cita', isset($cita) && $cita->primera_cita == 1 ? 'checked' : '') }}>
+
+            <label class="form-check-label" for="primera_cita">¿Es primera cita?</label>
+
+            <label class="text-primary" data-bs-toggle="tooltip" data-bs-placement="right"
+                title="Marca esta casilla si es la primera cita del tratamiento. Si es la única cita, marcarla es opcional.">
+                AYUDA
+            </label>
+        </div>
+    </div>
+
+    @endif
     <div class="col-12 col-md-6 mb-3">
         <label for="fecha_hora" class="form-label">Fecha y hora</label>
         <input type="datetime-local" name="fecha_hora" id="fecha_hora"

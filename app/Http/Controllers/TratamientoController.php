@@ -123,6 +123,7 @@ class TratamientoController extends Controller
                 'duracion' => $citaData['duracion'] ?? null,
                 'estado' => $citaData['estado'],
                 'observaciones' => $citaData['observaciones'] ?? null,
+                'primera_cita' => $citaData['primera_cita'] ?? null,
             ]);
 
 
@@ -158,6 +159,7 @@ class TratamientoController extends Controller
                     'duracion' => $cita->duracion,
                     'estado' => $cita->estado,
                     'observaciones' => $cita->observaciones,
+                    'primera_cita' => $cita->primera_cita,
                     'usuarios' => $cita->usuarios->pluck('id'),               // relación belongsToMany
                     'roles' => $cita->usuarios->pluck('pivot.rol_en_cita'),
                 ];
@@ -197,10 +199,68 @@ class TratamientoController extends Controller
             'observaciones' => 'nullable|string',
         ]);
 
-        $tratamiento->update($validated);
+        $tratamiento->update([
+            'paciente_id' => $validated['paciente_id'],
+            'nombre' => $validated['nombre'],
+            'fecha_inicio' => $validated['fecha_inicio'],
+            'fecha_fin' => $validated['fecha_fin'] ?? null,
+            'estado' => $validated['estado'],
+            'observaciones' => $validated['observaciones'] ?? null,
+        ]);
+
+        $fechaInicio = Carbon::parse($validated['fecha_inicio']);
+        $fechaFin = $validated['fecha_fin'] ? Carbon::parse($validated['fecha_fin']) : null;
+
+        $citasArray = json_decode($request->input('citas_json'), true);
+
+        if (is_null($citasArray) || !is_array($citasArray) || empty($citasArray)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Debe agregar al menos una cita');
+        }
+
+
+        $tratamiento->citas()->delete();
+
+        foreach ($citasArray as $citaData) {
+            $fechaCita = Carbon::parse($citaData['fecha_hora']);
+
+            if ($fechaCita->lt($fechaInicio)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'La fecha de la cita (' . $fechaCita->format('d/m/Y H:i') . ') no puede ser anterior al inicio del tratamiento.');
+            }
+
+            if ($fechaFin && $fechaCita->gt($fechaFin)) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'La fecha de la cita (' . $fechaCita->format('d/m/Y H:i') . ') no puede ser posterior al fin del tratamiento.');
+            }
+
+            $cita = Cita::create([
+                'paciente_id' => $tratamiento->paciente_id,
+                'tratamiento_id' => $tratamiento->id,
+                'fecha_hora' => $citaData['fecha_hora'],
+                'duracion' => $citaData['duracion'] ?? null,
+                'estado' => $citaData['estado'],
+                'observaciones' => $citaData['observaciones'] ?? null,
+                'primera_cita' => $citaData['primera_cita'] ?? 0,
+            ]);
+
+            if (!empty($citaData['usuarios']) && !empty($citaData['roles'])) {
+                $syncData = [];
+                foreach ($citaData['usuarios'] as $index => $userId) {
+                    $rol = $citaData['roles'][$index] ?? null;
+                    $syncData[$userId] = ['rol_en_cita' => $rol];
+                }
+                $cita->usuarios()->sync($syncData);
+            }
+        }
 
         return redirect()->route('tratamientos.index')->with('status', 'Tratamiento actualizado correctamente.');
     }
+
+
 
     public function destroy(Tratamiento $tratamiento)
     {
@@ -229,7 +289,7 @@ class TratamientoController extends Controller
             }
 
         }
-        dd($tratamientos);
+
         return $tratamientos;
     }
 
@@ -260,5 +320,17 @@ class TratamientoController extends Controller
             'tratamientos',
             false
         );
+    }
+
+    function administrar(Tratamiento $tratamiento)
+    {
+        // Breadcrumb
+        $breadcrumb = [
+            ['name' => 'Inicio', 'url' => route('home')],
+            ['name' => 'Tratamientos', 'url' => route('tratamientos.index')],
+            ['name' => 'Administrar tratamiento', 'url' => '#'],
+        ];
+
+        return view('tratamientos.administrar', compact('breadcrumb', 'tratamiento'));
     }
 }
