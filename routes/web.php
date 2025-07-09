@@ -18,7 +18,7 @@ use App\Http\Controllers\PacienteController;
 use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\TratamientoController;
 use App\Http\Controllers\CitaController;
-
+use App\Http\Controllers\DiagnosticoController;
 
 
 Route::get('/', function () {
@@ -307,7 +307,12 @@ Route::prefix('citas')->name('citas.')->group(function () {
     Route::put('/{cita}', [CitaController::class, 'update'])->name('update')->middleware('can:citas.actualizar');
     Route::delete('/{cita}', [CitaController::class, 'destroy'])->name('destroy')->middleware('can:citas.eliminar');
 });
-
+Route::prefix('tratamientos')->group(function () {
+    Route::get('diagnosticos', [DiagnosticoController::class, 'index'])->name('diagnosticos.index');
+    Route::get('diagnosticos/create', [DiagnosticoController::class, 'create'])->name('diagnosticos.create');
+    Route::post('diagnosticos', [DiagnosticoController::class, 'store'])->name('diagnosticos.store');
+    Route::delete('diagnosticos/{diagnostico}', [DiagnosticoController::class, 'destroy'])->name('diagnosticos.destroy');
+});
 
 Route::get('/departamentos/{paisCodigo}', function ($paisCodigo) {
     return \App\Models\Catalogo::where('catalogo_parent', $paisCodigo)
@@ -320,3 +325,6 @@ Route::get('/ciudades/{departamentoCodigo}', function ($departamentoCodigo) {
         ->where('catalogo_estado', 1)
         ->get(['catalogo_codigo', 'catalogo_descripcion']);
 });
+
+Route::get('tratamientos/{tratamiento}/diagnosticos/{diagnostico}/edit', [DiagnosticoController::class, 'edit'])->name('diagnosticos.edit');
+Route::put('tratamientos/{tratamiento}/diagnosticos/{diagnostico}', [DiagnosticoController::class, 'update'])->name('diagnosticos.update');
