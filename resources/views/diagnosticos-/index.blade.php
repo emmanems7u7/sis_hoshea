@@ -7,9 +7,7 @@
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <a href="{{ route('diagnosticos.create') }}" class="btn btn-primary mb-3">
-        + Nuevo Diagnóstico
-    </a>
+    
 
     @if($diagnosticos->isEmpty())
         <p>No hay diagnósticos registrados para este tratamiento.</p>

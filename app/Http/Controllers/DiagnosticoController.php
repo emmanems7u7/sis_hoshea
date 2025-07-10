@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Tratamiento;
 use App\Models\Diagnostico;
 use Illuminate\Http\Request;
+use App\Models\Catalogo;
+
 
 class DiagnosticoController extends Controller
 {
@@ -14,7 +16,7 @@ class DiagnosticoController extends Controller
             ['name' => 'Inicio', 'url' => route('home')],
             ['name' => 'Diagnosticos', 'url' => route('home')],
         ];
-        $diagnosticos = Diagnostico::all();
+        $diagnosticos = Diagnostico::with('tratamiento');
         $tratamiento = [];
         return view('diagnosticos.index', compact('breadcrumb','tratamiento', 'diagnosticos'));
     }
@@ -27,28 +29,31 @@ class DiagnosticoController extends Controller
 
         ];
         $tratamientos = Tratamiento::all();
-        return view('diagnosticos.create', compact('breadcrumb','tratamientos'));
+        $diagnosticos = Catalogo::where('categoria_id', 6)->get();
+        return view('diagnosticos.create', compact('breadcrumb','tratamientos','diagnosticos'));
     }
 
-    public function store(Request $request, $tratamiento_id)
+    public function store(Request $request)
     {
-        $request->validate([
-            'cod_diagnostico' => 'required|string|max:50',
-            'fecha_diagnostico' => 'required|date',
-            'estado' => 'required|in:activo,inactivo',
-            'observacion' => 'nullable|string',
-        ]);
+      
+       $request->validate([
+    'tratamiento_id' => 'required|exists:tratamientos,id',
+    'cod_diagnostico' => 'required|string|max:50|unique:diagnosticos,cod_diagnostico',
+    'fecha_diagnostico' => 'required|date',
+    'estado' => 'required|in:activo,inactivo',
+    'observacion' => 'nullable|string|max:1000',
+]);
 
         Diagnostico::create([
-            'tratamiento_id' => $tratamiento_id,
+            'tratamiento_id' => $request->tratamiento_id,
             'cod_diagnostico' => $request->cod_diagnostico,
             'fecha_diagnostico' => $request->fecha_diagnostico,
             'estado' => $request->estado,
             'observacion' => $request->observacion,
         ]);
 
-        return redirect()->route('diagnosticos.index', $tratamiento_id)
-                         ->with('success', 'Diagnóstico creado correctamente.');
+        return redirect()->route('diagnosticos.index')
+                         ->with('status', 'Diagnóstico creado correctamente.');
     }
 
     public function destroy($tratamiento_id, $id)

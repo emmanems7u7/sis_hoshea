@@ -22,6 +22,7 @@
             <thead>
                 <tr>
                     <th>Código</th>
+                    <th>Tratamiento</th>
                     <th>Fecha</th>
                     <th>Estado</th>
                     <th>Observación</th>
@@ -32,6 +33,7 @@
                 @foreach($diagnosticos as $d)
                     <tr>
                         <td>{{ $d->cod_diagnostico }}</td>
+                        <td>{{ $d->tratamiento->nombre ??'sin tratamiento asignado' }}</td>
                         <td>{{ \Carbon\Carbon::parse($d->fecha_diagnostico)->format('d/m/Y') }}</td>
                         <td>{{ ucfirst($d->estado) }}</td>
                         <td>{{ $d->observacion ?? '—' }}</td>

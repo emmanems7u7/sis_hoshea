@@ -16,14 +16,19 @@
 </div>
 
 <div class="mb-3">
-    <label for="cod_diagnostico" class="form-label">Código del Diagnóstico</label>
-    <input type="text" name="cod_diagnostico" id="cod_diagnostico"
-        class="form-control @error('cod_diagnostico') is-invalid @enderror"
-        value="{{ old('cod_diagnostico', $diagnostico->cod_diagnostico ?? '') }}" required>
-    @error('cod_diagnostico')
-        <div class="invalid-feedback">{{ $message }}</div>
-    @enderror
-</div>
+            <label for="cod_diagnostico">Diagnostico</label>
+            <select class="form-select @error('cod_diagnostico') is-invalid @enderror" id="cod_diagnostico" name="cod_diagnostico">
+                <option value="" selected>Seleccione un cod_diagnostico</option>
+                @foreach ($diagnosticos as $diagnostico)
+                    <option value="{{ $diagnostico->catalogo_codigo }}" {{ old('cod_diagnostico', $tratamiento->cod_diagnostico ?? '') == $diagnostico->catalogo_codigo ? 'selected' : '' }}>
+                        {{ $diagnostico->catalogo_descripcion }}
+                    </option>
+                @endforeach
+            </select>
+            @error('cod_diagnostico')
+                <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+        </div>
 
 <div class="mb-3">
     <label for="fecha_diagnostico" class="form-label">Fecha</label>
