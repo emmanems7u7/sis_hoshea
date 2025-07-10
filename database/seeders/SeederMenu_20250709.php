@@ -9,15 +9,17 @@ class SeederMenu_20250709 extends Seeder
 {
     public function run(): void
     {
-        $menus = [            [
+        $menus = [
+            [
                 'id' => '22',
                 'nombre' => 'Diagnosticos',
                 'orden' => 6,
                 'padre_id' => null,
-                'seccion_id' => 12,
+                'seccion_id' => 11,
                 'ruta' => 'diagnosticos.index',
                 'accion_usuario' => '',
-            ],];
+            ],
+        ];
 
         foreach ($menus as $data) {
             Menu::firstOrCreate(

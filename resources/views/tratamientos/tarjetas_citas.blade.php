@@ -20,10 +20,18 @@
                             };
                         @endphp
 
-                        <span class="badge {{ $estadoClass }} position-absolute top-0 end-0 m-2" data-bs-toggle="modal"
-                            data-bs-target="#estadoModal" data-cita="{{ $cita->id }}" data-estado="{{ $cita->estado }}">
-                            {{ ucfirst($cita->estado) }}
-                        </span>
+
+                        @if($botones)
+                            <span class="badge {{ $estadoClass }} position-absolute top-0 end-0 m-2">
+                                {{ ucfirst($cita->estado) }}
+                            </span>
+                        @else
+                            <span style="cursor: pointer;" class="badge {{ $estadoClass }} position-absolute top-0 end-0 m-2"
+                                data-bs-toggle="modal" data-bs-target="#estadoModal" data-cita="{{ $cita->id }}"
+                                data-estado="{{ $cita->estado }}">
+                                {{ ucfirst($cita->estado) }}
+                            </span>
+                        @endif
                         <div class=" row">
                             <div class="col-md-6">
                                 <small class="mb-1"><strong>Fecha y hora:</strong>
@@ -49,13 +57,24 @@
                         </div>
 
                         @if($botones)
-
-
-                            <a href="#" data-bs-toggle="modal" data-bs-target="#modal_gestion"
-                                class="btn btn-sm btn-warning {{  $cita->fecha_hora->toDateString() === Carbon::today()->toDateString() ? '' : 'disableds' }}">
+                            @php
+                                $fechaCita = \Carbon\Carbon::parse($cita->fecha_hora)->toDateString();
+                                $fechaHoy = \Carbon\Carbon::today()->toDateString();
+                                $habilitado = ($fechaCita === $fechaHoy && $cita->gestionado != 1);
+                            @endphp
+                            <a href="#" class="btn btn-sm btn-warning btn-gestionar" @if($habilitado) data-cita-id="{{ $cita->id }}"
+                            data-bs-toggle="modal" data-bs-target="#modal_gestion" @endif
+                                data-gestionado="{{ $cita->gestionado }}" {{ !$habilitado ? 'disabled' : '' }}>
                                 Gestionar
                             </a>
 
+                            @if($cita->gestionado == 1)
+                                <a href="" class="btn btn-sm btn-info">Ver Resumen</a>
+
+                                <a href="" class="btn btn-sm btn-danger">Exportar Hoja de Evolución</a>
+                                <a href="" class="btn btn-sm btn-primary">Crear Hoja de Laboratorio</a>
+
+                            @endif
                         @endif
                     </div>
                 </div>
@@ -66,3 +85,20 @@
 @else
     <p class="text-green">No hay citas asociadas.</p>
 @endif
+
+<script>
+    document.querySelectorAll('.btn-gestionar').forEach(btn => {
+        btn.addEventListener('click', e => {
+            if (btn.hasAttribute('disabled')) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                if (btn.dataset.gestionado == '1') {
+                    alertify.warning('Esta cita ya fue gestionada.');
+                } else {
+                    alertify.warning('No puede gestionar esta cita en esta fecha.');
+                }
+            }
+        });
+    });
+</script>

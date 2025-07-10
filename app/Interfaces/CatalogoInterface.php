@@ -9,6 +9,6 @@ interface CatalogoInterface
 
     public function GuardarCategoria($request);
     public function EditarCategoria($request, $categoria);
-
+    function generarNuevoCodigoCatalogo(int $categoriaId, string $codigoInicial = 'diag-0020');
 
 }

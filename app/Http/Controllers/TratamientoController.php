@@ -5,6 +5,8 @@ use App\Models\Cita;
 use App\Models\Tratamiento;
 use App\Models\Paciente;
 use App\Models\user;
+use App\Models\Catalogo;
+
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
@@ -245,6 +247,7 @@ class TratamientoController extends Controller
                 'estado' => $citaData['estado'],
                 'observaciones' => $citaData['observaciones'] ?? null,
                 'primera_cita' => $citaData['primera_cita'] ?? 0,
+                'gestionado' => 0,
             ]);
 
             if (!empty($citaData['usuarios']) && !empty($citaData['roles'])) {
@@ -330,7 +333,10 @@ class TratamientoController extends Controller
             ['name' => 'Tratamientos', 'url' => route('tratamientos.index')],
             ['name' => 'Administrar tratamiento', 'url' => '#'],
         ];
+        $objetivos = Catalogo::where('categoria_id', 9)->get();
+        $diagnosticos = Catalogo::where('categoria_id', 6)->get();
+        $planes = Catalogo::where('categoria_id', 10)->get();
 
-        return view('tratamientos.administrar', compact('breadcrumb', 'tratamiento'));
+        return view('tratamientos.administrar', compact('planes', 'diagnosticos', 'objetivos', 'breadcrumb', 'tratamiento'));
     }
 }

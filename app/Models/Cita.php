@@ -13,7 +13,8 @@ class Cita extends Model
         'duracion',
         'estado',
         'observaciones',
-        'primera_cita'
+        'primera_cita',
+        'gestionado',
     ];
 
     protected $casts = [

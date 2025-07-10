@@ -10,7 +10,7 @@ class SeederPermisos_20250709 extends Seeder
     public function run()
     {
         $permisos = [
-            ['id' => 106, 'name' => 'Diagnosticos', 'tipo' => 'menu', 'guard_name' => 'web' ],
+            ['id' => 106, 'name' => 'Diagnosticos', 'tipo' => 'menu', 'id_relacion' => 22, 'guard_name' => 'web'],
         ];
 
         foreach ($permisos as $permiso) {

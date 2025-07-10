@@ -11,7 +11,8 @@ class Diagnostico extends Model
         'cod_diagnostico',
         'fecha_diagnostico',
         'estado',
-        'observacion',
+        'criterio_clinico',
+        'evolucion_diagnostico',
     ];
 
     public function tratamiento()

@@ -65,20 +65,20 @@ class CatalogoRepository extends BaseRepository implements CatalogoInterface
 
     }
 
-    
 
-protected function guardarEnSeederCategoria(Categoria $categoria): void
-{
-    $fecha = now()->format('Ymd');
-    $nombreSeeder = "SeederCategoria_{$fecha}.php";
-    $rutaSeeder = database_path("seeders/{$nombreSeeder}");
 
-    // Preparamos los valores
-    $nombre = addslashes($categoria->nombre);
-    $descripcion = addslashes($categoria->descripcion ?? '');
-    $estado = addslashes($categoria->estado ?? 'activo');
+    protected function guardarEnSeederCategoria(Categoria $categoria): void
+    {
+        $fecha = now()->format('Ymd');
+        $nombreSeeder = "SeederCategoria_{$fecha}.php";
+        $rutaSeeder = database_path("seeders/{$nombreSeeder}");
 
-    $registro = <<<PHP
+        // Preparamos los valores
+        $nombre = addslashes($categoria->nombre);
+        $descripcion = addslashes($categoria->descripcion ?? '');
+        $estado = addslashes($categoria->estado ?? 'activo');
+
+        $registro = <<<PHP
                                 [
                                     'id' => {$categoria->id},
                                     'nombre' => '{$nombre}',
@@ -87,9 +87,9 @@ protected function guardarEnSeederCategoria(Categoria $categoria): void
                                 ],
                     PHP;
 
-    // Si no existe, creamos el archivo con la estructura base
-    if (!File::exists($rutaSeeder)) {
-        $plantilla = <<<PHP
+        // Si no existe, creamos el archivo con la estructura base
+        if (!File::exists($rutaSeeder)) {
+            $plantilla = <<<PHP
                     <?php
                     
                     namespace Database\Seeders;
@@ -113,55 +113,55 @@ protected function guardarEnSeederCategoria(Categoria $categoria): void
                     }
                     PHP;
 
-        File::put($rutaSeeder, $plantilla);
-        return;
+            File::put($rutaSeeder, $plantilla);
+            return;
+        }
+
+        // Si ya existe, agregamos el nuevo registro si no está
+        $contenido = File::get($rutaSeeder);
+        if (!Str::contains($contenido, "'nombre' => '{$nombre}'")) {
+            $contenido = str_replace('        $categorias = [', "        \$categorias = [\n{$registro}", $contenido);
+            File::put($rutaSeeder, $contenido);
+        }
+    }
+    protected function eliminarDeSeederCategoria(Categoria $categoria): void
+    {
+        $fecha = now()->format('Ymd');
+        $nombreSeeder = "SeederCategoria_{$fecha}.php";
+        $rutaSeeder = database_path("seeders/{$nombreSeeder}");
+
+        if (!File::exists($rutaSeeder)) {
+            return;
+        }
+
+        $nombreEscapado = preg_quote($categoria->nombre, '/');
+        $contenido = File::get($rutaSeeder);
+
+        // Regex para encontrar el array con ese nombre
+        $pattern = "/[ \t]*\[\s*'nombre'\s*=>\s*'{$nombreEscapado}'(?:.*?\n)*?\s*\],\s*/";
+
+        $contenidoModificado = preg_replace($pattern, '', $contenido, 1);
+
+        if ($contenidoModificado !== null && $contenidoModificado !== $contenido) {
+            File::put($rutaSeeder, $contenidoModificado);
+        }
     }
 
-    // Si ya existe, agregamos el nuevo registro si no está
-    $contenido = File::get($rutaSeeder);
-    if (!Str::contains($contenido, "'nombre' => '{$nombre}'")) {
-        $contenido = str_replace('        $categorias = [', "        \$categorias = [\n{$registro}", $contenido);
-        File::put($rutaSeeder, $contenido);
-    }
-}
-protected function eliminarDeSeederCategoria(Categoria $categoria): void
-{
-    $fecha = now()->format('Ymd');
-    $nombreSeeder = "SeederCategoria_{$fecha}.php";
-    $rutaSeeder = database_path("seeders/{$nombreSeeder}");
+    protected function guardarEnSeederCatalogo(Catalogo $catalogo): void
+    {
+        $fecha = now()->format('Ymd');
+        $nombreSeeder = "SeederCatalogo_{$fecha}.php";
+        $rutaSeeder = database_path("seeders/{$nombreSeeder}");
 
-    if (!File::exists($rutaSeeder)) {
-        return;
-    }
+        // Escapamos valores
+        $categoriaId = (int) $catalogo->categoria_id;
+        $catalogoParent = $catalogo->catalogo_parent !== null ? (int) $catalogo->catalogo_parent : 'null';
+        $codigo = addslashes($catalogo->catalogo_codigo);
+        $descripcion = addslashes($catalogo->catalogo_descripcion);
+        $estado = addslashes($catalogo->catalogo_estado);
+        $accion = addslashes($catalogo->accion_usuario ?? 'sistema');
 
-    $nombreEscapado = preg_quote($categoria->nombre, '/');
-    $contenido = File::get($rutaSeeder);
-
-    // Regex para encontrar el array con ese nombre
-    $pattern = "/[ \t]*\[\s*'nombre'\s*=>\s*'{$nombreEscapado}'(?:.*?\n)*?\s*\],\s*/";
-
-    $contenidoModificado = preg_replace($pattern, '', $contenido, 1);
-
-    if ($contenidoModificado !== null && $contenidoModificado !== $contenido) {
-        File::put($rutaSeeder, $contenidoModificado);
-    }
-}
-
-protected function guardarEnSeederCatalogo(Catalogo $catalogo): void
-{
-    $fecha = now()->format('Ymd');
-    $nombreSeeder = "SeederCatalogo_{$fecha}.php";
-    $rutaSeeder = database_path("seeders/{$nombreSeeder}");
-
-    // Escapamos valores
-    $categoriaId = (int) $catalogo->categoria_id;
-    $catalogoParent = $catalogo->catalogo_parent !== null ? (int) $catalogo->catalogo_parent : 'null';
-    $codigo = addslashes($catalogo->catalogo_codigo);
-    $descripcion = addslashes($catalogo->catalogo_descripcion);
-    $estado = addslashes($catalogo->catalogo_estado);
-    $accion = addslashes($catalogo->accion_usuario ?? 'sistema');
-
-    $registro = <<<PHP
+        $registro = <<<PHP
                                 [
                                     'id' => {$catalogo->id},
                                     'categoria_id' => {$categoriaId},
@@ -173,8 +173,8 @@ protected function guardarEnSeederCatalogo(Catalogo $catalogo): void
                                 ],
                     PHP;
 
-    if (!File::exists($rutaSeeder)) {
-        $plantilla = <<<PHP
+        if (!File::exists($rutaSeeder)) {
+            $plantilla = <<<PHP
                     <?php
                     
                     namespace Database\Seeders;
@@ -198,36 +198,60 @@ protected function guardarEnSeederCatalogo(Catalogo $catalogo): void
                     }
                     PHP;
 
-        File::put($rutaSeeder, $plantilla);
-        return;
+            File::put($rutaSeeder, $plantilla);
+            return;
+        }
+
+        // Si ya existe, evitamos duplicados
+        $contenido = File::get($rutaSeeder);
+        if (!Str::contains($contenido, "'catalogo_codigo' => '{$codigo}'")) {
+            $contenido = str_replace('        $catalogos = [', "        \$catalogos = [\n{$registro}", $contenido);
+            File::put($rutaSeeder, $contenido);
+        }
+    }
+    protected function eliminarDeSeederCatalogo(Catalogo $catalogo): void
+    {
+        $fecha = now()->format('Ymd');
+        $nombreSeeder = "SeederCatalogo_{$fecha}.php";
+        $rutaSeeder = database_path("seeders/{$nombreSeeder}");
+
+        if (!File::exists($rutaSeeder)) {
+            return;
+        }
+
+        $codigoEscapado = preg_quote($catalogo->catalogo_codigo, '/');
+        $contenido = File::get($rutaSeeder);
+
+        $pattern = "/[ \t]*\[\s*'catalogo_codigo'\s*=>\s*'{$codigoEscapado}'(?:.*?\n)*?\s*\],\s*/";
+
+        $contenidoModificado = preg_replace($pattern, '', $contenido, 1);
+
+        if ($contenidoModificado !== null && $contenidoModificado !== $contenido) {
+            File::put($rutaSeeder, $contenidoModificado);
+        }
     }
 
-    // Si ya existe, evitamos duplicados
-    $contenido = File::get($rutaSeeder);
-    if (!Str::contains($contenido, "'catalogo_codigo' => '{$codigo}'")) {
-        $contenido = str_replace('        $catalogos = [', "        \$catalogos = [\n{$registro}", $contenido);
-        File::put($rutaSeeder, $contenido);
+    function generarNuevoCodigoCatalogo(int $categoriaId, string $codigoInicial = 'diag-001'): string
+    {
+        $ultimoCatalogo = Catalogo::where('categoria_id', $categoriaId)
+            ->orderByDesc('catalogo_codigo')
+            ->first();
+
+        if ($ultimoCatalogo) {
+            $codigoUltimo = $ultimoCatalogo->catalogo_codigo;
+
+            if (preg_match('/^([a-zA-Z\-]+)(\d+)$/', $codigoUltimo, $matches)) {
+                $prefijo = $matches[1];
+                $numero = intval($matches[2]);
+
+                $nuevoNumero = $numero + 1;
+                $largoNumero = strlen($matches[2]);
+
+                return $prefijo . str_pad($nuevoNumero, $largoNumero, '0', STR_PAD_LEFT);
+            }
+        }
+
+        return $codigoInicial;
     }
-}
-protected function eliminarDeSeederCatalogo(Catalogo $catalogo): void
-{
-    $fecha = now()->format('Ymd');
-    $nombreSeeder = "SeederCatalogo_{$fecha}.php";
-    $rutaSeeder = database_path("seeders/{$nombreSeeder}");
 
-    if (!File::exists($rutaSeeder)) {
-        return;
-    }
-
-    $codigoEscapado = preg_quote($catalogo->catalogo_codigo, '/');
-    $contenido = File::get($rutaSeeder);
-
-    $pattern = "/[ \t]*\[\s*'catalogo_codigo'\s*=>\s*'{$codigoEscapado}'(?:.*?\n)*?\s*\],\s*/";
-
-    $contenidoModificado = preg_replace($pattern, '', $contenido, 1);
-
-    if ($contenidoModificado !== null && $contenidoModificado !== $contenido) {
-        File::put($rutaSeeder, $contenidoModificado);
-    }
-}
 }

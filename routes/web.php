@@ -309,7 +309,7 @@ Route::prefix('citas')->name('citas.')->group(function () {
     Route::delete('/{cita}', [CitaController::class, 'destroy'])->name('destroy')->middleware('can:citas.eliminar');
     Route::put('/', [CitaController::class, 'cambiar_estado'])->name('cambiarEstado')->middleware('can:citas.cambiar_estado');
 
-
+    Route::post('gestion/{cita}', [CitaController::class, 'store_gestion'])->name('gestion');
 
 });
 Route::prefix('tratamientos')->group(function () {
@@ -317,7 +317,11 @@ Route::prefix('tratamientos')->group(function () {
     Route::get('diagnosticos/create', [DiagnosticoController::class, 'create'])->name('diagnosticos.create');
     Route::post('diagnosticos', [DiagnosticoController::class, 'store'])->name('diagnosticos.store');
     Route::delete('diagnosticos/{diagnostico}', [DiagnosticoController::class, 'destroy'])->name('diagnosticos.destroy');
+    Route::post('/diagnostico/guardar_ajax', [DiagnosticoController::class, 'store_ajax'])->name('diagnostico.store_ajax');
+
+
 });
+
 
 Route::get('/departamentos/{paisCodigo}', function ($paisCodigo) {
     return \App\Models\Catalogo::where('catalogo_parent', $paisCodigo)
