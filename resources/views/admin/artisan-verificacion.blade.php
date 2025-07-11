@@ -22,4 +22,15 @@
             </div>
         </div>
     </div>
+    @if(isset($output))
+        <div class="alert alert-success mt-3">
+            <pre class="mb-0">{{ $output }}</pre>
+        </div>
+    @endif
+
+    @if(isset($error))
+        <div class="alert alert-danger mt-3">
+            {{ $error }}
+        </div>
+    @endif
 @endsection

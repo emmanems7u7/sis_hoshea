@@ -31,21 +31,40 @@ class ArtisanController extends Controller
     {
         $request->validate([
             'comando' => 'required|string',
+            'clave_segura' => 'required|string',
         ]);
 
-        $comando = $request->input('comando');
-
+        if ($request->clave_segura !== env('ARTISAN_PANEL_PASSWORD')) {
+            return redirect()->route('artisan.index')->with('error', 'Contraseña inválida.');
+        }
+        $breadcrumb = [
+            ['name' => 'Inicio', 'url' => route('home')],
+            ['name' => 'Panel de Artisan', 'url' => route('artisan.index')],
+        ];
         try {
-            Artisan::call($comando);
+            Artisan::call($request->comando);
             $output = Artisan::output();
 
-            return back()->with('output', $output);
+            return view('admin.artisan-panel', [
+                'output' => $output,
+                'breadcrumb' => $breadcrumb,
+                'clave_segura' => $request->clave_segura
+            ]);
         } catch (CommandNotFoundException $e) {
-            return back()->with('error', 'Comando no reconocido.');
+            return view('admin.artisan-panel', [
+                'error' => 'Comando no reconocido.',
+                'breadcrumb' => $breadcrumb,
+                'clave_segura' => $request->clave_segura
+            ]);
         } catch (\Exception $e) {
-            return back()->with('error', 'Error al ejecutar: ' . $e->getMessage());
+            return view('admin.artisan-panel', [
+                'error' => 'Error al ejecutar: ' . $e->getMessage(),
+                'breadcrumb' => $breadcrumb,
+                'clave_segura' => $request->clave_segura
+            ]);
         }
     }
+
     public function verificacion()
     {
         $breadcrumb = [
