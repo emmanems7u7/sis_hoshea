@@ -54,11 +54,19 @@ class DatabaseSeeder extends Seeder
 
  */
 
+
         $this->call(SeederSeccion_20250701::class);
+
         $this->call(SeederCategoria_20250709::class);
         $this->call(SeederCatalogo_20250709::class);
+
+
         $this->call(SeederMenu_20250709::class);
         $this->call(SeederPermisos_20250709::class);
+
+        $this->call(SeederCatalogo_20250710::class);
+
+
 
 
 
