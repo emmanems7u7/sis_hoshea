@@ -39,6 +39,8 @@ class MenuRepository extends BaseRepository implements MenuInterface
     {
         $fecha = now()->format('Ymd');
         $nombreSeeder = "SeederMenu_{$fecha}.php";
+        $nombreClase = "SeederMenu_{$fecha}";
+
         $rutaSeeder = database_path("seeders/{$nombreSeeder}");
 
         // Preparamos los valores
@@ -95,6 +97,8 @@ class MenuRepository extends BaseRepository implements MenuInterface
             $contenido = str_replace('        $menus = [', "        \$menus = [\n{$registro}", $contenido);
             File::put($rutaSeeder, $contenido);
         }
+
+        $this->agregarSeederADatabaseSeeder($nombreClase, 'SEEDERS MENU');
     }
     public function eliminarDeSeederMenu(Menu $menu): void
     {
@@ -140,6 +144,7 @@ class MenuRepository extends BaseRepository implements MenuInterface
     {
         $fecha = now()->format('Ymd');
         $nombreSeeder = "SeederSeccion_{$fecha}.php";
+        $nombreClase = "SeederSeccion_{$fecha}";
         $rutaSeeder = database_path("seeders/{$nombreSeeder}");
 
         // Preparar los valores
@@ -193,7 +198,9 @@ class MenuRepository extends BaseRepository implements MenuInterface
             $contenido = str_replace('        $secciones = [', "        \$secciones = [\n{$registro}", $contenido);
             File::put($rutaSeeder, $contenido);
         }
+        $this->agregarSeederADatabaseSeeder($nombreClase, 'SEEDERS SECCION');
     }
+
 
 
     public function ObtenerMenuPorSeccion($seccion_id)

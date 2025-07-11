@@ -139,6 +139,8 @@ class PermisoRepository extends BaseRepository implements PermisoInterface
             );
             File::put($rutaSeeder, $contenidoActual);
         }
+
+        $this->agregarSeederADatabaseSeeder($nombreClase, 'SEEDERS PERMISOS');
     }
     function eliminarDeSeeder(Permission $permiso)
     {

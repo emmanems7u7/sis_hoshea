@@ -55,23 +55,33 @@ class DatabaseSeeder extends Seeder
  */
 
 
-        //   $this->call(SeederSeccion_20250701::class);
-
-        //  $this->call(SeederCategoria_20250709::class);
-        //  $this->call(SeederCatalogo_20250709::class);
-
-
+        $this->call(SeederSeccion_20250701::class);
+        $this->call(SeederCategoria_20250709::class);
+        $this->call(SeederCatalogo_20250709::class);
         $this->call(SeederMenu_20250709::class);
         $this->call(SeederPermisos_20250709::class);
-
         $this->call(SeederCatalogo_20250710::class);
 
 
+        //INICIO SEEDERS SECCION
 
+        //FIN SEEDERS SECCION
 
+        //INICIO SEEDERS CATEGORIA
 
+        //FIN SEEDERS CATEGORIA
 
+        //INICIO SEEDERS CATALOGO
 
+        //FIN SEEDERS CATALOGO
+
+        //INICIO SEEDERS MENU
+
+        //FIN SEEDERS MENU
+
+        //INICIO SEEDERS PERMISOS
+
+        //FIN SEEDERS PERMISOS
 
     }
 }

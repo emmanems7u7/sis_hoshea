@@ -73,6 +73,7 @@ class CatalogoRepository extends BaseRepository implements CatalogoInterface
     {
         $fecha = now()->format('Ymd');
         $nombreSeeder = "SeederCategoria_{$fecha}.php";
+        $nombreClase = "SeederCategoria_{$fecha}";
         $rutaSeeder = database_path("seeders/{$nombreSeeder}");
 
         // Preparamos los valores
@@ -125,11 +126,15 @@ class CatalogoRepository extends BaseRepository implements CatalogoInterface
             $contenido = str_replace('        $categorias = [', "        \$categorias = [\n{$registro}", $contenido);
             File::put($rutaSeeder, $contenido);
         }
+
+        $this->agregarSeederADatabaseSeeder($nombreClase, 'SEEDERS CATEGORIA');
+
     }
     protected function eliminarDeSeederCategoria(Categoria $categoria): void
     {
         $fecha = now()->format('Ymd');
         $nombreSeeder = "SeederCategoria_{$fecha}.php";
+
         $rutaSeeder = database_path("seeders/{$nombreSeeder}");
 
         if (!File::exists($rutaSeeder)) {
@@ -153,6 +158,8 @@ class CatalogoRepository extends BaseRepository implements CatalogoInterface
     {
         $fecha = now()->format('Ymd');
         $nombreSeeder = "SeederCatalogo_{$fecha}.php";
+        $nombreClase = "SeederCatalogo_{$fecha}";
+
         $rutaSeeder = database_path("seeders/{$nombreSeeder}");
 
         // Escapamos valores
@@ -210,6 +217,8 @@ class CatalogoRepository extends BaseRepository implements CatalogoInterface
             $contenido = str_replace('        $catalogos = [', "        \$catalogos = [\n{$registro}", $contenido);
             File::put($rutaSeeder, $contenido);
         }
+        $this->agregarSeederADatabaseSeeder($nombreClase, 'SEEDERS CATALOGO');
+
     }
     protected function eliminarDeSeederCatalogo(Catalogo $catalogo): void
     {
