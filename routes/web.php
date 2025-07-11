@@ -19,7 +19,21 @@ use App\Http\Controllers\InventarioController;
 use App\Http\Controllers\TratamientoController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\DiagnosticoController;
+use App\Http\Controllers\ArtisanController;
 
+
+//Artisan 
+
+
+
+Route::middleware(['auth', 'can:ejecutar-artisan'])->group(function () {
+
+    Route::get('/artisan-panel', [ArtisanController::class, 'verificacion'])->name('artisan.index');
+
+    Route::post('/artisan-panel', [ArtisanController::class, 'index'])->name('artisan.verificar');
+
+    Route::post('/artisan/run', [ArtisanController::class, 'run'])->name('artisan.run');
+});
 
 Route::get('/', function () {
     return redirect('/login');
