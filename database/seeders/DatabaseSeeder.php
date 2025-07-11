@@ -39,20 +39,24 @@ class DatabaseSeeder extends Seeder
 
                 //SEEDERS DINAMICOS
                 $this->call(SeederSeccion_20250625::class);
-                $this->call(SeederSeccion_20250701::class);
 
+
+                // MENUS CARGADOS
                 $this->call(SeederMenu_20250625::class);
                 $this->call(SeederMenu_20250627::class);
                 $this->call(SeederMenu_20250704::class);
+                // MENUS CARGADOS
+
 
                 $this->call(SeederPermisos_20250625::class);
                 $this->call(SeederPermisos_20250627::class);
                 $this->call(SeederPermisos_20250704::class);
 
+ */
 
+        $this->call(SeederSeccion_20250701::class);
         $this->call(SeederCategoria_20250709::class);
         $this->call(SeederCatalogo_20250709::class);
- */
         $this->call(SeederMenu_20250709::class);
         $this->call(SeederPermisos_20250709::class);
 

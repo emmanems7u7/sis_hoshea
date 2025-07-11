@@ -90,7 +90,7 @@ class PermisoRepository extends BaseRepository implements PermisoInterface
 
         return $permiso;
     }
-    protected function registrarEnSeeder(Permission $permiso, $id_relacion = null)
+    protected function registrarEnSeeder(Permission $permiso, $id_relacion = 0)
     {
         $fecha = now()->format('Ymd');
         $nombreClase = 'SeederPermisos_' . $fecha;
