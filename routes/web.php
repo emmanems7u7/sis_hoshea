@@ -310,6 +310,14 @@ Route::prefix('citas')->name('citas.')->group(function () {
     Route::put('/', [CitaController::class, 'cambiar_estado'])->name('cambiarEstado')->middleware('can:citas.cambiar_estado');
 
     Route::post('gestion/{cita}', [CitaController::class, 'store_gestion'])->name('gestion');
+    // Ruta para obtener los datos de una cita para edición (AJAX)
+    Route::get('editar-gestion/{cita}', [CitaController::class, 'edit_gestion'])->name('editar_gestion');
+
+    Route::put('update-gestion/{cita}', [CitaController::class, 'update_gestion'])->name('update_gestion');
+
+    Route::get('ver-gestion/{cita}', [CitaController::class, 'ver_gestion'])->name('ver_gestion');
+
+
 
 });
 Route::prefix('tratamientos')->group(function () {

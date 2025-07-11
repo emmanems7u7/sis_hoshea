@@ -57,19 +57,30 @@
                         </div>
 
                         @if($botones)
+                            <div data-cita-id="{{ $cita->id }}" class="contador-tiempo-restante text-danger fw-bold mb-2"
+                                data-updated-at="{{ $cita->fecha_gestion?->timestamp ? $cita->fecha_gestion->timestamp * 1000 : '' }}"
+                                data-created-at="{{ $cita->created_at->timestamp * 1000 }}">
+                            </div>
+
+
                             @php
                                 $fechaCita = \Carbon\Carbon::parse($cita->fecha_hora)->toDateString();
                                 $fechaHoy = \Carbon\Carbon::today()->toDateString();
                                 $habilitado = ($fechaCita === $fechaHoy && $cita->gestionado != 1);
                             @endphp
                             <a href="#" class="btn btn-sm btn-warning btn-gestionar" @if($habilitado) data-cita-id="{{ $cita->id }}"
-                            data-bs-toggle="modal" data-bs-target="#modal_gestion" @endif
-                                data-gestionado="{{ $cita->gestionado }}" {{ !$habilitado ? 'disabled' : '' }}>
+                            data-gestionado="{{ $cita->gestionado }}" @endif {{ !$habilitado ? 'disabled' : '' }}>
                                 Gestionar
                             </a>
 
                             @if($cita->gestionado == 1)
-                                <a href="" class="btn btn-sm btn-info">Ver Resumen</a>
+
+
+                                <a href="" id="btn-editar_{{ $cita->id }}" class="btn-editar-gestion btn btn-sm btn-warning"
+                                    data-cita-id="{{ $cita->id }}">Editar</a>
+
+                                <button href="" class="btn btn-sm btn-info" onclick="verGestion({{ $cita->id }})">Ver Resumen</button>
+
 
                                 <a href="" class="btn btn-sm btn-danger">Exportar Hoja de Evolución</a>
                                 <a href="" class="btn btn-sm btn-primary">Crear Hoja de Laboratorio</a>
@@ -85,6 +96,69 @@
 @else
     <p class="text-green">No hay citas asociadas.</p>
 @endif
+
+
+<script>
+
+    document.addEventListener('DOMContentLoaded', () => {
+        // Selecciona todos los contadores
+        const contadores = document.querySelectorAll('.contador-tiempo-restante');
+
+        contadores.forEach(contador => {
+            const updatedAtTimestamp = Number(contador.dataset.updatedAt);
+            const createdAtTimestamp = Number(contador.dataset.createdAt);
+
+            // Comparar si hubo edición (updatedAt > createdAt)
+            if (updatedAtTimestamp <= createdAtTimestamp) {
+                // No hubo edición, mostrar mensaje y deshabilitar botón editar
+                contador.style.display = 'none';
+
+                const citaId = contador.closest('[data-cita-id]')?.dataset.citaId || null;
+
+                const btnEditar = document.getElementById('btn-editar_' + citaId);
+                console.log(citaId)
+                console.log(btnEditar)
+                if (btnEditar) {
+                    btnEditar.disabled = true;
+                    btnEditar.classList.add('disabled');
+                }
+
+                return; // Salir para este contador sin iniciar timer
+            }
+
+            // Si sí hubo edición, sigue con el contador normal
+            const updatedAt = new Date(updatedAtTimestamp);
+            const limiteEdicion = new Date(updatedAt.getTime() + 5 * 60 * 1000);
+
+            const citaId = contador.closest('[data-cita-id]')?.dataset.citaId || null;
+            const btnEditar = document.querySelector(`.btn-editar-gestion[data-cita-id="${citaId}"]`);
+
+            let timer;
+
+            function actualizarContador() {
+                const ahora = new Date();
+                const diff = limiteEdicion - ahora;
+
+                if (diff <= 0) {
+                    contador.textContent = "Tiempo de edición expirado.";
+                    if (btnEditar) {
+                        btnEditar.disabled = true;
+                        btnEditar.classList.add('disabled');
+                    }
+                    clearInterval(timer);
+                    return;
+                }
+
+                const minutos = Math.floor(diff / 60000);
+                const segundos = Math.floor((diff % 60000) / 1000);
+                contador.textContent = `Tiempo restante para editar: ${minutos}:${segundos.toString().padStart(2, '0')}`;
+            }
+
+            actualizarContador();
+            timer = setInterval(actualizarContador, 1000);
+        });
+    });
+</script>
 
 <script>
     document.querySelectorAll('.btn-gestionar').forEach(btn => {

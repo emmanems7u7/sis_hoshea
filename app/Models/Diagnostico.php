@@ -19,6 +19,7 @@ class Diagnostico extends Model
     {
         return $this->belongsTo(Tratamiento::class);
     }
+
     public function diagnosticos()
     {
         return $this->hasMany(Diagnostico::class);

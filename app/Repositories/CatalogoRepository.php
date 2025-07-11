@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 class CatalogoRepository extends BaseRepository implements CatalogoInterface
 {
 
+
+
     public function __construct()
     {
         parent::__construct();
@@ -253,5 +255,9 @@ class CatalogoRepository extends BaseRepository implements CatalogoInterface
 
         return $codigoInicial;
     }
-
+    public function getNombreCatalogo($catalogo_codigo)
+    {
+        return Catalogo::where('catalogo_codigo', $catalogo_codigo)
+            ->value('catalogo_descripcion') ?? 'No encontrado';
+    }
 }

@@ -10,9 +10,17 @@ use App\Models\Diagnostico;
 use App\Models\ObjetivoCita;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Interfaces\CatalogoInterface;
 
 class CitaController extends Controller
 {
+    protected $CatalogoRepository;
+    public function __construct(CatalogoInterface $CatalogoInterface)
+    {
+
+        $this->CatalogoRepository = $CatalogoInterface;
+    }
+
     public function index()
     {
         $citas = Cita::with(['paciente', 'tratamiento', 'usuarios'])->orderBy('fecha_hora', 'desc')->paginate(15);
@@ -298,10 +306,173 @@ class CitaController extends Controller
 
         $cita_->estado = 'completada';
         $cita_->gestionado = 1;
+        $cita_->fecha_gestion = now();
         $cita_->save();
 
         return redirect()->back()->with('status', 'La información de la cita se guardó correctamente. Ahora puede generar el PDF.
         Además, se ha enviado una notificación al paciente y al personal asociado a la cita.');
 
+    }
+
+    public function update_gestion(Request $request, $cita)
+    {
+        $request->validate([
+            'cod_diagnostico' => 'required|string|max:255',
+            'criterio_clinico' => 'nullable|string|max:1000',
+            'evolucion_diagnostico' => 'nullable|string|max:1000',
+            'planes_json' => 'required|string',
+            'datos_json' => 'required|string',
+            'objetivos_json' => 'required|string',
+        ]);
+
+        $planes = json_decode($request->input('planes_json'), true);
+        $datos = json_decode($request->input('datos_json'), true);
+        $objetivos = json_decode($request->input('objetivos_json'), true);
+
+        // Validaciones como en el store
+        if ($planes === null || !is_array($planes)) {
+            return redirect()->back()->with('error', 'Los datos de planes no son válidos.')->withInput();
+        }
+
+        if ($datos === null || !is_array($datos)) {
+            return redirect()->back()->with('error', 'Los datos ingresados no son válidos.')->withInput();
+        }
+
+        if ($objetivos === null || !is_array($objetivos)) {
+            return redirect()->back()->with('error', 'Los datos de objetivos no son válidos.')->withInput();
+        }
+
+        foreach ($planes as $plan) {
+            if (
+                !isset($plan['tipo'], $plan['descripcion'], $plan['tipoNombre']) ||
+                !is_string($plan['tipo']) || !is_string($plan['descripcion']) || !is_string($plan['tipoNombre'])
+            ) {
+                return redirect()->back()->with('error', 'Formato inválido en planes.')->withInput();
+            }
+        }
+
+        foreach ($datos as $dato) {
+            if (!is_string($dato)) {
+                return redirect()->back()->with('error', 'Formato inválido en datos.')->withInput();
+            }
+        }
+
+        foreach ($objetivos as $objetivo) {
+            if (
+                !isset($objetivo['codigo'], $objetivo['nombre'], $objetivo['valor']) ||
+                !is_string($objetivo['codigo']) || !is_string($objetivo['nombre']) || !is_string($objetivo['valor'])
+            ) {
+                return redirect()->back()->with('error', 'Formato inválido en objetivos.')->withInput();
+            }
+        }
+
+        $cita_ = Cita::findOrFail($cita);
+        $tratamiento = Tratamiento::findOrFail($cita_->tratamiento_id);
+
+        // Actualizar diagnóstico
+        $diagnostico = Diagnostico::where('tratamiento_id', $tratamiento->id)->first();
+        if ($diagnostico) {
+            $diagnostico->update([
+                'cod_diagnostico' => $request->input('cod_diagnostico'),
+                'criterio_clinico' => $request->input('criterio_clinico'),
+                'evolucion_diagnostico' => $request->input('evolucion_diagnostico'),
+            ]);
+        } else {
+            Diagnostico::create([
+                'tratamiento_id' => $tratamiento->id,
+                'cod_diagnostico' => $request->input('cod_diagnostico'),
+                'fecha_diagnostico' => now(),
+                'estado' => 1,
+                'criterio_clinico' => $request->input('criterio_clinico'),
+                'evolucion_diagnostico' => $request->input('evolucion_diagnostico'),
+            ]);
+        }
+
+        Plan::where('cita_id', $cita)->delete();
+        DatoCita::where('cita_id', $cita)->delete();
+        ObjetivoCita::where('cita_id', $cita)->delete();
+
+        // Insertar nuevos
+        foreach ($planes as $planData) {
+            Plan::create([
+                'cita_id' => $cita,
+                'tipo' => $planData['tipo'],
+                'descripcion' => $planData['descripcion'],
+            ]);
+        }
+
+        foreach ($datos as $dato) {
+            DatoCita::create([
+                'cita_id' => $cita,
+                'descripcion' => $dato,
+            ]);
+        }
+
+        foreach ($objetivos as $obj) {
+            ObjetivoCita::create([
+                'cita_id' => $cita,
+                'codigo' => $obj['codigo'],
+                'valor' => $obj['valor'],
+            ]);
+        }
+
+        $cita_->estado = 'completada';
+        $cita_->gestionado = 1;
+        $cita_->save();
+
+        return redirect()->back()->with('status', 'La gestión de la cita fue actualizada correctamente.');
+    }
+
+
+    public function edit_gestion($cita)
+    {
+        $cita_ = Cita::with(['diagnostico', 'planes', 'datosCita', 'objetivosCita'])->findOrFail($cita);
+
+        return response()->json([
+            'cod_diagnostico' => $cita_->diagnostico->cod_diagnostico ?? '',
+            'criterio_clinico' => $cita_->diagnostico->criterio_clinico ?? '',
+            'evolucion_diagnostico' => $cita_->diagnostico->evolucion_diagnostico ?? '',
+            'planes' => $cita_->planes->map(function ($plan) {
+                return [
+                    'tipo' => $plan->tipo,
+                    'descripcion' => $plan->descripcion,
+                    'tipoNombre' => $this->CatalogoRepository->getNombreCatalogo($plan->tipo),
+                ];
+            }),
+            'datos' => $cita_->datosCita->pluck('descripcion'),
+            'objetivos' => $cita_->objetivosCita->map(function ($obj) {
+                return [
+                    'codigo' => $obj->codigo,
+                    'nombre' => $this->CatalogoRepository->getNombreCatalogo($obj->codigo),
+                    'valor' => $obj->valor,
+                ];
+            }),
+        ]);
+    }
+
+    public function ver_gestion($cita)
+    {
+        $cita_ = Cita::with(['diagnostico', 'planes', 'datosCita', 'objetivosCita'])->findOrFail($cita);
+
+        return response()->json([
+            'cod_diagnostico' => $this->CatalogoRepository->getNombreCatalogo($cita_->diagnostico->cod_diagnostico) ?? '',
+            'criterio_clinico' => $cita_->diagnostico->criterio_clinico ?? '',
+            'evolucion_diagnostico' => $cita_->diagnostico->evolucion_diagnostico ?? '',
+            'planes' => $cita_->planes->map(function ($plan) {
+                return [
+                    'tipo' => $plan->tipo,
+                    'descripcion' => $plan->descripcion,
+                    'tipoNombre' => $this->CatalogoRepository->getNombreCatalogo($plan->tipo),
+                ];
+            }),
+            'datos' => $cita_->datosCita->pluck('descripcion'),
+            'objetivos' => $cita_->objetivosCita->map(function ($obj) {
+                return [
+                    'codigo' => $obj->codigo,
+                    'nombre' => $this->CatalogoRepository->getNombreCatalogo($obj->codigo),
+                    'valor' => $obj->valor,
+                ];
+            }),
+        ]);
     }
 }

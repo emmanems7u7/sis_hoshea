@@ -125,5 +125,7 @@ class CatalogoController extends Controller
 
         return redirect()->back()->with('success', 'Catálogo eliminado correctamente.');
     }
+
+
 }
 
