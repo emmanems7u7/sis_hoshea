@@ -60,7 +60,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SeederCatalogo_20250710::class);
 
  */
-        $this->call(PacientesSeeder::class);
+        //$this->call(PacientesSeeder::class); // listo en prod
 
 
         //INICIO SEEDERS SECCION
@@ -68,12 +68,13 @@ class DatabaseSeeder extends Seeder
         //FIN SEEDERS SECCION
 
         //INICIO SEEDERS CATEGORIA
+        $this->call(SeederCategoria_20250713::class); // listo en prod
 
         //FIN SEEDERS CATEGORIA
 
         //INICIO SEEDERS CATALOGO
 
-        $this->call(SeederCatalogo_20250713::class);
+        $this->call(SeederCatalogo_20250713::class); // listo en prod
         //FIN SEEDERS CATALOGO
 
         //INICIO SEEDERS MENU
