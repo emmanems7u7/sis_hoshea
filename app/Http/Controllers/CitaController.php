@@ -568,9 +568,22 @@ class CitaController extends Controller
         $fecha = Carbon::now()->format('d-m-Y H:i:s');
 
         $tratamiento = Tratamiento::with('paciente', 'citas.examenes')->find($cita->tratamiento_id);
-        $objetivos = Catalogo::where('categoria_id', 9)->get();
-        $diagnosticos = Catalogo::where('categoria_id', 6)->get();
-        $planes = Catalogo::where('categoria_id', 10)->get();
+
+
+        $proximaCita = Cita::where('tratamiento_id', $cita->tratamiento_id)
+            ->where('fecha_hora', '>', $cita->fecha_hora)
+            ->orderBy('fecha_hora', 'asc')
+            ->first();
+
+        if ($proximaCita) {
+            // Convertir la fecha a formato literal en español
+            Carbon::setLocale('es');
+            $fechaProxima = Carbon::parse($proximaCita->fecha_hora)
+                ->isoFormat('dddd, D [de] MMMM [de] YYYY, [Hora ] HH:mm');
+        } else {
+            $fechaProxima = 'No hay próxima cita agendada';
+        }
+
 
         $path = public_path('logo.png');
 
@@ -595,9 +608,7 @@ class CitaController extends Controller
         return ExportPDF::exportPdf(
             'tratamientos.exportar_resumen',
             [
-                'objetivos' => $objetivos,
-                'diagnosticos' => $diagnosticos,
-                'planes' => $planes,
+                'fechaProxima' => $fechaProxima,
                 'tratamiento' => $tratamiento,
                 'cita' => $cita,
                 'user' => $user,

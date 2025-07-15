@@ -37,6 +37,9 @@
 <div class="info-header">
     <p><strong>Generado por:</strong> {{ $user->nombre_completo }}</p>
     <p><strong>Fecha:</strong> {{ $fecha }}</p>
+
+    <p><strong>Nº De Historia Clinica:</strong> C-{{ $cita->id }}</p>
+
 </div>
 
 <table width="100%" border="0" cellspacing="0" cellpadding="5">
@@ -122,7 +125,7 @@
 </h4>
 <h4
     style="font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 4px; margin-top: 20px; margin-bottom: 10px;">
-    Subjetivo</h4>
+    S/(Subjetivo):</h4>
 <span style="margin-bottom: 20px;">[Sintomas referidos por el paciente, molestias, evolución desde la ultima visita]
 </span>
 <table width="100%" style="font-size: 11px; border-collapse: collapse; margin-top: 20px;">
@@ -133,24 +136,27 @@
     @endforeach
 </table>
 
-<h4 style="font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 4px; margin-bottom: 10px;">Objetivos</h4>
+<h4 style="font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 4px; margin-bottom: 10px;">O/(Objetivos)
+</h4>
 <span style="margin-bottom: 20px;">[Signos vitales, hallazgos del examen físico, resultados de laboratorio, imágenes,
     etc.]
 </span>
 <table width="100%" style="font-size: 11px; border-collapse: collapse; margin-top: 20px;">
     @foreach ($cita->objetivosCita as $obj)
         <tr>
-            <td width="40%" style="font-weight: bold;">{{ $obj->catalogo->catalogo_descripcion ?? 'Sin descripción' }}</td>
-
-            <td width="60%" style="color: #6c757d;">{{ $obj->valor }}</td>
+            <td width="40%" style="font-weight: bold; padding: 5px 10px; border-bottom: 1px solid #ccc;">
+                {{ $obj->catalogo->catalogo_descripcion ?? 'Sin descripción' }}
+            </td>
+            <td width="60%" style="color: #6c757d; padding: 5px 10px; border-bottom: 1px solid #ccc;">
+                {{ $obj->valor }}
+            </td>
         </tr>
     @endforeach
 </table>
 
-
 <h4
     style="font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 4px; margin-top: 20px; margin-bottom: 10px;">
-    Análisis/Diagnóstico</h4>
+    A/(Análisis/Diagnóstico)</h4>
 <span style="margin-bottom: 20px;">[Diagnóstico médico actual, evolución del diagnóstico previo, criterios clínicos]
 </span>
 
@@ -192,7 +198,7 @@
 
 <h4
     style="font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 4px; margin-top: 20px; margin-bottom: 10px;">
-    Plan/Tratamiento</h4>
+    P/(Plan/Tratamiento)</h4>
 <span style="margin-bottom: 20px;">[Tratamiento indicado, estudios complementarios, seguimiento, recomendaciones]
 </span>
 
@@ -221,6 +227,9 @@
     @endforeach
 </div>
 
+<p style="font-family: Arial, sans-serif; font-size: 12px; color: #333; margin-top: 10px;">
+    <strong>Próxima cita:</strong> {{ $fechaProxima }}
+</p>
 
 
 @include('tratamientos.firma')

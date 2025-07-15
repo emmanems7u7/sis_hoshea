@@ -137,14 +137,14 @@
                                     <span>Opciones Para Exportar </span>
                                     @if($cita->gestionado == 1)
                                         <div class="row">
-                                            <div class="col-6">
+                                            <div class="col-10">
                                                 <a target="_blank" href="{{ route('citas.export_gestion', $cita) }}" class="btn btn-sm btn-danger w-100">
                                                     Hoja de Evolución
                                                 </a>
                                             </div>
 
                                             @if($cita->examenes)
-                                                <div class="col-6">
+                                                <div class="col-10">
                                                     <a href="#" class="btn btn-sm btn-danger w-100">
                                                          Hoja de Laboratorio
                                                     </a>
