@@ -11,5 +11,8 @@ class ObjetivoCita extends Model
         'codigo',
         'valor',
     ];
-
+    public function catalogo()
+    {
+        return $this->belongsTo(Catalogo::class, 'codigo', 'catalogo_codigo');
+    }
 }

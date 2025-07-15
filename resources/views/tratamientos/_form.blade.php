@@ -4,13 +4,12 @@
 @endphp
 
 <div class="row">
-    <div class="col-md-6 mb-3">
+    <div class="col-12 col-md-6 mb-3">
         <label for="paciente_id" class="form-label">Paciente</label>
         <select name="paciente_id" id="paciente_id" class="form-select @error('paciente_id') is-invalid @enderror"
-            required>
-            <option value="">Seleccione un paciente</option>
+            @if($pac == 1) required @endif>
             @foreach($pacientes as $id => $nombre)
-                <option value="{{ $id }}" {{ old('paciente_id', $tratamiento->paciente_id ?? '') == $id ? 'selected' : '' }}>
+                <option value="{{ $id }}" {{ old('paciente_id', $cita->paciente_id ?? '') == $id ? 'selected' : '' }}>
                     {{ $nombre }}
                 </option>
             @endforeach

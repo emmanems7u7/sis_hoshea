@@ -8,8 +8,13 @@
         <div class="row text-black">
             @foreach($tratamiento->citas as $cita)
                 <div class="col-md-12 mb-3">
-                    <div class="border bg-green_tarjetas_claro  rounded p-3 bg-light position-relative">
 
+                    <div class="border bg-green_tarjetas_claro  rounded p-3 bg-light position-relative">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <span class="text-info">{{ $cita->primera_cita == 1 ? 'Primera Cita' : '' }}</span>
+                            </div>
+                        </div>
                         @php
                             $estadoClass = match ($cita->estado) {
                                 'pendiente' => 'bg-warning text-white',
@@ -32,7 +37,7 @@
                                 {{ ucfirst($cita->estado) }}
                             </span>
                         @endif
-                        <div class=" row">
+                        <div class="row">
                             <div class="col-md-6">
                                 <small class="mb-1"><strong>Fecha y hora:</strong>
                                     {{ $cita->fecha_hora->format('Y-m-d H:i') }}</small>
@@ -61,31 +66,96 @@
                                 data-updated-at="{{ $cita->fecha_gestion?->timestamp ? $cita->fecha_gestion->timestamp * 1000 : '' }}"
                                 data-created-at="{{ $cita->created_at->timestamp * 1000 }}">
                             </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <span>Opciones Disponibles </span>
+                                    @php
+                                        $fechaCita = \Carbon\Carbon::parse($cita->fecha_hora)->toDateString();
+                                        $fechaHoy = \Carbon\Carbon::today()->toDateString();
+                                        $habilitado = ($fechaCita === $fechaHoy && $cita->gestionado != 1);
+                                    @endphp
+
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <a href="#" 
+                                            class="btn btn-sm btn-warning btn-gestionar w-100" 
+                                            @if($habilitado) data-cita-id="{{ $cita->id }}" data-gestionado="{{ $cita->gestionado }}" @endif 
+                                            {{ !$habilitado ? 'disabled' : '' }}>
+                                               </i> Gestionar
+                                            </a>
+                                        </div>
+
+                                        <div class="col-6">
+                                            <a href="#" 
+                                            class="btn btn-sm btn-danger btn-gestionar w-100" 
+                                            data-cita-id="{{ $cita->id }}" data-gestionado="{{ $cita->gestionado }}" 
+                                            {{ !$habilitado ? 'disabled' : '' }}>
+                                                 Gestionar
+                                            </a>
+                                        </div>
+
+                                        @if($cita->gestionado == 1)
+                                            <div class="col-6 mt-2">
+                                                <a href="" 
+                                                id="btn-editar_{{ $cita->id }}" 
+                                                class="btn-editar-gestion btn btn-sm btn-warning w-100"
+                                                data-cita-id="{{ $cita->id }}">
+                                                   </i> Editar
+                                                </a>
+                                            </div>
+
+                                            <div class="col-6 mt-2">
+                                                <button 
+                                                    class="btn btn-sm btn-info w-100" 
+                                                    onclick="verGestion({{ $cita->id }})">
+                                                    Resumen
+                                                </button>
+                                            </div>
+
+                                            @if($cita->examenes->isNotEmpty())
+                                                <div class="col-md-12 mt-2">
+                                                    <button 
+                                                        class="btn btn-sm btn-warning w-100" 
+                                                        onclick="EditarHoja({{ $cita->id }})">
+                                                       Editar Hoja de Laboratorio
+                                                    </button>
+                                                </div>
+                                            @else
+                                                <div class="col-md-12 mt-2">
+                                                    <button 
+                                                        class="btn btn-sm btn-primary w-100" 
+                                                        onclick="CrearHoja({{ $cita->id }})">
+                                                       Crear Hoja de Laboratorio
+                                                    </button>
+                                                </div>
+                                            @endif
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <span>Opciones Para Exportar </span>
+                                    @if($cita->gestionado == 1)
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <a target="_blank" href="{{ route('citas.export_gestion', $cita) }}" class="btn btn-sm btn-danger w-100">
+                                                    Hoja de Evolución
+                                                </a>
+                                            </div>
+
+                                            @if($cita->examenes)
+                                                <div class="col-6">
+                                                    <a href="#" class="btn btn-sm btn-danger w-100">
+                                                         Hoja de Laboratorio
+                                                    </a>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
 
 
-                            @php
-                                $fechaCita = \Carbon\Carbon::parse($cita->fecha_hora)->toDateString();
-                                $fechaHoy = \Carbon\Carbon::today()->toDateString();
-                                $habilitado = ($fechaCita === $fechaHoy && $cita->gestionado != 1);
-                            @endphp
-                            <a href="#" class="btn btn-sm btn-warning btn-gestionar" @if($habilitado) data-cita-id="{{ $cita->id }}"
-                            data-gestionado="{{ $cita->gestionado }}" @endif {{ !$habilitado ? 'disabled' : '' }}>
-                                Gestionar
-                            </a>
-
-                            @if($cita->gestionado == 1)
-
-
-                                <a href="" id="btn-editar_{{ $cita->id }}" class="btn-editar-gestion btn btn-sm btn-warning"
-                                    data-cita-id="{{ $cita->id }}">Editar</a>
-
-                                <button href="" class="btn btn-sm btn-info" onclick="verGestion({{ $cita->id }})">Ver Resumen</button>
-
-
-                                <a href="" class="btn btn-sm btn-danger">Exportar Hoja de Evolución</a>
-                                <a href="" class="btn btn-sm btn-primary">Crear Hoja de Laboratorio</a>
-
-                            @endif
                         @endif
                     </div>
                 </div>

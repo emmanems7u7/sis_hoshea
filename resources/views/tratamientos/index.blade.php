@@ -80,28 +80,26 @@
         @foreach($tratamientos as $tratamiento)
             <div class="col-md-6 tratamiento-item">
                 <div class="card mb-4 shadow-sm ">
-                    <div class="card-header  text-black d-flex justify-content-between align-items-center rounded-top">
+
+
+                    <div class="card-body  rounded-bottom  text-black">
                         <div>
                             <h4 class="mb-0 fw-bold text-black">Tratamiento: {{ $tratamiento->nombre }}</h4>
                             <small>Paciente: <strong>{{ $tratamiento->paciente->nombre_completo }}
                                 </strong></small>
                         </div>
-
-                    </div>
-
-                    <div class="card-body  rounded-bottom  text-black">
                         <div class="mb-2">
                             <span
                                 class="me-3
-                                                                                                                                            {{ $tratamiento->fecha_inicio->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
-                                <strong>Fecha Inicio:</strong> {{ $tratamiento->fecha_inicio->format('Y-m-d') }}
+                                                                                                                                                                    {{ $tratamiento->fecha_inicio->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
+                                <strong>Fecha Inicio:</strong> {{ $tratamiento->fecha_inicio->format('d-m-Y') }}
                             </span>
 
                             <span
                                 class="me-3
-                                                                                                                                            {{ $tratamiento->fecha_fin && $tratamiento->fecha_fin->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
+                                                                                                                                                                    {{ $tratamiento->fecha_fin && $tratamiento->fecha_fin->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
                                 <strong>Fecha Fin:</strong>
-                                {{ $tratamiento->fecha_fin ? $tratamiento->fecha_fin->format('Y-m-d') : '-' }}
+                                {{ $tratamiento->fecha_fin ? $tratamiento->fecha_fin->format('d-m-Y') : '-' }}
                             </span>
                             <span><strong>Estado:</strong>
                                 @php

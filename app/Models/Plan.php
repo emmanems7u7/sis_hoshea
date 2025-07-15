@@ -13,4 +13,9 @@ class Plan extends Model
         'tipo',
         'descripcion',
     ];
+
+    public function catalogo()
+    {
+        return $this->belongsTo(Catalogo::class, 'tipo', 'catalogo_codigo');
+    }
 }

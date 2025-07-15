@@ -28280,3 +28280,14 @@ pre[class*=language-] {
 }
 
 /*# sourceMappingURL=dashboard-free.css.map */
+
+.btn:focus, 
+.btn:active, 
+a.btn:focus, 
+a.btn:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border: 1px solid transparent !important; /* evita que borde cambie */
+  padding: 0.375rem 0.75rem !important; /* mantén padding fijo */
+  transition: none !important; /* sin animaciones que cambien tamaño */
+}

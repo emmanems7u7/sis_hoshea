@@ -24,7 +24,7 @@
                     <h5>Administración de tratamiento <strong>{{ $tratamiento->nombre }}</strong></h5>
 
                     <a href="" class="btn-primary btn btn-sm">Finalizar Gestión</a>
-                    <a href="" class="btn-warning btn btn-sm">Guardar Avance</a>
+
                     <a href="" class="btn-dark btn btn-sm">Añadir observación</a>
 
 
@@ -96,136 +96,7 @@
 
     @include('tratamientos.modal_vista_gestion')
 
-    <script>function verGestion(citaId) {
-            const urlVerGestionBase = "{{ route('citas.ver_gestion', ['cita' => '__ID__']) }}";
-            const url = urlVerGestionBase.replace('__ID__', citaId);
-
-            $.ajax({
-                url: url,
-                method: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    // Mostrar valores en texto
-                    $('#vista_cod_diagnostico').text(data.cod_diagnostico || '-');
-                    $('#vista_criterio_clinico').text(data.criterio_clinico || '-');
-                    $('#vista_evolucion_diagnostico').text(data.evolucion_diagnostico || '-');
-
-                    // Datos simples
-                    const contenedorDatos = $('#vista_datos');
-                    contenedorDatos.empty();
-
-
-
-                    (data.datos || []).forEach(d => {
-                        contenedorDatos.append(`
-                                                                                                                                                                            <div class="col-md-4 mb-3">
-                                                                                                                                                                                <div class="card shadow-sm bg-green_tarjetas_claro  ">
-                                                                                                                                                                                    <div class="card-body">
-                                                                                                                                                                                        ${d}
-                                                                                                                                                                                    </div>
-                                                                                                                                                                                </div>
-                                                                                                                                                                            </div>
-                                                                                                                                                                        `);
-                    });
-
-
-
-                    // Objetivos
-                    const listaObjetivos = $('#vista_objetivos');
-                    listaObjetivos.empty();
-
-                    // Agrupar objetivos por nombre
-                    const grupos = {};
-
-                    (data.objetivos || []).forEach(obj => {
-                        if (!grupos[obj.nombre]) {
-                            grupos[obj.nombre] = [];
-                        }
-                        grupos[obj.nombre].push(obj.valor);
-                    });
-
-                    // Mostrar cada grupo en una tarjeta
-                    for (const nombre in grupos) {
-                        const valores = grupos[nombre];
-                        const tarjeta = $(`
-                                                                                                                                                                <div class="col-md-6">
-                                                                                                                                                            <div class="card bg-green_tarjetas_claro shadow-sm">
-
-                                                                                                                                                                <div class="card-body">
-                                                                                                                                                                <strong>${nombre}</strong>
-                                                                                                                                                                <div class="row g-2"></div>
-                                                                                                                                                                </div>
-                                                                                                                                                            </div>
-                                                                                                                                                            </div>
-                                                                                                                                                        `);
-
-                        const row = tarjeta.find('.row');
-                        valores.forEach(valor => {
-                            row.append(`
-                                                                                                                                            <div class="col-md-6">
-                                                                                                                                                <div class="border rounded p-2 bg-white">
-                                                                                                                                                    ${valor}
-                                                                                                                                                </div>
-                                                                                                                                            </div>
-                                                                                                                                        `);
-                        });
-                        listaObjetivos.append(tarjeta);
-                    }
-
-                    // Planes
-                    const listaPlanes = $('#vista_planes');
-                    listaPlanes.empty();
-
-                    // Agrupar planes por tipoNombre
-                    const gruposPlanes = {};
-
-                    (data.planes || []).forEach(plan => {
-                        if (!gruposPlanes[plan.tipoNombre]) {
-                            gruposPlanes[plan.tipoNombre] = [];
-                        }
-                        gruposPlanes[plan.tipoNombre].push(plan.descripcion);
-                    });
-
-                    // Mostrar cada grupo en tarjeta con filas y columnas
-                    for (const tipoNombre in gruposPlanes) {
-                        const descripciones = gruposPlanes[tipoNombre];
-                        const tarjeta = $(`
-                                                                                                                    <div class="card mb-3 bg-green_tarjetas_claro shadow-sm">
-
-                                                                                                                        <div class="card-body">
-                                                                                                                        <strong class='mb-2'>${tipoNombre}</strong>
-                                                                                                                            <div class="row g-2 "></div>
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                `);
-
-                        const row = tarjeta.find('.row');
-                        descripciones.forEach(descripcion => {
-                            row.append(`
-                                                                                                                        <div class="col-md-6 ">
-                                                                                                                            <div class="border bg-white rounded p-2">
-                                                                                                                                ${descripcion}
-                                                                                                                            </div>
-                                                                                                                        </div>
-                                                                                                                    `);
-                        });
-
-                        listaPlanes.append(tarjeta);
-                    }
-
-                    // Mostrar el modal de solo visualización
-                    const modalEl = document.getElementById('modal_gestion_vista');
-                    let modalInstance = bootstrap.Modal.getInstance(modalEl);
-                    if (!modalInstance) {
-                        modalInstance = new bootstrap.Modal(modalEl);
-                    }
-                    modalInstance.show();
-                },
-                error: function () {
-                    alertify.error('Error cargando la gestión para visualizar.');
-                }
-            });
-        }</script>
+    @include('tratamientos.modal_hoja_lab')
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

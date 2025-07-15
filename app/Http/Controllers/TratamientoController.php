@@ -21,7 +21,7 @@ class TratamientoController extends Controller
     {
         $hoy = Carbon::today();
 
-        $tratamientos = Tratamiento::with(['paciente', 'citas'])
+        $tratamientos = Tratamiento::with(['paciente', 'citas.examenes'])
             ->when($request->filled('q'), function ($query) use ($request) {
                 $texto = strtolower($request->q);
 
@@ -336,7 +336,24 @@ class TratamientoController extends Controller
         $objetivos = Catalogo::where('categoria_id', 9)->get();
         $diagnosticos = Catalogo::where('categoria_id', 6)->get();
         $planes = Catalogo::where('categoria_id', 10)->get();
+        $examenes = Catalogo::where('categoria_id', 14)->get();
+        return view('tratamientos.administrar', compact('examenes', 'planes', 'diagnosticos', 'objetivos', 'breadcrumb', 'tratamiento'));
+    }
 
-        return view('tratamientos.administrar', compact('planes', 'diagnosticos', 'objetivos', 'breadcrumb', 'tratamiento'));
+    public function exportPDFGestion(Tratamiento $tratamiento)
+    {
+
+        $objetivos = Catalogo::where('categoria_id', 9)->get();
+        $diagnosticos = Catalogo::where('categoria_id', 6)->get();
+        $planes = Catalogo::where('categoria_id', 10)->get();
+
+        return ExportPDF::exportPdf('tratamientos.exportar_resumen', [
+            'objetivos' => $objetivos,
+            'diagnosticos' => $diagnosticos,
+            'planes' => $planes,
+            'tratamiento' => $tratamiento,
+
+            'export' => 'gestion_tratamiento'
+        ], 'tratamiento', false);
     }
 }

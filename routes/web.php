@@ -330,7 +330,14 @@ Route::prefix('citas')->name('citas.')->group(function () {
     Route::put('update-gestion/{cita}', [CitaController::class, 'update_gestion'])->name('update_gestion');
 
     Route::get('ver-gestion/{cita}', [CitaController::class, 'ver_gestion'])->name('ver_gestion');
+    Route::post('hoja/{cita}', [CitaController::class, 'store_hoja'])->name('hoja');
 
+
+    Route::put('update-hoja/{cita}', [CitaController::class, 'update_hoja'])->name('update_hoja');
+
+    Route::get('/cita/examenes/{id}', [CitaController::class, 'getExamenes'])->name('examenes');
+
+    Route::get('/cita/exportar-gestion/{cita}', [CitaController::class, 'exportPDFCita'])->name('export_gestion');
 
 
 });

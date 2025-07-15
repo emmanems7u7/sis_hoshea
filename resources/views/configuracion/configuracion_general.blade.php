@@ -40,6 +40,15 @@
                                         Activar modo Mantenimiento
                                     </label>
                                 </div>
+
+                                
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="mant"
+                                        name="firma" {{ $config->firma ? 'checked' : '' }}>
+                                    <label class="form-check-label text-black" for="mant">
+                                        Los reportes tienen Firma
+                                    </label>
+                                </div>
                                 
                                 <!-- Límite de sesiones -->
                                 <div class="mb-3">

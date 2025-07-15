@@ -18,14 +18,16 @@
                                                 <span>[Diagnóstico médico actual, evolución del diagnóstico previo, criterios clínicos]</span>
                                                 <label class="text-primary mb-0" data-bs-toggle="tooltip"
                                                             data-bs-placement="right"
-                                                            title="Ingresa tu valoración médica en los campos que se muestran a continuación. Esta información será clave para el seguimiento del diagnóstico del paciente.">
+                                                            title="Ingresa tu valoración médica abajo. Selecciona un diagnostico existente o crea uno nuevo.">
                                                             <i class="fas fa-info-circle" style="cursor: pointer;"></i>
                                                         </label>
                                                 <div class="row mt-2">
                                                     <div class="col-md-4">
-                                                    <select class="form-select select2 @error('cod_diagnostico') is-invalid @enderror"
-                                                            id="cod_diagnostico" name="cod_diagnostico">
-                                                        <option value="" selected>Seleccione un diagnostico</option>
+                                                    <span class="mb-3">Selecciona un diagnostico</span>
+
+                                                    <select class="form-select mt-3 @error('cod_diagnostico') is-invalid @enderror"
+                                                            id="cod_diagnostico" name="cod_diagnostico" >
+                                                        <option value="" selected>Seleccione un diagnóstico</option>
                                                         @foreach ($diagnosticos as $diagnostico)
                                                             <option value="{{ $diagnostico->catalogo_codigo }}"
                                                                 {{ old('cod_diagnostico', $tratamiento->cod_diagnostico ?? '') == $diagnostico->catalogo_codigo ? 'selected' : '' }}>
@@ -74,3 +76,50 @@
                                             </div>
                                         </div>
                                     </div>
+                                    
+                                    <script>
+
+let tomSelectDiagnostico;
+
+document.addEventListener('DOMContentLoaded', function () {
+    tomSelectDiagnostico = new TomSelect('#cod_diagnostico', {
+        placeholder: 'Seleccione un diagnóstico',
+        allowEmptyOption: true
+    });
+});
+                                            $(document).ready(function () {
+
+$('#btn-agregar_diagnostico').on('click', function (e) {
+    e.preventDefault();
+    const descripcion = $('#diagnostico').val().trim();
+
+    if (descripcion === '') {
+        alertify.error('El campo no puede estar vacío.');
+        return;
+    }
+
+    $.ajax({
+        url: '{{ route("diagnostico.store_ajax") }}',
+        method: 'POST',
+        data: {
+            descripcion: descripcion,
+            _token: '{{ csrf_token() }}'
+        },
+        success: function (response) {
+            if (response.success) {
+                // Agregar nueva opción al select
+                tomSelectDiagnostico.addOption({ value: response.id, text: response.descripcion });
+                    tomSelectDiagnostico.setValue(response.id);
+
+                    $('#diagnostico').val('');  // limpia input
+                    alertify.success('Diagnóstico agregado con éxito.');
+            }
+        },
+        error: function (xhr) {
+            alertify.error('Error al guardar el diagnóstico.');
+        }
+    });
+});
+});
+                                 
+</script>

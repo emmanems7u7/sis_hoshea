@@ -63,7 +63,7 @@
           <i class="fas fa-trash text-danger" style="cursor:pointer;"></i>
         `;
 
-            // Borrar con animación
+            // Eliminar con animación
             div.querySelector('.fa-trash').addEventListener('click', () => {
                 $(div).fadeOut(300, () => {
                     datosObjetivos.splice(index, 1);
@@ -71,68 +71,58 @@
                 });
             });
 
-            // Editar solo valor
-            div.querySelector('.fa-edit').addEventListener('click', function () {
-                const icon = this;
+            const icon = div.querySelector('.fa-edit');
+
+            function activarEdicion() {
                 const flexDiv = div.querySelector('div.flex-grow-1');
                 const nombreSpan = flexDiv.querySelector('.nombre-objetivo');
                 const valorSpan = flexDiv.querySelector('.valor-objetivo');
 
-                // Evitar abrir input si ya está en modo edición
-                if (div.querySelector('input')) return;
+                if (div.querySelector('input')) return; // ya en edición
 
                 const valorActual = valorSpan.textContent;
 
-                // Mantener el nombre fijo
-                const nombreTexto = nombreSpan.textContent;
-
-                // Crear input solo para el valor
                 const inputValor = document.createElement('input');
                 inputValor.type = 'text';
                 inputValor.className = 'form-control form-control-sm';
                 inputValor.value = valorActual;
                 inputValor.style.width = '120px';
 
-                // Reemplazar solo el span valor por input
                 valorSpan.replaceWith(inputValor);
-
                 inputValor.focus();
 
-                // Cambiar icono editar a check (guardar)
                 icon.classList.remove('fa-edit', 'text-primary');
                 icon.classList.add('fa-check', 'text-success');
+                icon.removeEventListener('click', activarEdicion);
+                icon.addEventListener('click', guardarEdicion);
+            }
 
-                // Cambiar evento a guardar
-                icon.onclick = function () {
-                    const nuevoValor = inputValor.value.trim();
+            function guardarEdicion() {
+                const inputValor = div.querySelector('input');
+                const nuevoValor = inputValor.value.trim();
 
-                    if (!nuevoValor) {
-                        alertify.error('El valor no puede estar vacío.');
-                        inputValor.focus();
-                        return;
-                    }
+                if (!nuevoValor) {
+                    alertify.error('El valor no puede estar vacío.');
+                    inputValor.focus();
+                    return;
+                }
 
-                    // Actualizar solo valor en array
-                    datosObjetivos[index].valor = nuevoValor;
+                datosObjetivos[index].valor = nuevoValor;
 
-                    // Restaurar el span valor con nuevo texto
-                    const nuevoSpan = document.createElement('span');
-                    nuevoSpan.classList.add('valor-objetivo');
-                    nuevoSpan.textContent = nuevoValor;
+                const nuevoSpan = document.createElement('span');
+                nuevoSpan.classList.add('valor-objetivo');
+                nuevoSpan.textContent = nuevoValor;
+                inputValor.replaceWith(nuevoSpan);
 
-                    inputValor.replaceWith(nuevoSpan);
+                icon.classList.remove('fa-check', 'text-success');
+                icon.classList.add('fa-edit', 'text-primary');
+                icon.removeEventListener('click', guardarEdicion);
+                icon.addEventListener('click', activarEdicion);
 
-                    // Cambiar icono a editar
-                    icon.classList.remove('fa-check', 'text-success');
-                    icon.classList.add('fa-edit', 'text-primary');
+                document.getElementById('objetivos_json').value = JSON.stringify(datosObjetivos);
+            }
 
-                    // Reasignar evento editar
-                    icon.onclick = arguments.callee;
-
-                    // Actualizar input oculto JSON
-                    document.getElementById('objetivos_json').value = JSON.stringify(datosObjetivos);
-                };
-            });
+            icon.addEventListener('click', activarEdicion);
 
             $(div).hide();
             resumenContainer.appendChild(div);

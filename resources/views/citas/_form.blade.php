@@ -5,19 +5,19 @@
 
 <div class="row">
     @if($pac == 1)
-        <div class="col-12 col-md-6 mb-3">
-            <label for="paciente_id" class="form-label">Paciente</label>
-            <select name="paciente_id" id="paciente_id" class="form-select @error('paciente_id') is-invalid @enderror"
-                @if($pac == 1) required @endif>
-                <option value="">Seleccione un paciente</option>
-                @foreach($pacientes as $id => $nombre)
-                    <option value="{{ $id }}" {{ old('paciente_id', $cita->paciente_id ?? '') == $id ? 'selected' : '' }}>
-                        {{ $nombre }}
-                    </option>
-                @endforeach
-            </select>
-            @error('paciente_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-        </div>
+    <div class="col-12 col-md-6 mb-3">
+        <label for="paciente_id" class="form-label">Paciente</label>
+        <select name="paciente_id" id="paciente_id" class="form-select @error('paciente_id') is-invalid @enderror"
+            @if($pac == 1) required @endif>
+            <option value="" disabled selected>Seleccione un paciente</option>
+            @foreach($pacientes as $id => $nombre)
+                <option value="{{ $id }}" {{ old('paciente_id', $cita->paciente_id ?? '') == $id ? 'selected' : '' }}>
+                    {{ $nombre }}
+                </option>
+            @endforeach
+        </select>
+        @error('paciente_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+    </div>
 
         <div class="col-12 col-md-6 mb-3">
             <label for="tratamiento_id" class="form-label">Tratamiento (opcional)</label>
@@ -51,7 +51,7 @@
 
             <label class="text-primary" data-bs-toggle="tooltip" data-bs-placement="right"
                 title="Marca esta casilla si es la primera cita del tratamiento. Si es la única cita, marcarla es opcional.">
-                AYUDA
+                <i class="fas fa-info-circle" style="cursor: pointer;"></i>
             </label>
         </div>
     </div>
@@ -115,3 +115,16 @@
         @error('roles') <div class="text-danger">{{ $message }}</div> @enderror
     </div>
 </div>
+<script>
+    new TomSelect('#paciente_id', {
+    placeholder: 'Seleccione un paciente',
+    allowEmptyOption: true,
+});
+    document.addEventListener('DOMContentLoaded', function () {
+        new TomSelect('#paciente_id', {
+            placeholder: 'Seleccione un paciente o escriba para buscar',
+            allowEmptyOption: true,
+          
+        });
+    });
+</script>

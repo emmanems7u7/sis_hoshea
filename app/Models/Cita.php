@@ -45,6 +45,10 @@ class Cita extends Model
 
         return $this->hasOne(Diagnostico::class, 'tratamiento_id', 'tratamiento_id');
     }
+    public function diagnosticos()
+    {
+        return $this->hasMany(Diagnostico::class, 'tratamiento_id', 'tratamiento_id');
+    }
 
     // Planes (uno a muchos)
     public function planes()
@@ -62,5 +66,10 @@ class Cita extends Model
     public function objetivosCita()
     {
         return $this->hasMany(ObjetivoCita::class, 'cita_id', 'id');
+    }
+
+    public function examenes()
+    {
+        return $this->hasMany(CitaExamen::class);
     }
 }

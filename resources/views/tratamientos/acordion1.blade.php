@@ -42,21 +42,12 @@
             </p>
         `);
 
-            // Borrar con fadeOut
-            p.find('.fa-trash').on('click', function () {
-                p.fadeOut(400, function () {
-                    datos.splice(index, 1);
-                    renderizarDatos();
-                });
-            });
-
-            // Editar inline
-            p.find('.fa-edit').on('click', function () {
-                const icon = $(this);
+            // Función para manejar edición
+            function activarEdicion() {
+                const icon = p.find('.fa-edit');
                 const span = p.find('.texto-item');
                 const textoActual = span.text();
 
-                // Evitar abrir varios inputs
                 if (p.find('input').length > 0) return;
 
                 const input = $(`<input type="text" class="form-control form-control-sm" value="${textoActual}">`);
@@ -64,35 +55,45 @@
                 input.focus();
 
                 icon.removeClass('fa-edit text-primary').addClass('fa-check text-success');
+                icon.off('click').on('click', guardarEdicion);
+            }
 
-                // Cambiar a guardar
-                icon.off('click').on('click', function () {
-                    const nuevoTexto = input.val().trim();
-                    if (nuevoTexto === '') {
-                        alertify.error('El texto no puede estar vacío.');
-                        input.focus();
-                        return;
-                    }
-                    // Actualizar array datos
-                    datos[index] = nuevoTexto;
+            // Función para guardar edición
+            function guardarEdicion() {
+                const icon = p.find('.fa-check');
+                const input = p.find('input');
+                const nuevoTexto = input.val().trim();
 
-                    input.replaceWith(`<span class="texto-item flex-grow-1">${nuevoTexto}</span>`);
-                    icon.removeClass('fa-check text-success').addClass('fa-edit text-primary');
+                if (nuevoTexto === '') {
+                    alertify.error('El texto no puede estar vacío.');
+                    input.focus();
+                    return;
+                }
 
-                    // Volver a evento editar
-                    icon.off('click').on('click', arguments.callee);
+                datos[index] = nuevoTexto;
+                input.replaceWith(`<span class="texto-item flex-grow-1">${nuevoTexto}</span>`);
+                icon.removeClass('fa-check text-success').addClass('fa-edit text-primary');
+                icon.off('click').on('click', activarEdicion);
 
-                    // Actualizar input oculto
-                    document.getElementById('datos_json').value = JSON.stringify(datos);
+                document.getElementById('datos_json').value = JSON.stringify(datos);
+            }
+
+            // Evento eliminar
+            p.find('.fa-trash').on('click', function () {
+                p.fadeOut(400, function () {
+                    datos.splice(index, 1);
+                    renderizarDatos();
                 });
             });
+
+            // Evento editar inicial
+            p.find('.fa-edit').on('click', activarEdicion);
 
             // Actualizar input oculto en cada render
             document.getElementById('datos_json').value = JSON.stringify(datos);
             contenedor.append(p.hide().fadeIn(400));
         });
     }
-
 
     $('#btn-agregar').on('click', () => {
 

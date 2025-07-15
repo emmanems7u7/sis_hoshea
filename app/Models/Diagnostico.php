@@ -24,5 +24,10 @@ class Diagnostico extends Model
     {
         return $this->hasMany(Diagnostico::class);
     }
+    public function catalogo()
+    {
+        return $this->belongsTo(Catalogo::class, 'cod_diagnostico', 'catalogo_codigo');
+
+    }
 }
 

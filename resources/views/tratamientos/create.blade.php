@@ -23,7 +23,11 @@
     </div>
 
     <div class="card mt-3 ">
+        <div class="card-header">
+            <h5>Agregar Datos del Tratamiento</h5>
+        </div>
         <div class="card-body">
+
             <form method="POST" action="{{ route('tratamientos.store') }}" id="form-tratamiento">
                 @csrf
                 @include('tratamientos._form')
@@ -60,8 +64,8 @@
         const usuariosMap = {
             @foreach($usuarios as $id => $nombre)
                 '{{ $id }}': '{{ addslashes($nombre) }}',
-            @endforeach
-                                                                                                                                                                                                                                                                                                                };
+            @endforeach 
+            };
     </script>
 
     <script src="{{ asset('js/citas.js') }}"></script>

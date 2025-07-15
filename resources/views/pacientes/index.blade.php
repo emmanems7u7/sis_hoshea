@@ -80,8 +80,8 @@
                     </table>
                 </div>
 
-                <div class="mt-3">
-                    {{ $pacientes->links() }}
+                <div class="d-flex justify-content-center">
+                    {{ $pacientes->links('pagination::bootstrap-4') }}
                 </div>
             @else
                 <p class="text-muted">No hay pacientes registrados.</p>

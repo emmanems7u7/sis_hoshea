@@ -9,6 +9,14 @@ use App\Models\Tratamiento;
 use App\Models\Diagnostico;
 use App\Models\ObjetivoCita;
 use App\Models\User;
+use App\Models\CitaExamen;
+use Carbon\Carbon;
+use App\Models\Catalogo;
+use App\Models\Configuracion;
+
+
+use App\Exports\ExportPDF;
+
 use Illuminate\Http\Request;
 use App\Interfaces\CatalogoInterface;
 
@@ -474,5 +482,136 @@ class CitaController extends Controller
                 ];
             }),
         ]);
+    }
+
+    public function store_hoja(Request $request, $cita)
+    {
+        // dd($request);
+        $cita = Cita::findOrFail($cita);
+
+        $cita->examenes()->delete();
+
+
+        $examenesSeleccionados = $request->input('examenes', []);
+
+        foreach ($examenesSeleccionados as $examenId) {
+
+            $examen = CitaExamen::create([
+                'cita_id' => $cita->id,
+                'examen' => $examenId,
+                'examen_otro' => null,
+            ]);
+        }
+
+        if ($request->filled('examen_otro_check') && $request->filled('examen_otro_texto')) {
+
+            $examen = CitaExamen::create([
+                'cita_id' => $cita->id,
+                'examen_id' => null,
+                'examen_otro' => $request->input('examen_otro_texto'),
+            ]);
+        }
+        return redirect()->back()->with('status', 'Se guardó la hoja correctamente.');
+
+    }
+    public function getExamenes($id)
+    {
+        $cita = Cita::with('examenes')->findOrFail($id);
+
+        $examenesSeleccionados = $cita->examenes
+            ->whereNotNull('examen')
+            ->pluck('examen');
+
+        $examenOtro = $cita->examenes
+            ->whereNotNull('examen_otro')
+            ->pluck('examen_otro')
+            ->first();
+
+        return response()->json([
+            'examenes' => $examenesSeleccionados,
+            'examen_otro' => $examenOtro
+        ]);
+    }
+    public function update_hoja(Request $request, $cita)
+    {
+        $cita = Cita::findOrFail($cita);
+
+
+        $cita->examenes()->delete();
+
+
+        $examenesSeleccionados = $request->input('examenes', []);
+        foreach ($examenesSeleccionados as $examenId) {
+            CitaExamen::create([
+                'cita_id' => $cita->id,
+                'examen' => $examenId,
+                'examen_otro' => null,
+            ]);
+        }
+
+
+        if ($request->filled('examen_otro_check') && $request->filled('examen_otro_texto')) {
+            CitaExamen::create([
+                'cita_id' => $cita->id,
+                'examen' => null,
+                'examen_otro' => $request->input('examen_otro_texto'),
+            ]);
+        }
+
+        return redirect()->back()->with('status', 'La hoja fue actualizada correctamente.');
+    }
+    public function exportPDFCita(cita $cita)
+    {
+
+        $user = auth()->user();
+
+        $fecha = Carbon::now()->format('d-m-Y H:i:s');
+
+        $tratamiento = Tratamiento::with('paciente', 'citas.examenes')->find($cita->tratamiento_id);
+        $objetivos = Catalogo::where('categoria_id', 9)->get();
+        $diagnosticos = Catalogo::where('categoria_id', 6)->get();
+        $planes = Catalogo::where('categoria_id', 10)->get();
+
+        $path = public_path('logo.png');
+
+        if (file_exists($path)) {
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $data = file_get_contents($path);
+            $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        } else {
+            $base64 = null;
+        }
+
+        $cita = Cita::with(
+            'diagnosticos',
+            'planes',
+            'datosCita',
+            'objetivosCita',
+            'examenes'
+        )->find($cita->id);
+        $config = Configuracion::first();
+        $firma = $config->firma;
+        //dd($cita);
+        return ExportPDF::exportPdf(
+            'tratamientos.exportar_resumen',
+            [
+                'objetivos' => $objetivos,
+                'diagnosticos' => $diagnosticos,
+                'planes' => $planes,
+                'tratamiento' => $tratamiento,
+                'cita' => $cita,
+                'user' => $user,
+                'fecha' => $fecha,
+                'logo_base64' => $base64,
+                'firma' => $firma,
+
+                'export' => 'gestion_tratamiento'
+            ],
+            'tratamiento',
+            false,
+            [
+                'margin_bottom' => 25,
+            ]
+        );
     }
 }

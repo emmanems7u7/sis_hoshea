@@ -4,7 +4,17 @@ function getNombreUsuarioById(id) {
 }
 function agregar_cita() {
 
+    const yaExistePrimeraCita = citasData.some(cita => cita.primera_cita === 1);
 
+    const checkPrimeraCita = document.getElementById('primera_cita').checked;
+
+    if (yaExistePrimeraCita && checkPrimeraCita) {
+        alertify.error('Solo puede haber una primera cita.');
+        return; 
+    }
+    const checkbox = document.getElementById('primera_cita');
+    checkbox.checked = false;   
+    checkbox.disabled = true;   
     // Capturar datos básicos
     let nuevaCita = {
 
@@ -12,7 +22,7 @@ function agregar_cita() {
         duracion: $('#duracion').val(),
         estado: $('#estado').val(),
         observaciones: $('#observaciones').val(),
-        primera_cita: document.getElementById('primera_cita').checked ? 1 : 0,
+        primera_cita:  checkPrimeraCita ? 1 : 0,
         usuarios: [],
         roles: []
     };
@@ -82,10 +92,14 @@ function agregar_cita() {
 
     // 2) Debe ser <= fecha_fin (si existe)
     if (finTratamiento) {
-        const dFin = new Date(finTratamiento);
-        // agregar 23:59:59 para incluir todo el día fin
-        dFin.setHours(23, 59, 59, 999);
-
+        const partes = finTratamiento.split('-');
+        const dFin = new Date(partes[0], partes[1] - 1, partes[2], 23, 59, 59, 999); // Local, sin problemas de zona horaria
+    
+        const fechaCita = new Date($('#fecha_hora').val());
+    
+        console.log(fechaCita);
+        console.log(dFin);
+    
         if (fechaCita > dFin) {
             alertify.error('La cita no puede ser posterior al fin del tratamiento.');
             return;
@@ -115,6 +129,7 @@ renderTabla();
 
 // Render tabla
 function renderTabla() {
+ 
     if (citasData.length === 0) {
         $('#citas').html('<p>No hay citas agregadas.</p>');
         return;
@@ -146,11 +161,12 @@ function renderTabla() {
             const rol = cita.roles[index] || '-';
             return `${nombre} (${rol})`;
         }).join(', ');
-
+        const partes = cita.fecha_hora.split('T'); // ["2025-07-13", "21:20"]
+        const fecha = `${partes[0]} ${partes[1]}`;
         html += `
                             <tr data-index="${i}">
 
-                                <td>${cita.fecha_hora}</td>
+                                <td>${fecha}</td>
                                 <td>${cita.duracion || '-'}</td>
                                 <td>${cita.estado}</td>
                                 <td>${cita.observaciones || '-'}</td>
@@ -180,6 +196,7 @@ function limpiarCampos() {
     $('#duracion').val('');
     $('#estado').val('pendiente');
     $('#observaciones').val('');
+
 }
 
 

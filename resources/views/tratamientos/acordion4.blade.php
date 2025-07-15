@@ -82,60 +82,57 @@
             </div>
         `);
 
-            // Evento para eliminar con animación
+            // Eliminar
             div.find('.fa-trash').on('click', function () {
-                div.fadeOut(300, function () {
+                div.fadeOut(300, () => {
                     planes.splice(index, 1);
                     renderPlanes();
                 });
             });
 
-            // Evento para editar descripción inline con textarea
-            div.find('.fa-edit').on('click', function () {
-                const icon = $(this);
+            const icon = div.find('.fa-edit');
+
+            // Función editar
+            function activarEdicion() {
                 const descripcionSpan = div.find('.descripcion-plan');
 
-                // Evitar abrir textarea si ya está en modo edición
-                if (div.find('textarea').length > 0) return;
+                if (div.find('textarea').length > 0) return; // ya en edición
 
                 const descripcionActual = descripcionSpan.text();
-
-                // Crear textarea en vez de input
                 const textarea = $(`<textarea class="form-control form-control-sm" rows="4">${descripcionActual}</textarea>`);
                 descripcionSpan.replaceWith(textarea);
                 textarea.focus();
 
-                // Cambiar icono editar a check (guardar)
                 icon.removeClass('fa-edit text-primary').addClass('fa-check text-success');
+                icon.off('click').on('click', guardarEdicion);
+            }
 
-                // Cambiar evento a guardar
-                icon.off('click').on('click', function () {
-                    const nuevoDescripcion = textarea.val().trim();
-                    if (nuevoDescripcion === '') {
-                        alertify.error('La descripción no puede estar vacía.');
-                        textarea.focus();
-                        return;
-                    }
-                    // Actualizar array
-                    planes[index].descripcion = nuevoDescripcion;
+            // Función guardar
+            function guardarEdicion() {
+                const textarea = div.find('textarea');
+                const nuevaDescripcion = textarea.val().trim();
 
-                    // Restaurar span con nuevo texto
-                    textarea.replaceWith(`<span class="descripcion-plan">${nuevoDescripcion}</span>`);
+                if (nuevaDescripcion === '') {
+                    alertify.error('La descripción no puede estar vacía.');
+                    textarea.focus();
+                    return;
+                }
 
-                    // Cambiar icono a editar
-                    icon.removeClass('fa-check text-success').addClass('fa-edit text-primary');
+                planes[index].descripcion = nuevaDescripcion;
 
-                    // Reasignar evento editar
-                    icon.off('click').on('click', arguments.callee);
+                const nuevoSpan = $(`<span class="descripcion-plan">${nuevaDescripcion}</span>`);
+                textarea.replaceWith(nuevoSpan);
 
-                    // Actualizar input oculto JSON
-                    document.getElementById('planes_json').value = JSON.stringify(planes);
-                });
-            });
+                icon.removeClass('fa-check text-success').addClass('fa-edit text-primary');
+                icon.off('click').on('click', activarEdicion);
+
+                document.getElementById('planes_json').value = JSON.stringify(planes);
+            }
+
+            icon.on('click', activarEdicion);
 
             // Actualizar input oculto en cada render
             document.getElementById('planes_json').value = JSON.stringify(planes);
-
             contenedor.append(div.hide().fadeIn(300));
         });
     }
@@ -146,38 +143,5 @@
         renderPlanes();
     }
 
-    $(document).ready(function () {
 
-        $('#btn-agregar_diagnostico').on('click', function (e) {
-            e.preventDefault();
-            const descripcion = $('#diagnostico').val().trim();
-
-            if (descripcion === '') {
-                alertify.error('El campo no puede estar vacío.');
-                return;
-            }
-
-            $.ajax({
-                url: '{{ route("diagnostico.store_ajax") }}',
-                method: 'POST',
-                data: {
-                    descripcion: descripcion,
-                    _token: '{{ csrf_token() }}'
-                },
-                success: function (response) {
-                    if (response.success) {
-                        // Agregar nueva opción al select
-                        const newOption = new Option(response.descripcion, response.id, true, true);
-                        $('#cod_diagnostico').append(newOption).trigger('change');
-
-                        $('#diagnostico').val('');
-                        alertify.success('Diagnóstico agregado con éxito.');
-                    }
-                },
-                error: function (xhr) {
-                    alertify.error('Error al guardar el diagnóstico.');
-                }
-            });
-        });
-    });
 </script>

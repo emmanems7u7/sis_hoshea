@@ -25,6 +25,8 @@ class ConfiguracionController extends Controller
             'limite_de_sesiones' => $request->input('limite_de_sesiones'),
             'GROQ_API_KEY' => $request->input('GROQ_API_KEY'),
             'mantenimiento' => $request->has('mantenimiento'),
+            'firma' => $request->has('firma'),
+
 
         ]);
 
