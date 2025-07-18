@@ -42,7 +42,11 @@ class CitaController extends Controller
     {
         $pacientes = Paciente::all()->pluck('nombre_completo', 'id');
         $tratamientos = Tratamiento::orderByDesc('fecha_inicio')->pluck('nombre', 'id');
-        $usuarios = User::role(['medico', 'enfermero'])->orderBy('name')->pluck('name', 'id');
+
+
+        $usuarios = User::whereHas('roles') // Solo usuarios que tienen al menos un rol
+            ->orderBy('name')->get();
+
         $breadcrumb = [
             ['name' => 'Citas', 'url' => route('citas.index')],
             ['name' => 'Crear cita', 'url' => '#'],
@@ -102,7 +106,10 @@ class CitaController extends Controller
     {
         $pacientes = Paciente::all()->pluck('nombre_completo', 'id');
         $tratamientos = Tratamiento::orderByDesc('fecha_inicio')->pluck('nombre', 'id');
-        $usuarios = User::role(['medico', 'enfermero'])->orderBy('name')->pluck('name', 'id');
+        $usuariosConRolAdmin = User::role('admin')->pluck('id');
+
+        $usuarios = User::whereHas('roles') // Solo usuarios que tienen al menos un rol
+            ->orderBy('name')->get();
 
         // Obtener datos actuales de usuarios y roles asignados para editar
         $usuariosAsignados = $cita->usuarios->pluck('pivot.rol_en_cita', 'id')->toArray();
@@ -125,6 +132,8 @@ class CitaController extends Controller
 
     public function update(Request $request, Cita $cita)
     {
+
+        // dd($request);
         $validated = $request->validate([
             'paciente_id' => 'required|exists:pacientes,id',
             'tratamiento_id' => 'nullable|exists:tratamientos,id',
@@ -133,10 +142,19 @@ class CitaController extends Controller
             'estado' => 'required|string|max:50',
             'observaciones' => 'nullable|string',
             'usuarios' => 'required|array|min:1',
-            'usuarios.*' => 'exists:users,id',
-            'roles' => 'required|array|min:1',
-            'roles.*' => 'string',
+            'roles' => 'required|array',
         ]);
+
+
+
+        foreach ($validated['usuarios'] as $userId => $valor) {
+            if (empty($validated['roles'][$userId])) {
+                return back()
+                    ->withErrors(['roles' => "Debe asignar un rol para el usuario o usuarios seleccionados."])
+                    ->withInput();
+            }
+        }
+
 
         if ($validated['tratamiento_id']) {
             $tratamiento = Tratamiento::findOrFail($validated['tratamiento_id']);
@@ -625,4 +643,56 @@ class CitaController extends Controller
             ]
         );
     }
+
+    public function exportPDF_Hoja_lab(cita $cita)
+    {
+
+        $user = auth()->user();
+
+        $fecha = Carbon::now()->format('d-m-Y H:i:s');
+
+        $tratamiento = Tratamiento::with('paciente')->find($cita->tratamiento_id);
+
+        $examenes = Catalogo::where('categoria_id', 14)->get();
+
+        $path = public_path('logo.png');
+
+        if (file_exists($path)) {
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $data = file_get_contents($path);
+            $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        } else {
+            $base64 = null;
+        }
+
+        $cita = Cita::with(
+
+            'examenes.catalogo'
+        )->find($cita->id);
+        $config = Configuracion::first();
+        $firma = $config->firma;
+        //dd($cita);
+
+        return ExportPDF::exportPdf(
+            'tratamientos.export_hoja_laboratorio',
+            [
+                'tratamiento' => $tratamiento,
+                'cita' => $cita,
+                'examenes' => $examenes,
+                'user' => $user,
+                'fecha' => $fecha,
+                'logo_base64' => $base64,
+                'firma' => $firma,
+                'export' => 'gestion_tratamiento'
+            ],
+            'tratamiento',
+            false,
+            [
+                'margin_bottom' => 25,
+            ]
+        );
+    }
+
+
+
 }

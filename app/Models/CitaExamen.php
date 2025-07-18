@@ -13,5 +13,9 @@ class CitaExamen extends Model
         'examen_otro',
     ];
 
+    public function catalogo()
+    {
+        return $this->belongsTo(Catalogo::class, 'examen', 'catalogo_codigo');
 
+    }
 }

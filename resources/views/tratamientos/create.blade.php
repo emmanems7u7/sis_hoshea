@@ -21,32 +21,63 @@
 
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-6 order-2 order-md-1">
+            <div class="card mt-3 ">
+                <div class="card-header">
+                    <h5>1. Agregar Datos del Tratamiento</h5>
+                </div>
+                <div class="card-body">
 
-    <div class="card mt-3 ">
-        <div class="card-header">
-            <h5>Agregar Datos del Tratamiento</h5>
+                    <form method="POST" action="{{ route('tratamientos.store') }}" id="form-tratamiento">
+                        @csrf
+                        @include('tratamientos._form')
+
+                        <input type="hidden" id="citas_json" name="citas_json" value="{{ old('citas_json') }}">
+                </div>
+            </div>
+
+            <div class="card mt-2 mb-2 shadow-sm">
+                <div class="card-header">
+                    <h5>2. Agregar citas al tratamiento</h5>
+                </div>
+                <div class="card-body">
+
+                    @include('citas._form')
+                    <a onclick="agregar_cita()" class="btn btn-primary">Agregar Cita</a>
+
+                </div>
+            </div>
         </div>
-        <div class="card-body">
 
-            <form method="POST" action="{{ route('tratamientos.store') }}" id="form-tratamiento">
-                @csrf
-                @include('tratamientos._form')
+        <div class="col-md-6 order-1 order-md-2">
 
-                <input type="hidden" id="citas_json" name="citas_json" value="{{ old('citas_json') }}">
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h6>Historial del Paciente Seleccionado</h6>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <h6>Tratamientos</h6>
+                            <div id="paciente_tratamientos"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card mt-2">
+                        <div class="card-body">
+                            <h6>Diagnosticos/Antecedentes</h6>
+                            <div id="paciente_diagnosticos"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="card mt-2 mb-2 shadow-sm">
-        <div class="card-header">
-            <h5>Agregar citas al tratamiento</h5>
-        </div>
-        <div class="card-body">
-
-            @include('citas._form')
-            <a onclick="agregar_cita()" class="btn btn-primary">Agregar Cita</a>
-
-        </div>
-    </div>
 
     <div class="card mt-3">
         <div class="card-body">
@@ -65,7 +96,7 @@
             @foreach($usuarios as $id => $nombre)
                 '{{ $id }}': '{{ addslashes($nombre) }}',
             @endforeach 
-            };
+                                    };
     </script>
 
     <script src="{{ asset('js/citas.js') }}"></script>

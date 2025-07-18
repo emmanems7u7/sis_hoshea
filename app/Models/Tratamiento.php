@@ -30,4 +30,8 @@ class Tratamiento extends Model
     {
         return $this->hasMany(Cita::class);
     }
+    public function diagnosticos()
+    {
+        return $this->hasMany(Diagnostico::class);
+    }
 }

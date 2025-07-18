@@ -54,27 +54,69 @@ class HomeController extends Controller
             $tiempo_cambio_contraseña = 1;
         }
 
-        $citas = Cita::with(['paciente', 'tratamiento', 'usuarios'])->orderBy('fecha_hora', 'desc')->paginate(15);
-        $tratamientos = Tratamiento::with('paciente', 'citas')->orderByDesc('fecha_inicio')->paginate(15);
-
-
         $totalPacientes = Paciente::all()->count();
         $tratamientosActivos = Tratamiento::where('estado', 'Activo')->count();
-        $citasActivas = Cita::where('estado', 'confirmado')->count();
+        $citasActivas = Cita::where('estado', 'confirmada')->count();
         $personalActivo = User::all()->count();
 
+        if (Auth::user()->hasRole('admin')) {
+
+            $citas = Cita::with(['paciente', 'tratamiento', 'usuarios'])
+                ->where('estado', '!=', 'completada')
+                ->where('tratamiento_id', null)
+                ->orderBy('fecha_hora', 'desc')
+                ->paginate(15);
+
+            $tratamientos = Tratamiento::with('paciente', 'citas')->orderByDesc('fecha_inicio')->paginate(15);
+            return view('home', compact(
+                'tratamientos',
+                'citas',
+                'breadcrumb',
+                'tiempo_cambio_contraseña',
+                'totalPacientes',
+                'tratamientosActivos',
+                'citasActivas',
+                'personalActivo',
+            ));
+        } else {
+            $citas = Cita::with(['paciente', 'tratamiento', 'usuarios'])
+                ->where('estado', '!=', 'completada')
+                ->where('tratamiento_id', null)
+                ->whereHas('usuarios', function ($query) {
+                    $query->where('users.id', Auth::id());
+                })
+                ->orderBy('fecha_hora', 'desc')
+                ->paginate(15);
 
 
-        return view('home', compact(
-            'tratamientos',
-            'citas',
-            'breadcrumb',
-            'tiempo_cambio_contraseña',
-            'totalPacientes',
-            'tratamientosActivos',
-            'citasActivas',
-            'personalActivo',
-        ));
+            $citasConTratamientos = Auth::user()->citas()->with('tratamiento')->get();
+
+
+            $tratamientos = $citasConTratamientos
+                ->pluck('tratamiento')
+                ->filter()
+                ->unique('id')
+                ->values();
+
+            return view('home', compact(
+                'tratamientos',
+                'citas',
+                'breadcrumb',
+                'tiempo_cambio_contraseña',
+                'totalPacientes',
+                'tratamientosActivos',
+                'citasActivas',
+                'personalActivo',
+            ));
+        }
+
+
+
+
+
+
+
+
     }
 
 }

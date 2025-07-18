@@ -35,7 +35,7 @@
                 <table class="table table-striped table-bordered align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th>ID</th>
+                            <th>Nº</th>
                             <th>Paciente</th>
                             <th>Tratamiento</th>
                             <th>Fecha y Hora</th>
@@ -46,9 +46,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach($citas as $cita)
+                        @foreach($citas as $index => $cita)
                             <tr>
-                                <td>{{ $cita->id }}</td>
+                                <td>{{ $index + 1 }}</td>
                                 <td>{{ $cita->paciente->nombres }} {{ $cita->paciente->apellidos }}</td>
                                 <td>{{ $cita->tratamiento ? $cita->tratamiento->nombre : '-' }}</td>
                                 <td>{{ $cita->fecha_hora->format('Y-m-d H:i') }}</td>

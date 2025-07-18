@@ -1,11 +1,12 @@
 @extends('layouts.argon')
 
 @section('content')
+
     @if($tiempo_cambio_contraseña != 1)
 
         <div class="row">
             {{-- Pacientes registrados --}}
-            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4  ">
+            <div class="col-md-3 mb-4  ">
                 <div class="card text-black">
                     <div class="card-body p-3">
                         <div class="row">
@@ -29,7 +30,7 @@
             </div>
 
             {{-- Tratamientos activos --}}
-            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="col-md-3 mb-4">
                 <div class="card text-black">
                     <div class="card-body p-3">
                         <div class="row">
@@ -53,7 +54,7 @@
             </div>
 
             {{-- Citas activas --}}
-            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="col-md-3 mb-4">
                 <div class="card text-black">
                     <div class="card-body p-3">
                         <div class="row">
@@ -77,7 +78,7 @@
             </div>
 
             {{-- Personal activo --}}
-            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+            <div class="col-md-3 mb-4">
                 <div class="card text-black">
                     <div class="card-body p-3">
                         <div class="row">
@@ -103,102 +104,10 @@
 
         </div>
 
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card mt-3  text-black">
-                    <div class="card-body">
-                        Proximas Citas
-                        <div class="row g-3">
-                            @foreach ($citas as $cita)
-                                <div class="col-md-12">
-                                    <div class="card shadow-sm h-100 bg-green_tarjetas_claro text-black">
-                                        <div class="card-body d-flex justify-content-between align-items-start">
-                                            <div>
-                                                <h5 class="mb-1">
-                                                    {{ $cita->paciente->nombre_completo }}
-                                                </h5>
-
-                                                <p class="mb-0">
-                                                    <strong>Tratamiento:</strong>
-                                                    {{ $cita->tratamiento->nombre ?? '-' }}
-                                                </p>
-
-                                                <p class="mb-0">
-                                                    <strong>Duración:</strong>
-                                                    {{ $cita->duracion ?? '-' }}
-                                                </p>
-
-                                                <p class="mb-2">
-                                                    <strong>Estado:</strong>
-                                                    {{ ucfirst($cita->estado) }}
-                                                </p>
-                                                <p class="text-green small ms-2">Personal Asignado</p>
-
-                                                @foreach ($cita->usuarios as $usuario)
-                                                    <span class="badge bg-secondary me-1 mb-1">
-                                                        {{ $usuario->name }} ({{ $usuario->pivot->rol_en_cita ?? 'N/A' }})
-                                                    </span>
-                                                @endforeach
-                                            </div>
-
-                                            <span class="text-green small ms-2">
-                                                {{ $cita->fecha_hora->format('Y-m-d H:i') }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mt-3">
-                <div class="card   text-black shadow-sm">
-                    <div class="card-body">
-                        Tratamientos Activos
-                        <div class="row g-3">
-                            @foreach ($tratamientos as $tratamiento)
-                                <div class="col-md-6">
-                                    <div class="card h-100 position-relative shadow-sm  bg-green_tarjetas_claro text-black">
 
 
-                                        <span class="badge bg-primary position-absolute top-0 end-0 m-2">
-                                            {{ ucfirst($tratamiento->estado) }}
-                                        </span>
+        @include('home_admin')
 
-                                        <div class="card-body">
-                                            <h5 class="mb-1 text-black">
-                                                Paciente: {{ $tratamiento->paciente->nombre_completo }}
-                                            </h5>
-
-                                            <p class="mb-0">
-                                                <strong>Tratamiento:</strong> {{ $tratamiento->nombre }}
-                                            </p>
-
-                                            <p class="mb-0">
-                                                <strong>Inicio:</strong> {{ $tratamiento->fecha_inicio->format('Y-m-d') }}
-                                            </p>
-
-                                            <p class="mb-0">
-                                                <strong>Fin:</strong>
-                                                {{ $tratamiento->fecha_fin ? $tratamiento->fecha_fin->format('Y-m-d') : '-' }}
-                                            </p>
-                                            <p class="mb-0">
-                                                <strong>Citas:</strong>
-                                                {{ $tratamiento->citas->count() }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-        </div>
 
 
     @else

@@ -59,7 +59,8 @@ class TratamientoController extends Controller
             ['name' => 'Crear tratamiento', 'url' => '#'],
         ];
         $pac = 0;
-        $usuarios = User::role(['medico', 'enfermero'])->orderBy('name')->pluck('name', 'id');
+        $usuarios = User::whereHas('roles') // Solo usuarios que tienen al menos un rol
+            ->orderBy('name')->get();
         return view('tratamientos.create', compact('usuarios', 'pac', 'pacientes', 'breadcrumb'));
     }
 
@@ -149,9 +150,8 @@ class TratamientoController extends Controller
         $pacientes = Paciente::all()->pluck('nombre_completo', 'id');
 
         // Usuarios (médicos y enfermeros) para asignar a cada cita
-        $usuarios = User::role(['medico', 'enfermero'])
-            ->orderBy('name')
-            ->pluck('name', 'id');
+        $usuarios = User::whereHas('roles') // Solo usuarios que tienen al menos un rol
+            ->orderBy('name')->get();
 
         // Citas del tratamiento serializadas para precargar el JS
         $citasJson = $tratamiento->citas    // relación hasMany

@@ -284,7 +284,7 @@ Route::get('/pacientes/{paciente}', [PacienteController::class, 'show'])->name('
 Route::get('/pacientes/{paciente}/edit', [PacienteController::class, 'edit'])->name('pacientes.edit')->middleware('can:pacientes.editar');
 Route::put('/pacientes/{paciente}', [PacienteController::class, 'update'])->name('pacientes.update')->middleware('can:pacientes.actualizar');
 Route::delete('/pacientes/{paciente}', [PacienteController::class, 'destroy'])->name('pacientes.destroy')->middleware('can:pacientes.eliminar');
-
+Route::get('/pacientes/{paciente}/datos', [PacienteController::class, 'datos'])->name('pacientes.datos');
 
 /* -------------------- INVENTARIO -------------------- */
 Route::prefix('inventario')->group(function () {
@@ -338,6 +338,8 @@ Route::prefix('citas')->name('citas.')->group(function () {
     Route::get('/cita/examenes/{id}', [CitaController::class, 'getExamenes'])->name('examenes');
 
     Route::get('/cita/exportar-gestion/{cita}', [CitaController::class, 'exportPDFCita'])->name('export_gestion');
+
+    Route::get('/cita/exportar-hoja/{cita}', [CitaController::class, 'exportPDF_Hoja_lab'])->name('export_hoja');
 
 
 });

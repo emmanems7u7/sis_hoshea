@@ -68,6 +68,7 @@ class DatabaseSeeder extends Seeder
         //FIN SEEDERS SECCION
 
         //INICIO SEEDERS CATEGORIA
+
         $this->call(SeederCategoria_20250713::class); // listo en prod
 
         //FIN SEEDERS CATEGORIA

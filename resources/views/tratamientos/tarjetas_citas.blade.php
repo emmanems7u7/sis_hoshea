@@ -145,7 +145,7 @@
 
                                             @if($cita->examenes)
                                                 <div class="col-10">
-                                                    <a href="#" class="btn btn-sm btn-danger w-100">
+                                                    <a target="_blank" href="{{ route('citas.export_hoja', $cita) }}"  class="btn btn-sm btn-danger w-100">
                                                          Hoja de Laboratorio
                                                     </a>
                                                 </div>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Catalogo;
 use App\Models\Paciente;
+use App\Models\Diagnostico;
 use Illuminate\Http\Request;
 
 class PacienteController extends Controller
@@ -127,5 +128,40 @@ class PacienteController extends Controller
 
         return redirect()->route('pacientes.index')
             ->with('success', 'Paciente eliminado correctamente.');
+    }
+
+    public function datos(Paciente $paciente)
+    {
+        // Obtener tratamientos activos o todos los tratamientos relacionados a las citas del paciente
+        // Asumiendo que en Cita el tratamiento está relacionado y quieres solo tratamientos activos o vigentes:
+        $tratamientos = $paciente->citas()
+            ->with('tratamiento')
+            ->get()
+            ->pluck('tratamiento')
+            ->filter()
+            ->unique('id')
+            ->values();
+
+        $tratamientoIds = $tratamientos->pluck('id')->toArray();
+
+        $diagnosticos = Diagnostico::whereIn('tratamiento_id', $tratamientoIds)
+            ->with('catalogo') // aseguramos eager loading para eficiencia
+            ->get()
+            ->map(function ($diagnostico) {
+                return [
+                    'id' => $diagnostico->id,
+                    'tratamiento_id' => $diagnostico->tratamiento_id,
+                    'cod_diagnostico' => $diagnostico->cod_diagnostico,
+                    'criterio_clinico' => $diagnostico->criterio_clinico,
+                    'evolucion_diagnostico' => $diagnostico->evolucion_diagnostico,
+                    'fecha_diagnostico' => $diagnostico->fecha_diagnostico,
+                    'nombre_diagnostico' => $diagnostico->catalogo->catalogo_descripcion,
+                ];
+            });
+
+        return response()->json([
+            'tratamientos' => $tratamientos,
+            'diagnosticos' => $diagnosticos,
+        ]);
     }
 }
