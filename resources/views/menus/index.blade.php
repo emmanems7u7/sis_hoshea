@@ -21,36 +21,37 @@
                 <p>No hay secciones disponibles.</p>
             @else
                 <p>Lista de Secciones disponibles en el sistema.</p>
-                <table class="table table-bordered text-black">
-                    <thead>
-                        <tr>
-                            <th class="text-green">Nª</th>
-                            <th class="text-green">Título</th>
-
-                            <th class="text-green">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($secciones as $seccion)
+                <div class="table-responsive">
+                    <table class="table table-bordered text-black">
+                        <thead>
                             <tr>
-                                <td class="text-center text-black">{{ $loop->iteration }}</td>
-                                <td class="text-green">{{ $seccion->titulo }}</td>
+                                <th class="text-green">Nª</th>
+                                <th class="text-green">Título</th>
 
-                                <td class="text-green">
-                                    <a href="{{ route('secciones.edit', $seccion->id) }}" class="btn btn-warning">Editar</a>
-                                    <form action="{{ route('secciones.destroy', $seccion->id) }}" method="POST"
-                                        id="delete-form-{{ $seccion->id }}" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="button" class="btn btn-danger"
-                                            onclick="confirmarEliminacion('delete-form-{{ $seccion->id }}' , '¿Estás seguro de eliminar esta sección?')">Eliminar</button>
-                                    </form>
-                                </td>
+                                <th class="text-green">Acciones</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach($secciones as $seccion)
+                                <tr>
+                                    <td class="text-center text-black">{{ $loop->iteration }}</td>
+                                    <td class="text-green">{{ $seccion->titulo }}</td>
 
+                                    <td class="text-green">
+                                        <a href="{{ route('secciones.edit', $seccion->id) }}" class="btn btn-warning">Editar</a>
+                                        <form action="{{ route('secciones.destroy', $seccion->id) }}" method="POST"
+                                            id="delete-form-{{ $seccion->id }}" style="display:inline;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="button" class="btn btn-danger"
+                                                onclick="confirmarEliminacion('delete-form-{{ $seccion->id }}' , '¿Estás seguro de eliminar esta sección?')">Eliminar</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             @endif
         </div>
     </div>
@@ -69,32 +70,39 @@
             @if($menus->isEmpty())
                 <p>No hay menús disponibles.</p>
             @else
-                <div class="row">
-                    @foreach($menus as $menu)
-                        <div class="col-md-4 mb-3">
-                            <div class="card shadow-sm_claro text-black">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $menu->nombre }}</h5>
-                                    <p class="card-text">Sección: {{ $menu->seccion->titulo }}</p>
-
-                                    <div class="d-flex justify-content-between">
+                <div class="table-responsive">
+                    <table class="table table-bordered text-black">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Sección</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($menus as $menu)
+                                <tr>
+                                    <td>{{ $menu->nombre }}</td>
+                                    <td>{{ $menu->seccion->titulo }}</td>
+                                    <td>
                                         <a href="{{ route('menus.edit', $menu->id) }}" class="btn btn-warning btn-sm">
                                             Editar
                                         </a>
                                         <form action="{{ route('menus.destroy', $menu->id) }}" method="POST"
-                                            id="delete-form-{{ $menu->id }}">
+                                            id="delete-form-{{ $menu->id }}" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" class="btn btn-danger btn-sm"
-                                                onclick="confirmarEliminacion('delete-form-{{ $menu->id }}' , '¿Estás seguro de eliminar este menú?')">
+                                                onclick="confirmarEliminacion('delete-form-{{ $menu->id }}', '¿Estás seguro de eliminar este menú?')">
                                                 Eliminar
                                             </button>
                                         </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+
                 </div>
                 <div class="d-flex justify-content-center">
                     {{ $menus->links('pagination::bootstrap-4') }} <!-- Enlaces de paginación para los menús -->
