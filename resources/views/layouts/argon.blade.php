@@ -64,7 +64,12 @@
         $configuracion = Configuracion::first();
        
     $user = auth()->user();
-        $preferencias = UserPersonalizacion::where('user_id', $user->id)->first();
+
+    if (Schema::hasTable('user_personalizacions')) {
+    $preferencias = UserPersonalizacion::where('user_id', $user->id)->first();
+        } else {
+            $preferencias = null;
+        }
        
         if (Auth::user()->usuario_fecha_ultimo_password) {
             $ultimoCambio = Carbon::parse(Auth::user()->usuario_fecha_ultimo_password);
