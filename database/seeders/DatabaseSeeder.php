@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-
+        $this->call(SeederServicios::class);
         //  $this->call(ConfiguracionCredencialesSeeder::class);
         /*
                 User::factory()->create([
@@ -89,7 +89,7 @@ class DatabaseSeeder extends Seeder
         //FIN SEEDERS MENU
 
         //INICIO SEEDERS PERMISOS
-        $this->call(SeederPermisos_20250718::class);
+        //$this->call(SeederPermisos_20250718::class);
 
         //FIN SEEDERS PERMISOS
 
