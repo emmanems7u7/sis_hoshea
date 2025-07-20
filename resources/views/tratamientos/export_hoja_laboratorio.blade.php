@@ -41,13 +41,21 @@
         .linea2 {
             transform: rotate(-45deg);
         }
+
+        h1 {
+            color: #4e6b48;
+            border-bottom: 2px solid #4e6b48;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
     </style>
 
 
-    <table width="100%" style="border-collapse: collapse; margin-bottom:2px">
+    <table width="100%" style="border-collapse: collapse; margin-bottom:20px">
+
         <tr>
             <td style="text-align: center;">
-                <h1 style="margin: 0;">Hoja de laboratorio</h1>
+                <h1 style="margin: 0;">- Hoja de laboratorio- </h1>
             </td>
             <td style="text-align: right;" width="100">
                 @if($logo_base64)
@@ -85,24 +93,25 @@
     @endphp
 
     <table width="100%" style="font-size: 12px;">
-        @foreach ($examenes as $examen)
+        @foreach ($examenes->chunk(3) as $grupo)
             <tr>
-                <td>
-                    @if(in_array($examen->catalogo_codigo, $codigosMarcados))
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJub25lIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8bGluZSB4MT0iNCIgeTE9IjQiIHgyPSIxMiIgeTI9IjEyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8bGluZSB4MT0iMTIiIHkxPSI0IiB4Mj0iNCIgeTI9IjEyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+"
-                            alt="X" style="width:10px; height:10px;">
+                @foreach ($grupo as $examen)
+                    <td width="33%">
+                        @if(in_array($examen->catalogo_codigo, $codigosMarcados))
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJub25lIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iNCIgeTE9IjQiIHgyPSIxMiIgeTI9IjEyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMTIiIHkxPSI0IiB4Mj0iNCIgeTI9IjEyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4="
+                                alt="X" style="width:10px; height:10px;">
+                        @else
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJub25lIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4="
+                                alt="Cuadro" style="width:10px; height:10px;">
+                        @endif
+                        {{ $examen->catalogo_descripcion }}
+                    </td>
+                @endforeach
 
-
-
-                    @else
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJub25lIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+"
-                            alt="Cuadro" style="width:10px; height:10px;">
-
-                    @endif
-
-
-                    {{ $examen->catalogo_descripcion }}
-                </td>
+                {{-- Rellenar las celdas faltantes si hay menos de 3 en la fila --}}
+                @for ($i = $grupo->count(); $i < 3; $i++)
+                    <td></td>
+                @endfor
             </tr>
         @endforeach
 
@@ -110,15 +119,16 @@
         @foreach ($cita->examenes as $ex)
             @if (!empty($ex->examen_otro))
                 <tr>
-                    <td>
-                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJub25lIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8bGluZSB4MT0iNCIgeTE9IjQiIHgyPSIxMiIgeTI9IjEyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8bGluZSB4MT0iMTIiIHkxPSI0IiB4Mj0iNCIgeTI9IjEyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz4KPC9zdmc+"
+                    <td colspan="3">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBzdHJva2U9ImJsYWNrIiBmaWxsPSJub25lIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iNCIgeTE9IjQiIHgyPSIxMiIgeTI9IjEyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz48bGluZSB4MT0iMTIiIHkxPSI0IiB4Mj0iNCIgeTI9IjEyIiBzdHJva2U9ImJsYWNrIiBzdHJva2Utd2lkdGg9IjIiLz48L3N2Zz4="
                             alt="X" style="width:10px; height:10px;">
-                        Otro: {{ $ex->examen_otro }}
+                        <strong>Otro:</strong> {{ $ex->examen_otro }}
                     </td>
                 </tr>
             @endif
         @endforeach
     </table>
+
 
 
 

@@ -72,4 +72,15 @@ class Cita extends Model
     {
         return $this->hasMany(CitaExamen::class);
     }
+
+
+    public function servicios()
+    {
+        return $this->belongsToMany(Servicio::class)->withTimestamps();
+    }
+
+    public function inventarios()
+    {
+        return $this->belongsToMany(Inventario::class, 'cita_inventario')->withPivot('cantidad');
+    }
 }

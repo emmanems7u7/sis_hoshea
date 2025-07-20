@@ -3,7 +3,7 @@
 @section('content')
 
 
-    <div class="card shadow-lg mx-4 card-profile-bottom  text-black">
+    <div class="card shadow-lg mx-4 card-profile-bottom  ">
         <div class="card-body p-3">
             <p>{{ __('lo.catalogo') }}</p>
             <div class="row mt-3">
@@ -29,7 +29,7 @@
                                                 aria-expanded="false" aria-controls="collapse{{ $index }}">
                                                 <div class="d-flex w-100 justify-content-between">
                                                     <span
-                                                        class="me-auto text-black"><strong>{{ $categoria->nombre }}</strong></span>
+                                                        class="me-auto text-dark "><strong>{{ $categoria->nombre }}</strong></span>
                                                     <span class="badge bg-{{ $categoria->estado ? 'success' : 'secondary' }}">
                                                         {{ $categoria->estado ? 'Activo' : 'Inactivo' }}
                                                     </span>
@@ -40,7 +40,7 @@
 
                                         <div id="collapse{{ $index }}" class="accordion-collapse collapse"
                                             aria-labelledby="heading{{ $index }}" data-bs-parent="#accordionCategorias">
-                                            <div class="accordion-body text-black">
+                                            <div class="accordion-body ">
                                                 <p><strong>{{ __('ui.description_text') }}:</strong>
                                                     {{ $categoria->descripcion }}</p>
 
@@ -75,7 +75,7 @@
 
     </div>
 
-    <div class="card shadow-lg mx-4 card-profile-bottom  text-black">
+    <div class="card shadow-lg mx-4 card-profile-bottom  ">
         <div class="card-body">
             <!-- Formulario de búsqueda -->
             <form action="{{ route('catalogos.index') }}" method="GET" class="mb-3">

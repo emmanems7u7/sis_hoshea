@@ -1,6 +1,7 @@
 <div class="modal fade" id="modal_gestion_vista" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl">
-        <div class="modal-content p-3">
+        <div
+            class="modal-content {{ auth()->user()->preferences && auth()->user()->preferences->dark_mode ? 'bg-dark text-white' : 'bg-white text-dark' }} p-3">
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title mb-0">Detalle de la Cita Completada</h5>
                 <div class="d-flex align-items-center">
@@ -38,11 +39,14 @@
                 <div class="card shadow-sm mb-2 bg-green_tarjetas_claro">
                     <div class="card-body">
                         <div class="row ">
-                            <div class="col-md-6"><label><strong>Criterio Clínico:</strong></label>
-                                <p id="vista_criterio_clinico" class="form-control-plaintext"></p>
+                            <div class="col-md-6"><label class="text-dark"><strong>Criterio Clínico:</strong></label>
+                                <p id="vista_criterio_clinico" class="form-control-plaintext text-black"
+                                    style="color:black !important"></p>
                             </div>
-                            <div class="col-md-6"><label><strong>Evolución Diagnóstico:</strong></label>
-                                <p id="vista_evolucion_diagnostico" class="form-control-plaintext"></p>
+                            <div class="col-md-6"><label class="text-dark"><strong>Evolución
+                                        Diagnóstico:</strong></label>
+                                <p id="vista_evolucion_diagnostico" class="form-control-plaintext text-black"
+                                    style="color:black !important"></p>
                             </div>
                         </div>
                     </div>
@@ -145,7 +149,7 @@
             <div class="border rounded bg-green_tarjetas_claro shadow-sm p-2 h-100">
                 <div class="d-flex justify-content-between align-items-center mb-2">
                     <strong class="small text-muted">${tipoNombre}</strong>
-                    <span class="badge bg-light text-dark">${descripciones.length}</span>
+                    <span class="badge text-dark" >${descripciones.length}</span>
                 </div>
                 <div class="d-flex flex-column gap-1 contenido-descripciones"></div>
             </div>
@@ -156,7 +160,7 @@
 
                     descripciones.forEach(descripcion => {
                         contenedorDescripciones.append(`
-            <div class="small border rounded bg-light px-2 py-1">
+            <div class="small border rounded bg-light px-2 py-1 text-dark" >
                 ${descripcion}
             </div>
         `);

@@ -7,9 +7,10 @@
                     <!-- Acordeón: Citas -->
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingCitas">
-                            <button class="accordion-button collapsed border-bottom" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#collapseCitas" aria-expanded="false"
-                                aria-controls="collapseCitas">
+                            <button
+                                class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro"
+                                type="button" data-bs-toggle="collapse" data-bs-target="#collapseCitas"
+                                aria-expanded="false" aria-controls="collapseCitas">
                                 Citas Activas
                                 <i class="collapse-close fa fa-plus text-xs pt-1 position-absolute end-0 me-3"
                                     aria-hidden="true"></i>
@@ -29,9 +30,10 @@
                     <!-- Acordeón: Tratamientos -->
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="headingTratamientos">
-                            <button class="accordion-button collapsed border-bottom" type="button"
-                                data-bs-toggle="collapse" data-bs-target="#collapseTratamientos" aria-expanded="false"
-                                aria-controls="collapseTratamientos">
+                            <button
+                                class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro"
+                                type="button" data-bs-toggle="collapse" data-bs-target="#collapseTratamientos"
+                                aria-expanded="false" aria-controls="collapseTratamientos">
                                 Tratamientos Activos
                                 <i class="collapse-close fa fa-plus text-xs pt-1 position-absolute end-0 me-3"
                                     aria-hidden="true"></i>
@@ -58,7 +60,8 @@
 
 <div class="modal fade" id="modalDetalle" tabindex="-1" aria-labelledby="modalDetalleLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
+        <div
+            class="modal-content {{ auth()->user()->preferences && auth()->user()->preferences->dark_mode ? 'bg-dark text-white' : 'bg-white text-dark' }}">
             <div class="modal-header">
                 <h5 class="modal-title">Detalle</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -107,7 +110,7 @@
 
             events: [
                 @foreach ($citas as $cita)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {
                         title: '{{ $cita->paciente->nombre_completo }}',
                         start: '{{ $cita->fecha_hora }}',
                         extendedProps: {
@@ -150,7 +153,7 @@
             aspectRatio: 1.35,
             events: [
                 @foreach ($tratamientos as $tratamiento)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {
                         title: '{{ $tratamiento->paciente->nombre_completo }} - {{ $tratamiento->nombre }}',
                         start: '{{ $tratamiento->fecha_inicio->format('Y-m-d') }}',
                         end: '{{ $tratamiento->fecha_fin ? $tratamiento->fecha_fin->addDay()->format('Y-m-d') : $tratamiento->fecha_inicio->format('Y-m-d') }}',

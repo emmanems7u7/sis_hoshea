@@ -58,10 +58,13 @@
         use Carbon\Carbon;
         use App\Models\ConfiguracionCredenciales;
         use App\Models\Configuracion;
-
+        use App\Models\UserPersonalizacion;
         $secciones = Seccion::with('menus')->orderBy('posicion')->get();
         $config = ConfiguracionCredenciales::first();
         $configuracion = Configuracion::first();
+       
+    $user = auth()->user();
+        $preferencias = UserPersonalizacion::where('user_id', $user->id)->first();
        
         if (Auth::user()->usuario_fecha_ultimo_password) {
             $ultimoCambio = Carbon::parse(Auth::user()->usuario_fecha_ultimo_password);
@@ -80,10 +83,24 @@
     @endphp
 </head>
 
-<body class="g-sidenav-show  bg-white2">
+
+
+<style>
+    html, body {
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
+.main-content {
+  height: 100vh; 
+  -webkit-overflow-scrolling: touch; 
+}
+</style>
+<body class="{{ isset($preferencias) && $preferencias->dark_mode ? 'dark-version' : '' }} g-sidenav-show bg-gray-100">
     <div class="min-height-300 bg-green_fondo  text-black position-absolute w-100"></div>
     <aside
-        class="sidenav bg-white  text-black navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4 "
+        class="sidenav {{ isset($preferencias) ? $preferencias->sidebar_type : 'bg-white' }} navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-4"
         id="sidenav-main">
         <div class="sidenav-header">
             <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
@@ -145,6 +162,10 @@
                 </li>
                 @endrole
 
+                @php
+                $color = Auth::user()->preferences->sidebar_color ?? 'primary';
+                @endphp
+
                 <ul id="secciones-list" class="list-unstyled" {{ $configuracion->mantenimiento ? 'data-draggable="false"' : 'data-draggable="true"' }}>
                     @foreach ($secciones as $seccion)
                         @can($seccion->titulo)
@@ -158,7 +179,7 @@
                                     @foreach ($seccion->menus as $menu)
                                         @can($menu->nombre)
                                             <li class="nav-item text-black">
-                                                <a class="nav-link" href="{{ route($menu->ruta) }}">
+                                                <a class="nav-link {{ Route::currentRouteName() === $menu->ruta ? 'active bg-gradient-' . $color : '' }}" href="{{ route($menu->ruta) }}">
                                                     <span class="text-black nav-link-text">{{ $menu->nombre }}</span>
                                                 </a>
                                             </li>
@@ -262,7 +283,47 @@
                                     </div>
                                 </a>
                             </li>
-                           
+
+                            <li class="nav-item px-3 d-flex align-items-center">
+                            <a href="javascript:;" class="nav-link text-white p-0">
+                                <i class="fa fa-cog fixed-plugin-button-nav cursor-pointer"></i>
+                            </a>
+                        </li>
+                        <li class="nav-item px-3 d-flex align-items-center">
+
+<div class="notification-wrapper">
+    <div id="notificationTrigger"
+        class="notification-icon {{ Auth::user()->unreadNotifications->count() > 0 ? 'has-notifications' : '' }}">
+        <i class="fas fa-bell text-warning"></i>
+        @if(Auth::user()->unreadNotifications->count() > 0)
+        <span class="badge">{{ Auth::user()->unreadNotifications->count() }}</span>
+        @endif
+    </div>
+
+    <div id="notificationBox" 
+        class="notification-box {{ isset($preferencias) && $preferencias->dark_mode ? 'dark-version' : '' }}">
+
+        <ul>
+            @forelse(Auth::user()->unreadNotifications as $notification)
+            <li class="list-group-item ">
+                <a style="text-decoration: none;"
+                    onclick="NotificacionLeida(event,'{{  $notification->id}}')"
+                    href="{{  $notification->data['action_url']}}"
+                    class="text-black float-right">
+                    <strong>{{ $notification->created_at->diffForHumans() }}</strong> -
+
+                    {{ $notification->data['message'] }}
+
+                </a>
+
+            </li>
+            @empty
+            <li>No hay notificaciones nuevas</li>
+            @endforelse
+        </ul>
+    </div>
+</div>
+</li>
                         
                         </ul>
                 </div>
@@ -271,26 +332,23 @@
         <!-- End Navbar -->
         <div class="container">
         <div class="main-content position-relative max-height-vh-100 h-100">
+        <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        alertify.set('notifier', 'position', 'top-right');
+
         @foreach (['status' => 'success', 'error' => 'error', 'warning' => 'warning'] as $msg => $type)
             @if(session($msg))
-                <script>
-                    document.addEventListener('DOMContentLoaded', function () {
-                        alertify.set('notifier','position', 'top-right');
-                        alertify.{{ $type }}(@json(session($msg)));
-                    });
-                </script>
+                alertify.{{ $type }}(@json(session($msg)));
             @endif
         @endforeach
 
         @if($errors->any())
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        @foreach ($errors->all() as $error)
-            alertify.error(@json($error));
-        @endforeach
+            @foreach ($errors->all() as $error)
+                alertify.error(@json($error));
+            @endforeach
+        @endif
     });
 </script>
-@endif
 
         @yield('content')
           </div>
@@ -299,6 +357,337 @@
 
         
     </main>
+
+    <div class="fixed-plugin">
+        <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
+            <i class="fa fa-cog py-2"> </i>
+        </a>
+        <div class="card shadow-lg">
+            <div class="card-header pb-0 pt-3 ">
+                <div class="float-start">
+                    <h5 class="mt-3 mb-0">Personaliza como quieres ver el sistema</h5>
+
+                </div>
+                <div class="float-end mt-4">
+                    <button class="btn btn-link text-dark p-0 fixed-plugin-close-button">
+                        <i class="fa fa-close"></i>
+                    </button>
+                </div>
+                <!-- End Toggle Button -->
+            </div>
+            <hr class="horizontal dark my-1">
+            <div class="card-body pt-sm-3 pt-0 overflow-auto">
+                <!-- Sidebar Backgrounds -->
+                <div>
+                    <h6 class="mb-0">Color de selector en menu</h6>
+                </div>
+                <a href="javascript:void(0)" class="switch-trigger background-color">
+                    <div class="badge-colors my-2 text-start">
+                        <span class="badge filter bg-gradient-primary active" data-color="primary"
+                            onclick="sidebarColor(this)"></span>
+                        <span class="badge filter bg-gradient-dark" data-color="dark"
+                            onclick="sidebarColor(this)"></span>
+                        <span class="badge filter bg-gradient-info" data-color="info"
+                            onclick="sidebarColor(this)"></span>
+                        <span class="badge filter bg-gradient-success" data-color="success"
+                            onclick="sidebarColor(this)"></span>
+                        <span class="badge filter bg-gradient-warning" data-color="warning"
+                            onclick="sidebarColor(this)"></span>
+                        <span class="badge filter bg-gradient-danger" data-color="danger"
+                            onclick="sidebarColor(this)"></span>
+                    </div>
+                </a>
+                <!-- Sidenav Type -->
+                <div class="mt-3">
+                    <h6 class="mb-0">Tipo de menu lateral</h6>
+                    <p class="text-sm">Puedes seleccionar entre 2 tipos</p>
+                </div>
+                <div class="d-flex">
+                    <button
+                        class="btn bg-gradient-primary w-100 px-3 mb-2 {{ isset($preferencias) && $preferencias->sidebar_type == 'bg-white' ? 'active' : '' }}
+"
+                        data-class="bg-white" onclick="sidebarType(this)">Claro</button>
+                    <button
+                        class="btn bg-gradient-primary w-100 px-3 mb-2 {{ isset($preferencias) && $preferencias->sidebar_type == 'bg-default' ? 'active' : '' }}"
+                        data-class="bg-default" onclick="sidebarType(this)">Oscuro</button>
+
+
+                </div>
+                <p class="text-sm d-xl-none d-block mt-2">You can change the sidenav type just on desktop view.</p>
+                <!-- Navbar Fixed -->
+                <div class="d-flex my-3">
+                    <h6 class="mb-0">Cabecera de Rutas</h6>
+                    <div class="form-check form-switch ps-0 ms-auto my-auto">
+                        <input class="form-check-input mt-1 ms-auto" type="checkbox" id="navbarFixed"
+                            onclick="navbarFixed(this)">
+                    </div>
+                </div>
+                <hr class="horizontal dark my-sm-4">
+                <div class="mt-2 mb-5 d-flex">
+                    <h6 class="mb-0">Claro / Oscuro</h6>
+                    <div class="form-check form-switch ps-0 ms-auto my-auto">
+                        <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version"
+                            onclick="darkMode(this)" {{ isset($preferencias) && $preferencias->dark_mode ? 'checked' : '' }}>>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    
+    <script>
+        function sidebarColor(a) {
+          
+            var parent = document.querySelector(".nav-link.active");
+            var color = a.getAttribute("data-color");
+
+            // Limpiar clases anteriores
+            [
+                'primary', 'dark', 'info', 'success', 'warning', 'danger'
+            ].forEach(function (c) {
+                parent.classList.remove('bg-gradient-' + c);
+            });
+
+            // Agregar nuevo color
+            parent.classList.add('bg-gradient-' + color);
+
+            // Marcar badge activo
+            document.querySelectorAll('.badge.filter').forEach(function (el) {
+                el.classList.remove('active');
+            });
+            a.classList.add('active');
+
+            // Guardar en backend
+            fetch('/guardar-color-sidebar', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ color: color })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('Color guardado con éxito');
+                    }
+                });
+        }
+
+
+        function sidebarType(e) {
+            const selectedType = e.getAttribute("data-class");
+            // Enviar al backend con fetch/AJAX
+            fetch('/user/personalizacion/sidebar-type', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                },
+                body: JSON.stringify({ sidebar_type: selectedType }),
+            }).then(res => {
+                if (!res.ok) throw new Error('Error al guardar personalización');
+                return res.json();
+            }).then(data => {
+                console.log('Guardado con éxito');
+            }).catch(err => {
+                console.error(err);
+            });
+            for (
+                var t = e.parentElement.children, s = e.getAttribute("data-class"),
+                n = document.querySelector("body"),
+                a = document.querySelector("body:not(.dark-version)"),
+                n = n.classList.contains("dark-version"),
+                i = [], r = 0;
+                r < t.length; r++)t[r].classList.remove("active"), i.push(t[r].getAttribute("data-class")); e.classList.contains("active") ? e.classList.remove("active") : e.classList.add("active"); for (var l, o, c, d = document.querySelector(".sidenav"), r = 0; r < i.length; r++)d.classList.remove(i[r]); if (d.classList.add(s), "bg-transparent" == s || "bg-white" == s) { var u = document.querySelectorAll(".sidenav .text-white:not(.nav-link-text):not(.active)"); for (let e = 0; e < u.length; e++)u[e].classList.remove("text-white"), u[e].classList.add("text-dark") } else { var f = document.querySelectorAll(".sidenav .text-dark"); for (let e = 0; e < f.length; e++)f[e].classList.add("text-white"), f[e].classList.remove("text-dark") } if ("bg-transparent" == s && n) { f = document.querySelectorAll(".navbar-brand .text-dark"); for (let e = 0; e < f.length; e++)f[e].classList.add("text-white"), f[e].classList.remove("text-dark") } "bg-transparent" != s && "bg-white" != s || !a ? (o = (l = document.querySelector(".navbar-brand-img")).src).includes("logo-ct-dark.png") && (c = o.replace("logo-ct-dark", "logo-ct"), l.src = c) : (o = (l = document.querySelector(".navbar-brand-img")).src).includes("logo-ct.png") && (c = o.replace("logo-ct", "logo-ct-dark"), l.src = c), "bg-white" == s && n && (o = (l = document.querySelector(".navbar-brand-img")).src).includes("logo-ct.png") && (c = o.replace("logo-ct", "logo-ct-dark"), l.src = c)
+
+
+
+
+        }
+    </script>
+
+
+    <script>
+        function darkMode(el) {
+            var check;
+            if (el.checked) {
+                check = 1;
+            }
+            else {
+
+                check = 0;
+            }
+            fetch('/user/preferences', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    dark_mode: check
+                })
+            });
+            const body = document.getElementsByTagName('body')[0];
+            const hr = document.querySelectorAll('div:not(.sidenav) > hr');
+            const hr_card = document.querySelectorAll('div:not(.bg-gradient-dark) hr');
+            const text_btn = document.querySelectorAll('button:not(.btn) > .text-dark');
+            const text_span = document.querySelectorAll('span.text-dark, .breadcrumb .text-dark');
+            const text_span_white = document.querySelectorAll('span.text-white, .breadcrumb .text-white');
+            const text_strong = document.querySelectorAll('strong.text-dark');
+            const text_strong_white = document.querySelectorAll('strong.text-white');
+            const text_nav_link = document.querySelectorAll('a.nav-link.text-dark');
+            const text_nav_link_white = document.querySelectorAll('a.nav-link.text-white');
+            const secondary = document.querySelectorAll('.text-secondary');
+            const bg_gray_100 = document.querySelectorAll('.bg-gray-100');
+            const bg_gray_600 = document.querySelectorAll('.bg-gray-600');
+            const btn_text_dark = document.querySelectorAll('.btn.btn-link.text-dark, .material-symbols-rounded.text-dark');
+            const btn_text_white = document.querySelectorAll('.btn.btn-link.text-white, .material-symbols-rounded.text-white');
+            const card_border = document.querySelectorAll('.card.border');
+            const card_border_dark = document.querySelectorAll('.card.border.border-dark');
+
+            const svg = document.querySelectorAll('g');
+
+            if (!el.getAttribute("checked")) {
+                body.classList.add('dark-version');
+                for (var i = 0; i < hr.length; i++) {
+                    if (hr[i].classList.contains('dark')) {
+                        hr[i].classList.remove('dark');
+                        hr[i].classList.add('light');
+                    }
+                }
+
+                for (var i = 0; i < hr_card.length; i++) {
+                    if (hr_card[i].classList.contains('dark')) {
+                        hr_card[i].classList.remove('dark');
+                        hr_card[i].classList.add('light');
+                    }
+                }
+                for (var i = 0; i < text_btn.length; i++) {
+                    if (text_btn[i].classList.contains('text-dark')) {
+                        text_btn[i].classList.remove('text-dark');
+                        text_btn[i].classList.add('text-white');
+                    }
+                }
+                for (var i = 0; i < text_span.length; i++) {
+                    if (text_span[i].classList.contains('text-dark')) {
+                        text_span[i].classList.remove('text-dark');
+                        text_span[i].classList.add('text-white');
+                    }
+                }
+                for (var i = 0; i < text_strong.length; i++) {
+                    if (text_strong[i].classList.contains('text-dark')) {
+                        text_strong[i].classList.remove('text-dark');
+                        text_strong[i].classList.add('text-white');
+                    }
+                }
+                for (var i = 0; i < text_nav_link.length; i++) {
+                    if (text_nav_link[i].classList.contains('text-dark')) {
+                        text_nav_link[i].classList.remove('text-dark');
+                        text_nav_link[i].classList.add('text-white');
+                    }
+                }
+                for (var i = 0; i < secondary.length; i++) {
+                    if (secondary[i].classList.contains('text-secondary')) {
+                        secondary[i].classList.remove('text-secondary');
+                        secondary[i].classList.add('text-white');
+                        secondary[i].classList.add('opacity-8');
+                    }
+                }
+                for (var i = 0; i < bg_gray_100.length; i++) {
+                    if (bg_gray_100[i].classList.contains('bg-gray-100')) {
+                        bg_gray_100[i].classList.remove('bg-gray-100');
+                        bg_gray_100[i].classList.add('bg-gray-600');
+                    }
+                }
+                for (var i = 0; i < btn_text_dark.length; i++) {
+                    btn_text_dark[i].classList.remove('text-dark');
+                    btn_text_dark[i].classList.add('text-white');
+                }
+                for (var i = 0; i < svg.length; i++) {
+                    if (svg[i].hasAttribute('fill')) {
+                        svg[i].setAttribute('fill', '#fff');
+                    }
+                }
+                for (var i = 0; i < card_border.length; i++) {
+                    card_border[i].classList.add('border-dark');
+                }
+                el.setAttribute("checked", "true");
+            } else {
+                body.classList.remove('dark-version');
+                for (var i = 0; i < hr.length; i++) {
+                    if (hr[i].classList.contains('light')) {
+                        hr[i].classList.add('dark');
+                        hr[i].classList.remove('light');
+                    }
+                }
+                for (var i = 0; i < hr_card.length; i++) {
+                    if (hr_card[i].classList.contains('light')) {
+                        hr_card[i].classList.add('dark');
+                        hr_card[i].classList.remove('light');
+                    }
+                }
+                for (var i = 0; i < text_btn.length; i++) {
+                    if (text_btn[i].classList.contains('text-white')) {
+                        text_btn[i].classList.remove('text-white');
+                        text_btn[i].classList.add('text-dark');
+                    }
+                }
+                for (var i = 0; i < text_span_white.length; i++) {
+                    if (text_span_white[i].classList.contains('text-white') && !text_span_white[i].closest('.sidenav') && !text_span_white[i].closest('.card.bg-gradient-dark')) {
+                        text_span_white[i].classList.remove('text-white');
+                        text_span_white[i].classList.add('text-dark');
+                    }
+                }
+                for (var i = 0; i < text_strong_white.length; i++) {
+                    if (text_strong_white[i].classList.contains('text-white')) {
+                        text_strong_white[i].classList.remove('text-white');
+                        text_strong_white[i].classList.add('text-dark');
+                    }
+                }
+                for (var i = 0; i < text_nav_link_white.length; i++) {
+                    if (text_nav_link_white[i].classList.contains('text-white') && !text_nav_link_white[i].closest('.sidenav')) {
+                        text_nav_link_white[i].classList.remove('text-white');
+                        text_nav_link_white[i].classList.add('text-dark');
+                    }
+                }
+                for (var i = 0; i < secondary.length; i++) {
+                    if (secondary[i].classList.contains('text-white')) {
+                        secondary[i].classList.remove('text-white');
+                        secondary[i].classList.remove('opacity-8');
+                        secondary[i].classList.add('text-dark');
+                    }
+                }
+                for (var i = 0; i < bg_gray_600.length; i++) {
+                    if (bg_gray_600[i].classList.contains('bg-gray-600')) {
+                        bg_gray_600[i].classList.remove('bg-gray-600');
+                        bg_gray_600[i].classList.add('bg-gray-100');
+                    }
+                }
+                for (var i = 0; i < svg.length; i++) {
+                    if (svg[i].hasAttribute('fill')) {
+                        svg[i].setAttribute('fill', '#252f40');
+                    }
+                }
+                for (var i = 0; i < btn_text_white.length; i++) {
+                    if (!btn_text_white[i].closest('.card.bg-gradient-dark')) {
+                        btn_text_white[i].classList.remove('text-white');
+                        btn_text_white[i].classList.add('text-dark');
+                    }
+                }
+                for (var i = 0; i < card_border_dark.length; i++) {
+                    card_border_dark[i].classList.remove('border-dark');
+                }
+                el.removeAttribute("checked");
+
+
+            }
+        };
+
+    </script>
+
     
  
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
@@ -367,7 +756,7 @@
         }
     </script>
 
-    <script src="{{asset('argon/js/argon-dashboard.min.js?v=2.1.0')}}"></script>
+    <script src="{{asset('argon/js/argon-dashboard.js?v=2.1.0')}}"></script>
 
 </body>
 

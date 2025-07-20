@@ -18,6 +18,7 @@ class ConfiguracionController extends Controller
 
     public function update(Request $request)
     {
+
         $config = Configuracion::first();
 
         $config->update([
@@ -26,10 +27,9 @@ class ConfiguracionController extends Controller
             'GROQ_API_KEY' => $request->input('GROQ_API_KEY'),
             'mantenimiento' => $request->has('mantenimiento'),
             'firma' => $request->has('firma'),
-
-
+            'hoja_export' => $request->input('hoja_export')
         ]);
 
-        return redirect()->back()->with('success', 'Configuración actualizada.');
+        return redirect()->back()->with('status', 'Configuración actualizada.');
     }
 }

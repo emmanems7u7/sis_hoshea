@@ -24,4 +24,13 @@ class Inventario extends Model
     {
         return $this->belongsTo(Categoria::class);
     }
+    public function citas()
+    {
+        return $this->belongsToMany(Cita::class)->withTimestamps();
+    }
+    public function inventario()
+    {
+        return $this->belongsToMany(Inventario::class)->withPivot(['cantidad'])->withTimestamps();
+    }
+
 }

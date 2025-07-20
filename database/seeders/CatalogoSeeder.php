@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\Catalogo;
 use Illuminate\Support\Facades\DB;
+
 class CatalogoSeeder extends Seeder
 {
     public function run()

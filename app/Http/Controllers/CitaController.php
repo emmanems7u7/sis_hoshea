@@ -65,11 +65,17 @@ class CitaController extends Controller
             'estado' => 'required|string|max:50',
             'observaciones' => 'nullable|string',
             'usuarios' => 'required|array|min:1',
-            'usuarios.*' => 'exists:users,id',
-            'roles' => 'required|array|min:1',
-            'roles.*' => 'string',
+            'roles' => 'required|array',
         ]);
 
+
+        foreach ($validated['usuarios'] as $userId => $valor) {
+            if (empty($validated['roles'][$userId])) {
+                return back()
+                    ->withErrors(['roles' => "Debe asignar un rol para el usuario o usuarios seleccionados."])
+                    ->withInput();
+            }
+        }
         // Validar que el paciente del tratamiento coincida con el paciente_id (si hay tratamiento)
         if ($validated['tratamiento_id']) {
             $tratamiento = Tratamiento::findOrFail($validated['tratamiento_id']);

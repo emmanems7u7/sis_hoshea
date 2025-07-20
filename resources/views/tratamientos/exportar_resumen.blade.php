@@ -13,18 +13,16 @@
         margin-bottom: 20px;
     }
 
-    .info-header {
-        margin-bottom: 25px;
-    }
+
 
     .info-header p {
         margin: 2px 0;
     }
 </style>
-<table width="100%" style="border-collapse: collapse; margin-bottom:50px">
+<table width="100%" style="border-collapse: collapse; margin-bottom:20px">
     <tr>
         <td style="text-align: center;">
-            <h1 style="margin: 0;">Hoja de evolución</h1>
+            <h1 style="margin: 0;">- Hoja de evolución- </h1>
         </td>
         <td style="text-align: right;" width="100">
             @if($logo_base64)

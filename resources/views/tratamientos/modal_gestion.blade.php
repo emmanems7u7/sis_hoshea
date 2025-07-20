@@ -7,7 +7,8 @@
             <input type="hidden" name="planes_json" id="planes_json">
             <input type="hidden" name="datos_json" id="datos_json">
             <input type="hidden" name="objetivos_json" id="objetivos_json">
-            <div class="modal-content">
+            <div
+                class="modal-content {{ auth()->user()->preferences && auth()->user()->preferences->dark_mode ? 'bg-dark text-white' : 'bg-white text-dark' }}">
 
                 <div class="modal-header d-flex justify-content-between align-items-center">
                     <h5 class="modal-title" id="modal_gestionLabel">Gestionar Cita</h5>

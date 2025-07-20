@@ -2,7 +2,8 @@
 <div class="modal fade" id="modal_hoja" tabindex="-1" role="dialog" aria-labelledby="modal_hojaLabel" aria-hidden="true"
     data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-        <div class="modal-content ">
+        <div
+            class="modal-content {{ auth()->user()->preferences && auth()->user()->preferences->dark_mode ? 'bg-dark text-white' : 'bg-white text-dark' }} ">
             <div class="modal-header d-flex justify-content-between align-items-center">
                 <h5 class="modal-title mb-0">Hoja de laboratorio</h5>
                 <div class="d-flex align-items-center">

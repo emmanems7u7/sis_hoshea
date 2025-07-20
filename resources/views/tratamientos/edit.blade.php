@@ -36,9 +36,10 @@
     </div>
     <div class="d-flex justify-content-center gap-3 mt-4">
 
+        <a href="{{ route('tratamientos.index') }}" class="btn btn-secondary">Cancelar</a>
+
 
         <button type="submit" class="btn btn-success">Actualizar</button>
-        <a href="{{ route('tratamientos.index') }}" class="btn btn-secondary">Cancelar</a>
         </form>
     </div>
 
@@ -47,9 +48,14 @@
             @foreach($usuarios as $id => $nombre)
                 '{{ $id }}': '{{ addslashes($nombre) }}',
             @endforeach
-                                                                                                                                                                                                                                                                                                                };
+                                    };
     </script>
 
     <script src="{{ asset('js/citas.js') }}"></script>
+
+    <script>
+        citasData = {!! $citasJson !!};
+
+    </script>
 
 @endsection

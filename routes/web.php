@@ -21,7 +21,8 @@ use App\Http\Controllers\CitaController;
 use App\Http\Controllers\DiagnosticoController;
 use App\Http\Controllers\ArtisanController;
 
-
+use App\Http\Controllers\UserPersonalizacionController;
+use App\Http\Controllers\ServicioController;
 //Artisan 
 
 
@@ -39,6 +40,11 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+
+
+Route::post('/guardar-color-sidebar', [UserPersonalizacionController::class, 'guardarSidebarColor'])->middleware('auth');
+Route::post('/user/personalizacion/sidebar-type', [UserPersonalizacionController::class, 'updateSidebarType'])->middleware('auth');
+Route::post('/user/preferences', [UserPersonalizacionController::class, 'updateDark'])->middleware('auth');
 
 
 Auth::routes();
@@ -306,10 +312,10 @@ Route::prefix('tratamientos')->name('tratamientos.')->group(function () {
     Route::put('/{tratamiento}', [TratamientoController::class, 'update'])->name('update')->middleware('can:tratamientos.actualizar');
     Route::delete('/{tratamiento}', [TratamientoController::class, 'destroy'])->name('destroy')->middleware('can:tratamientos.eliminar');
     Route::get('/actuales', [TratamientoController::class, 'tratamientosFechaHoy'])->name('actuales');
-    Route::get('/administrar/{tratamiento}', [TratamientoController::class, 'administrar'])->name('administrar');
 
     Route::get('/export/pdf', [TratamientoController::class, 'exportPDF'])->name('exportPDF');
 
+    Route::get('/{cita}/gestion/cita', [TratamientoController::class, 'Gestion'])->name('gestion_cita');
 
 });
 
@@ -354,6 +360,22 @@ Route::prefix('tratamientos')->group(function () {
 });
 
 
+
+Route::get('/servicios', [ServicioController::class, 'index'])->name('servicios.index');
+Route::get('/servicios/create', [ServicioController::class, 'create'])->name('servicios.create');
+Route::post('/servicios', [ServicioController::class, 'store'])->name('servicios.store');
+Route::get('/servicios/{servicio}/edit', [ServicioController::class, 'edit'])->name('servicios.edit');
+Route::put('/servicios/{servicio}', [ServicioController::class, 'update'])->name('servicios.update');
+Route::delete('/servicios/{servicio}', [ServicioController::class, 'destroy'])->name('servicios.destroy');
+
+Route::get('/servicios/{servicio}/edit', [ServicioController::class, 'edit'])->name('servicios.edit');
+Route::get('/servicios/asignar/{cita}/', [ServicioController::class, 'asignar'])->name('servicios.asignar');
+Route::post('/guardar/asignacion/{cita}', [ServicioController::class, 'guardar_asignacion'])->name('servicios.guardar_asignacion');
+Route::get('/servicios/show/{cita}', [ServicioController::class, 'show'])->name('servicios.show');
+
+Route::get('/servicios/recibo/{cita}', [ServicioController::class, 'recibo'])->name('servicios.recibo');
+
+
 Route::get('/departamentos/{paisCodigo}', function ($paisCodigo) {
     return \App\Models\Catalogo::where('catalogo_parent', $paisCodigo)
         ->where('catalogo_estado', 1)
@@ -368,3 +390,6 @@ Route::get('/ciudades/{departamentoCodigo}', function ($departamentoCodigo) {
 
 Route::get('tratamientos/{tratamiento}/diagnosticos/{diagnostico}/edit', [DiagnosticoController::class, 'edit'])->name('diagnosticos.edit');
 Route::put('tratamientos/{tratamiento}/diagnosticos/{diagnostico}', [DiagnosticoController::class, 'update'])->name('diagnosticos.update');
+
+
+

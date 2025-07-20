@@ -24,7 +24,7 @@
                 <div class="d-flex flex-wrap gap-2 mb-3">
                     <div class="d-flex flex-wrap gap-2">
                         @foreach ($objetivos as $obj)
-                            <button type="button" class="btn btn-sm btn-outline-primary btn-objetivo px-2 py-1"
+                            <button type="button" class="btn btn-sm btn-primary btn-objetivo px-2 py-1"
                                 data-codigo="{{ $obj->catalogo_codigo }}" data-nombre="{{ $obj->catalogo_descripcion }}">
                                 {{ $obj->catalogo_descripcion }}
                             </button>

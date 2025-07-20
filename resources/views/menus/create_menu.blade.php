@@ -1,7 +1,8 @@
 <div class="modal fade " id="crearMenuModal" tabindex="-1" aria-labelledby="crearMenuModalLabel" aria-hidden="true"
     data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog ">
-        <div class="modal-content  text-black">
+        <div
+            class="modal-content {{ auth()->user()->preferences && auth()->user()->preferences->dark_mode ? 'bg-dark text-white' : 'bg-white text-dark' }}  text-black">
             <div class="modal-header">
                 <h5 class="modal-title text-black" id="crearMenuModalLabel">Crear Menú</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

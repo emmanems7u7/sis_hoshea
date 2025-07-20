@@ -5,7 +5,7 @@
     <select class="form-select" id="categoria" name="categoria" required>
         <option value="">-- {{ __('ui.select_one_text') }} {{ __('lo.categoria') }} --</option>
         @foreach ($categorias as $categoria)
-            <option value="{{ $categoria->id }}" {{ old('categoria', $catalogo->catalogo_tipo_codigo ?? '') == $categoria->codigo ? 'selected' : '' }}>
+            <option value="{{ $categoria->id }}" {{ (isset($catalogo) && old('categoria', $catalogo->catalogo_tipo_codigo) == $categoria->codigo) ? 'selected' : '' }}>
                 {{ $categoria->nombre }} | {{ $categoria->estado ? 'Activo' : 'Inactivo' }}
             </option>
         @endforeach

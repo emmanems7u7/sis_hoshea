@@ -11,7 +11,8 @@ class Configuracion extends Model
         'limite_de_sesiones',
         'GROQ_API_KEY',
         'mantenimiento',
-        'firma'
+        'firma',
+        'hoja_export'
     ];
 
     protected $table = 'configuracion';

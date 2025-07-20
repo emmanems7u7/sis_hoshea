@@ -130,12 +130,18 @@ class TratamientoController extends Controller
             ]);
 
 
-            if (!empty($citaData['usuarios']) && !empty($citaData['roles'])) {
+            if (!empty($citaData['usuarios'])) {
                 $syncData = [];
-                foreach ($citaData['usuarios'] as $index => $userId) {
-                    $rol = $citaData['roles'][$index] ?? null;
-                    $syncData[$userId] = ['rol_en_cita' => $rol];
+
+                foreach ($citaData['usuarios'] as $usuario) {
+                    $userId = $usuario['id'] ?? null;
+                    $rol = $usuario['rol'] ?? null;
+
+                    if ($userId) {
+                        $syncData[$userId] = ['rol_en_cita' => $rol];
+                    }
                 }
+
                 $cita->usuarios()->sync($syncData);
             }
         }
@@ -154,7 +160,7 @@ class TratamientoController extends Controller
             ->orderBy('name')->get();
 
         // Citas del tratamiento serializadas para precargar el JS
-        $citasJson = $tratamiento->citas    // relación hasMany
+        $citasJson = $tratamiento->citas
             ->map(function ($cita) {
                 return [
                     'fecha_hora' => $cita->fecha_hora->format('Y-m-d\TH:i'),
@@ -162,8 +168,13 @@ class TratamientoController extends Controller
                     'estado' => $cita->estado,
                     'observaciones' => $cita->observaciones,
                     'primera_cita' => $cita->primera_cita,
-                    'usuarios' => $cita->usuarios->pluck('id'),               // relación belongsToMany
-                    'roles' => $cita->usuarios->pluck('pivot.rol_en_cita'),
+                    'usuarios' => $cita->usuarios->map(function ($usuario) {
+                        return [
+                            'id' => $usuario->id,
+                            'nombre' => $usuario->nombre_completo,
+                            'rol' => $usuario->pivot->rol_en_cita,
+                        ];
+                    }),
                 ];
             })
             ->values()
@@ -250,12 +261,18 @@ class TratamientoController extends Controller
                 'gestionado' => 0,
             ]);
 
-            if (!empty($citaData['usuarios']) && !empty($citaData['roles'])) {
+            if (!empty($citaData['usuarios'])) {
                 $syncData = [];
-                foreach ($citaData['usuarios'] as $index => $userId) {
-                    $rol = $citaData['roles'][$index] ?? null;
-                    $syncData[$userId] = ['rol_en_cita' => $rol];
+
+                foreach ($citaData['usuarios'] as $usuario) {
+                    $userId = $usuario['id'] ?? null;
+                    $rol = $usuario['rol'] ?? null;
+
+                    if ($userId) {
+                        $syncData[$userId] = ['rol_en_cita' => $rol];
+                    }
                 }
+
                 $cita->usuarios()->sync($syncData);
             }
         }
@@ -325,19 +342,29 @@ class TratamientoController extends Controller
         );
     }
 
-    function administrar(Tratamiento $tratamiento)
+
+
+
+    function Gestion(Cita $cita)
     {
         // Breadcrumb
+
+        $tratamiento = Tratamiento::find($cita->tratamiento_id);
+
         $breadcrumb = [
             ['name' => 'Inicio', 'url' => route('home')],
             ['name' => 'Tratamientos', 'url' => route('tratamientos.index')],
-            ['name' => 'Administrar tratamiento', 'url' => '#'],
+            ['name' => 'Gestión Cita', 'url' => ''],
+
         ];
+
+
         $objetivos = Catalogo::where('categoria_id', 9)->get();
         $diagnosticos = Catalogo::where('categoria_id', 6)->get();
         $planes = Catalogo::where('categoria_id', 10)->get();
         $examenes = Catalogo::where('categoria_id', 14)->get();
-        return view('tratamientos.administrar', compact('examenes', 'planes', 'diagnosticos', 'objetivos', 'breadcrumb', 'tratamiento'));
+
+        return view('tratamientos.gestion_cita_t', compact('cita', 'examenes', 'planes', 'diagnosticos', 'objetivos', 'breadcrumb', 'tratamiento'));
     }
 
     public function exportPDFGestion(Tratamiento $tratamiento)

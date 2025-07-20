@@ -1,7 +1,4 @@
 
-function getNombreUsuarioById(id) {
-    return usuariosMap[id] || 'Desconocido';
-}
 function agregar_cita() {
 
     const yaExistePrimeraCita = citasData.some(cita => cita.primera_cita === 1);
@@ -24,25 +21,49 @@ function agregar_cita() {
         observaciones: $('#observaciones').val(),
         primera_cita:  checkPrimeraCita ? 1 : 0,
         usuarios: [],
-        roles: []
+      
     };
 
     // Capturar usuarios asignados y sus roles
     // El checkbox y el input rol están en el mismo índice (orden en DOM)
-    nuevaCita.usuarios = [];
-    nuevaCita.roles = [];
-
-    $('input[name="usuarios[]"]').each(function (index) {
-        if ($(this).is(':checked')) {
-            nuevaCita.usuarios.push($(this).val());
-
-            // Capturamos el rol en la misma posición
-            let rolVal = $('input[name="roles[]"]').eq(index).val();
-            nuevaCita.roles.push(rolVal);
-        }
-    });
 
 
+   nuevaCita.usuarios = [];
+
+   let validacionCorrecta = true;
+
+   $('input[name^="usuarios["]').each(function () {
+       if ($(this).is(':checked')) {
+           let id = $(this).val();
+           let nombre = $('label[for="' + $(this).attr('id') + '"]').text().trim();
+           let rolInput = $('input[name="roles[' + id + ']"]');
+           let rol = rolInput.val().trim();
+   
+           if (rol === '') {
+               // Mostrar mensaje de error o marcar el input
+               rolInput.addClass('is-invalid'); // Bootstrap: marca el input en rojo
+               alertify.error('Por favor, completa la responsabilidad de ' + nombre);
+               validacionCorrecta = false;
+               return false; // Sale del each()
+           } else {
+               rolInput.removeClass('is-invalid'); // Limpia error anterior si aplica
+           }
+   
+           nuevaCita.usuarios.push({
+               id: id,
+               nombre: nombre,
+               rol: rol
+           });
+       }
+   });
+   
+  
+   if (!validacionCorrecta) {
+   
+       return;
+   }
+   
+  
 
     // Validar fecha y hora
     if (!nuevaCita.fecha_hora) {
@@ -65,13 +86,6 @@ function agregar_cita() {
     if (nuevaCita.usuarios.length === 0) {
         alertify.error('Debe seleccionar al menos un usuario asignado.');
         return;
-    }
-
-    for (let i = 0; i < nuevaCita.roles.length; i++) {
-        if (!nuevaCita.roles[i] || nuevaCita.roles[i].trim() === '') {
-            alertify.error('Debe ingresar el rol para cada usuario asignado.');
-            return;
-        }
     }
 
 
@@ -142,7 +156,7 @@ function renderTabla() {
                                  <tr>
 
                                      <th>Fecha y Hora</th>
-                                     <th>Duración</th>
+                                     <th>Duración (Min.)</th>
                                      <th>Estado</th>
                                      <th>Observaciones</th>
                                      <th>Primera Cita</th>
@@ -153,31 +167,34 @@ function renderTabla() {
                              <tbody>
                  `;
 
-    citasData.forEach((cita, i) => {
-        // Usuarios y roles concatenados
-        // Iterar usuarios con roles
-        let usuariosConRoles = cita.usuarios.map((usuarioId, index) => {
-            const nombre = usuariosMap[usuarioId] || 'Desconocido';
-            const rol = cita.roles[index] || '-';
-            return `${nombre} (${rol})`;
-        }).join(', ');
-        const partes = cita.fecha_hora.split('T'); // ["2025-07-13", "21:20"]
-        const fecha = `${partes[0]} ${partes[1]}`;
-        html += `
-                            <tr data-index="${i}">
-
-                                <td>${fecha}</td>
-                                <td>${cita.duracion || '-'}</td>
-                                <td>${cita.estado}</td>
-                                <td>${cita.observaciones || '-'}</td>
-                                <td>${cita.primera_cita == 1 ? 'Primera Cita' : '' || '-'}</td>
-
-                                <td>${usuariosConRoles}</td>
-
-                                <td><button class="btn btn-danger btn-sm btn-eliminar" data-index="${i}">Eliminar</button></td>
-                            </tr>
-                        `;
-    });
+                 citasData.forEach((cita, i) => {
+                    // Construir la lista de usuarios con nombre y rol
+                    let usuariosConRoles = cita.usuarios.map(usuario => {
+                        const nombre = usuario.nombre || 'Desconocido';
+                        const rol = usuario.rol || '-';
+                        return `- ${nombre} (${rol})`;
+                    }).join('<br>');
+                
+                    const partes = cita.fecha_hora.split('T'); // ["2025-07-13", "21:20"]
+                    const fecha = `${partes[0]} ${partes[1]}`;
+                
+                    html += `
+                        <tr data-index="${i}">
+                            <td>${fecha}</td>
+                            <td>${cita.duracion  || '-'}</td>
+                            <td>${cita.estado}</td>
+                            <td>${cita.observaciones || '-'}</td>
+                            <td>${cita.primera_cita == 1 ? 'Primera Cita' : '-'}</td>
+                            <td>${usuariosConRoles}</td>
+                            <td>
+                                <button class="btn btn-danger btn-sm btn-eliminar" data-index="${i}">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                
 
     html += `
                                 </tbody>
@@ -187,8 +204,7 @@ function renderTabla() {
 
     $('#citas').html(html);
     $('#citas_json').val(JSON.stringify(citasData));
-    console.log(JSON.stringify(citasData))
-    console.log($('#citas_json').val())
+
 }
 // Limpiar campos que se van a agregar al array
 function limpiarCampos() {
@@ -198,8 +214,6 @@ function limpiarCampos() {
     $('#observaciones').val('');
 
 }
-
-
 
 
 // Eliminar fila del array y refrescar tabla

@@ -94,4 +94,8 @@ class User extends Authenticatable
             ->withPivot('rol_en_cita')
             ->withTimestamps();
     }
+    public function preferences()
+    {
+        return $this->hasOne(UserPersonalizacion::class);
+    }
 }

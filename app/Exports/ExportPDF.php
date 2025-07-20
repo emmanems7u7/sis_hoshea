@@ -17,6 +17,13 @@ class ExportPDF
     ): Response {
         $html = View::make($view, $data)->render();
 
+        $configuracion = \App\Models\Configuracion::first();
+
+        // Si hay configuración de hoja, agrégala automáticamente
+        if ($configuracion && !isset($mpdfConfig['format'])) {
+            $mpdfConfig['format'] = $configuracion->hoja_export ?? 'A4';
+        }
+
         $mpdf = new \Mpdf\Mpdf($mpdfConfig);
 
         // Footer con numeración de página centrado
