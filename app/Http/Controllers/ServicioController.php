@@ -226,7 +226,7 @@ class ServicioController extends Controller
             }
 
             // Guardar la relación en la tabla pivote cita_inventario
-            $cita->inventario()->sync($dataSincronizada);
+            $cita->inventarios()->sync($dataSincronizada);
         }
 
         return redirect()->back()->with('status', 'Servicios e inventario asignados correctamente.');
