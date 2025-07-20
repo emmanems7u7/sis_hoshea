@@ -332,7 +332,7 @@
 
         <ul>
         @php
-            use Illuminate\Support\Facades\Schema;
+       
 
             $notificaciones = collect();
             if (Schema::hasTable('notifications') && Auth::check()) {
