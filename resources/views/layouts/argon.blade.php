@@ -331,22 +331,29 @@
         class="notification-box {{ isset($preferencias) && $preferencias->dark_mode ? 'dark-version' : '' }}">
 
         <ul>
-            @forelse(Auth::user()->unreadNotifications as $notification)
-            <li class="list-group-item ">
+        @php
+            use Illuminate\Support\Facades\Schema;
+
+            $notificaciones = collect();
+            if (Schema::hasTable('notifications') && Auth::check()) {
+                $notificaciones = Auth::user()->unreadNotifications;
+            }
+        @endphp
+
+        @forelse($notificaciones as $notification)
+            <li class="list-group-item">
                 <a style="text-decoration: none;"
-                    onclick="NotificacionLeida(event,'{{  $notification->id}}')"
-                    href="{{  $notification->data['action_url']}}"
-                    class="text-black float-right">
+                onclick="NotificacionLeida(event,'{{ $notification->id }}')"
+                href="{{ $notification->data['action_url'] }}"
+                class="text-black float-right">
                     <strong>{{ $notification->created_at->diffForHumans() }}</strong> -
-
                     {{ $notification->data['message'] }}
-
                 </a>
-
             </li>
-            @empty
+        @empty
             <li>No hay notificaciones nuevas</li>
-            @endforelse
+        @endforelse
+
         </ul>
     </div>
 </div>
