@@ -169,15 +169,15 @@
 
                 @php
 
-             $color = 'primary'; // valor por defecto
-                use Illuminate\Support\Facades\Schema;
-                if (Schema::hasTable('user_personalizacions') && Auth::check()) {
-                    $user = Auth::user();
+                     $color = 'primary'; // valor por defecto
+                 
+                    if (Schema::hasTable('user_personalizacions') && Auth::check()) {
+                        $user = Auth::user();
 
-                    if (method_exists($user, 'preferences') && $user->preferences) {
-                        $color = $user->preferences->sidebar_color ?? 'primary';
+                        if (method_exists($user, 'preferences') && $user->preferences) {
+                            $color = $user->preferences->sidebar_color ?? 'primary';
+                        }
                     }
-                }
                 @endphp
 
                 <ul id="secciones-list" class="list-unstyled" {{ $configuracion->mantenimiento ? 'data-draggable="false"' : 'data-draggable="true"' }}>
