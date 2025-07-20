@@ -306,13 +306,26 @@
                         <li class="nav-item px-3 d-flex align-items-center">
 
 <div class="notification-wrapper">
-    <div id="notificationTrigger"
-        class="notification-icon {{ Auth::user()->unreadNotifications->count() > 0 ? 'has-notifications' : '' }}">
-        <i class="fas fa-bell text-warning"></i>
-        @if(Auth::user()->unreadNotifications->count() > 0)
-        <span class="badge">{{ Auth::user()->unreadNotifications->count() }}</span>
-        @endif
-    </div>
+@php
+    use Illuminate\Support\Facades\Schema;
+
+    $tieneNotificaciones = false;
+    $cantidadNotificaciones = 0;
+
+    if (Schema::hasTable('notifications') && Auth::check()) {
+        $cantidadNotificaciones = Auth::user()->unreadNotifications->count();
+        $tieneNotificaciones = $cantidadNotificaciones > 0;
+    }
+@endphp
+
+<div id="notificationTrigger"
+     class="notification-icon {{ $tieneNotificaciones ? 'has-notifications' : '' }}">
+    <i class="fas fa-bell text-warning"></i>
+    @if($tieneNotificaciones)
+        <span class="badge">{{ $cantidadNotificaciones }}</span>
+    @endif
+</div>
+
 
     <div id="notificationBox" 
         class="notification-box {{ isset($preferencias) && $preferencias->dark_mode ? 'dark-version' : '' }}">
