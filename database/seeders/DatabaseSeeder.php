@@ -14,7 +14,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        $this->call(ConfiguracionCredencialesSeeder::class);
+        //  $this->call(ConfiguracionCredencialesSeeder::class);
         /*
                 User::factory()->create([
                     'name' => 'admin',
@@ -84,11 +84,12 @@ class DatabaseSeeder extends Seeder
 
         //INICIO SEEDERS MENU
 
-        $this->call(SeederMenu_20250718::class);
+        //  $this->call(SeederMenu_20250718::class);
 
         //FIN SEEDERS MENU
 
         //INICIO SEEDERS PERMISOS
+        $this->call(SeederPermisos_20250718::class);
 
         //FIN SEEDERS PERMISOS
 
