@@ -5,8 +5,8 @@
 
     <div class="row">
         <!-- Columna de botones -->
-        <div class="col-md-5 shadow-sm mb-2">
-            <div class="card mb-3">
+        <div class="col-md-5 ">
+            <div class="card  shadow-sm mb-2">
                 <div class="card-body">
                     <h5>Módulo de Pacientes</h5>
                     <a href="{{ route('pacientes.create') }}" class="btn btn-primary mb-1">Nuevo Paciente</a>
@@ -15,8 +15,8 @@
         </div>
 
         <!-- Columna de descripción -->
-        <div class="col-md-7 shadow-sm mb-2">
-            <div class="card">
+        <div class="col-md-7 ">
+            <div class="card shadow-sm mb-2">
                 <div class="card-body">
                     <h5>Información sobre Pacientes</h5>
                     <small>- En este módulo puedes gestionar la información de los pacientes registrados en el
@@ -30,6 +30,7 @@
             </div>
         </div>
     </div>
+
 
 
 

@@ -14,8 +14,9 @@
                 @csrf
                 @method('PUT')
                 @include('pacientes._form')
-                <button type="submit" class="btn btn-primary">Actualizar</button>
                 <a href="{{ route('pacientes.index') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Actualizar</button>
+
             </form>
         </div>
     </div>

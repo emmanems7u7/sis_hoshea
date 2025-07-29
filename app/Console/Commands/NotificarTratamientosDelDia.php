@@ -12,6 +12,7 @@ use App\Mail\EnviarNotificacionPersonal;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use App\Models\ConfCorreo;
+use App\Notifications\NotificacionTratamiento;
 
 class NotificarTratamientosDelDia extends Command
 {
@@ -42,9 +43,10 @@ class NotificarTratamientosDelDia extends Command
 
                     $destinatarios->each(function ($usuario) use ($tratamiento) {
 
-
                         Mail::to($usuario->email)
                             ->queue(new EnviarNotificacionPersonal($tratamiento, $usuario));
+
+                        $usuario->notify(new NotificacionTratamiento($tratamiento));
 
                         Log::info("Email enviado a: {$usuario->email}");
                     });

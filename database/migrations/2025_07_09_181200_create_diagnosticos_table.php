@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('diagnosticos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('tratamiento_id')->constrained()->onDelete('cascade');
+            $table->foreignId('cita_id')->constrained()->onDelete('cascade');
             $table->string('cod_diagnostico', 50)->nullable()->comment('Clave foránea a catalogos.catalogo_codigo');
             $table->foreign('cod_diagnostico')->references('catalogo_codigo')->on('catalogos')
                 ->onUpdate('cascade')

@@ -20,6 +20,8 @@ use App\Http\Controllers\TratamientoController;
 use App\Http\Controllers\CitaController;
 use App\Http\Controllers\DiagnosticoController;
 use App\Http\Controllers\ArtisanController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\BienController;
 
 use App\Http\Controllers\UserPersonalizacionController;
 use App\Http\Controllers\ServicioController;
@@ -40,6 +42,10 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
+//notificaciones
+
+
+Route::get('/notification/{notification}/markAsRead', [NotificationController::class, 'markAsRead'])->name('notification.markAsRead');
 
 
 Route::post('/guardar-color-sidebar', [UserPersonalizacionController::class, 'guardarSidebarColor'])->middleware('auth');
@@ -141,6 +147,10 @@ Route::middleware(['auth', 'can:Configuración'])->group(function () {
         ->name('obtener.correo');
 
 });
+
+Route::get('configuracion_correo', [ConfCorreoController::class, 'index'])->name('configuracion_correo.index');
+Route::put('configuracion_correo', [ConfCorreoController::class, 'update'])->name('configuracion_correo.update');
+
 
 //cambio de contraseña
 Route::middleware(['auth'])->group(function () {
@@ -315,7 +325,13 @@ Route::prefix('tratamientos')->name('tratamientos.')->group(function () {
 
     Route::get('/export/pdf', [TratamientoController::class, 'exportPDF'])->name('exportPDF');
 
-    Route::get('/{cita}/gestion/cita', [TratamientoController::class, 'Gestion'])->name('gestion_cita');
+    Route::get('/{cita}/gestion/cita/{tipo}', [TratamientoController::class, 'Gestion'])->name('gestion_cita');
+    Route::get('/{tratamiento}/finalizar', [TratamientoController::class, 'finalizar'])->name('finalizar')->middleware('can:tratamientos.finalizar');
+
+    Route::post('/tratamientos/{tratamiento}/observaciones', [TratamientoController::class, 'guardarObservacion'])
+        ->name('guardarObservacion');
+
+
 
 });
 
@@ -330,6 +346,7 @@ Route::prefix('citas')->name('citas.')->group(function () {
     Route::put('/', [CitaController::class, 'cambiar_estado'])->name('cambiarEstado')->middleware('can:citas.cambiar_estado');
 
     Route::post('gestion/{cita}', [CitaController::class, 'store_gestion'])->name('gestion');
+
     // Ruta para obtener los datos de una cita para edición (AJAX)
     Route::get('editar-gestion/{cita}', [CitaController::class, 'edit_gestion'])->name('editar_gestion');
 
@@ -347,6 +364,10 @@ Route::prefix('citas')->name('citas.')->group(function () {
 
     Route::get('/cita/exportar-hoja/{cita}', [CitaController::class, 'exportPDF_Hoja_lab'])->name('export_hoja');
 
+    Route::get('/{cita}/gestionar/cita', [CitaController::class, 'Gestion'])->name('gestion_cita');
+
+
+    Route::post('/validar-cita', [CitaController::class, 'validarConflictoAjax'])->name('validar.ajax');
 
 });
 Route::prefix('tratamientos')->group(function () {
@@ -392,4 +413,16 @@ Route::get('tratamientos/{tratamiento}/diagnosticos/{diagnostico}/edit', [Diagno
 Route::put('tratamientos/{tratamiento}/diagnosticos/{diagnostico}', [DiagnosticoController::class, 'update'])->name('diagnosticos.update');
 
 
+
+Route::prefix('biens')->name('biens.')->group(function () {
+    Route::get('/', [BienController::class, 'index'])->name('index');
+    Route::get('/create', [BienController::class, 'create'])->name('create');
+    Route::post('/', [BienController::class, 'store'])->name('store');
+    Route::get('/{bien}/edit', [BienController::class, 'edit'])->name('edit');
+    Route::put('/{bien}', [BienController::class, 'update'])->name('update');
+    Route::delete('/{bien}', [BienController::class, 'destroy'])->name('destroy');
+    Route::get('/export', [BienController::class, 'exportPDFBienes'])->name('export_pdf');
+
+
+});
 

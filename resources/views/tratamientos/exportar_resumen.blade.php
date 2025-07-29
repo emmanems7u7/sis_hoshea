@@ -45,11 +45,19 @@
         <td width="50%" valign="top">
             @include('tratamientos.tabla_datos_paciente')
         </td>
-        <td width="50%" valign="top">
-            @include('tratamientos.tabla_datos_tratamiento')
+        @if ($tratamiento)
+            <td width="50%" valign="top">
+                @include('tratamientos.tabla_datos_tratamiento')
 
 
-        </td>
+            </td>
+        @else
+            <td width="50%" valign="top">
+                @include('tratamientos.tabla_datos_cita')
+
+
+            </td>
+        @endif
     </tr>
 </table>
 <h4

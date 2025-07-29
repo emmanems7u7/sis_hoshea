@@ -72,7 +72,7 @@
         @enderror
     </div>
 
-    <div class="col-12 mb-3">
+    <div class="col-12  col-md-6 mb-3">
         <label for="email">Email</label>
         <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email"
             value="{{ old('email', $paciente?->email ?? '') }}">
@@ -81,23 +81,27 @@
         @enderror
     </div>
 
-    <div class="col-12 mb-3">
-        <label for="direccion">Dirección</label>
-        <input type="text" class="form-control @error('direccion') is-invalid @enderror" id="direccion" name="direccion"
-            value="{{ old('direccion', $paciente?->direccion ?? '') }}">
-        @error('direccion')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
 
     <div class="col-12 col-md-6 mb-3">
         <label for="tipo_documento">Tipo de documento</label>
-        <input type="text" class="form-control @error('tipo_documento') is-invalid @enderror" id="tipo_documento"
-            name="tipo_documento" value="{{ old('tipo_documento', $paciente?->tipo_documento ?? '') }}">
+        <select class="form-control @error('tipo_documento') is-invalid @enderror" name="tipo_documento"
+            id="tipo_documento">
+            <option value="">Seleccione una opción</option>
+            @php
+                $tiposDocumento = ['CI', 'Pasaporte', 'RUC', 'NIT', 'Licencia de conducir', 'DNI extranjero'];
+                $tipoSeleccionado = old('tipo_documento', $paciente?->tipo_documento ?? '');
+            @endphp
+            @foreach ($tiposDocumento as $tipo)
+                <option value="{{ $tipo }}" {{ $tipo == $tipoSeleccionado ? 'selected' : '' }}>
+                    {{ $tipo }}
+                </option>
+            @endforeach
+        </select>
         @error('tipo_documento')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
+
 
     <div class="col-12 col-md-6 mb-3">
         <label for="numero_documento">Número de documento</label>
@@ -145,6 +149,15 @@
         @enderror
     </div>
 
+    <div class="col-12 col-md-6 mb-3">
+        <label for="direccion">Dirección</label>
+        <input type="text" class="form-control @error('direccion') is-invalid @enderror" id="direccion" name="direccion"
+            value="{{ old('direccion', $paciente?->direccion ?? '') }}">
+        @error('direccion')
+            <div class="invalid-feedback">{{ $message }}</div>
+        @enderror
+    </div>
+
     <div class="col-12 mb-3 form-check">
         <input type="checkbox" class="form-check-input @error('activo') is-invalid @enderror" id="activo" name="activo"
             value="1" {{ old('activo', $paciente?->activo ?? true) ? 'checked' : '' }}>
@@ -155,6 +168,8 @@
     </div>
 
 </div>
+
+@include('pacientes.antecedentes')
 
 
 <script>

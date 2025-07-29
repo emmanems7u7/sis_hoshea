@@ -101,23 +101,23 @@
             @endphp
 
             <div class="row g-2 mt-2 text-center">
-            @if($cita->gestionado == 0)
-            <div class="col-12">
-                    <a href="{{ route('servicios.asignar',$cita) }}" class="btn btn-sm btn-dark w-100  flex-column align-items-center py-3">
+          
+            @if ($fechaCita === $fechaHoy)
+                <div class="col-12">
+                    <a href="{{ route('servicios.asignar', $cita) }}" class="btn btn-sm btn-dark w-100 flex-column align-items-center py-3">
                         <i class="fas fa-stethoscope fa-2x mb-2"></i>
                         Agregar Servicios y medicamentos suministrados
                     </a>
                 </div>
             @endif
-
-            @if($cita->gestionado == 1)
+                    
             <div class="col-12">
                     <a href="{{ route('servicios.show',$cita) }}" class="btn btn-sm btn-dark w-100  flex-column align-items-center py-3">
-                        <i class="fas fa-stethoscope fa-2x mb-2"></i>
+                        <i class="fas fa-eye fa-2x mb-2"></i>
                         Ver Servicios y medicamentos suministrados
                     </a>
                 </div>
-            @endif
+           
                
                 <div class="col-12">
                     <a href="#" class="btn btn-sm btn-warning btn-gestionar w-100  flex-column align-items-center py-3"
@@ -141,6 +141,7 @@
                
 
                 @if($cita->gestionado == 1)
+               
                     <div class="col-12">
                         <a href="#" id="btn-editar_{{ $cita->id }}"
                             class="btn-editar-gestion btn btn-sm btn-warning w-100  flex-column align-items-center py-3"
@@ -215,35 +216,29 @@
     </div>
 
 
-    <script>
-
+    @unlessrole('admin')
+<script>
     document.addEventListener('DOMContentLoaded', () => {
-        // Selecciona todos los contadores
         const contadores = document.querySelectorAll('.contador-tiempo-restante');
 
         contadores.forEach(contador => {
             const updatedAtTimestamp = Number(contador.dataset.updatedAt);
             const createdAtTimestamp = Number(contador.dataset.createdAt);
 
-            // Comparar si hubo edición (updatedAt > createdAt)
             if (updatedAtTimestamp <= createdAtTimestamp) {
-                // No hubo edición, mostrar mensaje y deshabilitar botón editar
                 contador.style.display = 'none';
 
                 const citaId = contador.closest('[data-cita-id]')?.dataset.citaId || null;
-
                 const btnEditar = document.getElementById('btn-editar_' + citaId);
-                console.log(citaId)
-                console.log(btnEditar)
+
                 if (btnEditar) {
                     btnEditar.disabled = true;
                     btnEditar.classList.add('disabled');
                 }
 
-                return; // Salir para este contador sin iniciar timer
+                return;
             }
 
-            // Si sí hubo edición, sigue con el contador normal
             const updatedAt = new Date(updatedAtTimestamp);
             const limiteEdicion = new Date(updatedAt.getTime() + 5 * 60 * 1000);
 
@@ -276,6 +271,7 @@
         });
     });
 </script>
+@endunlessrole
 
 <script>
     document.querySelectorAll('.btn-gestionar').forEach(btn => {
@@ -302,12 +298,9 @@
 @include('tratamientos.modal_hoja_lab')
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Botón "Gestionar"
-        document.querySelectorAll('.btn-gestionar').forEach(boton => {
-            boton.addEventListener('click', function () {
-                const citaId = this.dataset.citaId;
-                document.getElementById('btn_accion').textContent = 'Guardar Gestión';
+    function post_gestion(citaId)
+    {
+        document.getElementById('btn_accion').textContent = 'Guardar Gestión';
                 const form = document.getElementById('form-gestion-cita');
                 const baseRoute = @json(route('citas.gestion', ['cita' => 'ID_REEMPLAZO']));
                 form.action = baseRoute.replace('ID_REEMPLAZO', citaId);
@@ -316,6 +309,13 @@
                 if (methodInput) {
                     methodInput.remove();
                 }
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        // Botón "Gestionar"
+        document.querySelectorAll('.btn-gestionar').forEach(boton => {
+            boton.addEventListener('click', function () {
+                const citaId = this.dataset.citaId;
+                post_gestion(citaId);
             });
         });
 

@@ -13,13 +13,18 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\EnviarNotificacionPaciente;
 use App\Exports\ExportExcel;
 use App\Exports\ExportPDF;
-
+use App\Models\Categoria;
+use App\Notifications\CitaTratamientoAsignada;
+use App\Notifications\NotificacionTratamiento;
+use App\Notifications\TratamientoFinalizado;
 use Maatwebsite\Excel\Facades\Excel;
 class TratamientoController extends Controller
 {
     public function index(Request $request)
     {
         $hoy = Carbon::today();
+
+        $estado = $request->get('estado', 'activo');
 
         $tratamientos = Tratamiento::with(['paciente', 'citas.examenes'])
             ->when($request->filled('q'), function ($query) use ($request) {
@@ -33,14 +38,26 @@ class TratamientoController extends Controller
                         );
                     });
             })
+            // Solo aplicar filtro por estado si NO hay filtro 'anteriores'
+            ->when(!$request->has('anteriores'), function ($query) use ($estado) {
+                $query->when($estado === 'activo', function ($q) {
+                    $q->where('estado', 'activo');
+                })
+                    ->when($estado === 'pendiente', function ($q) {
+                        $q->where('estado', 'pendiente');
+                    })
+                    ->when($estado === 'finalizado', function ($q) {
+                        $q->where('estado', 'finalizado');
+                    });
+            })
+            // Filtro para tratamientos anteriores (sin filtrar por estado)
             ->when($request->has('anteriores'), function ($query) use ($hoy) {
                 $query->whereNotNull('fecha_fin')
                     ->whereDate('fecha_fin', '<=', $hoy);
             })
             ->orderByDesc('fecha_inicio')
-            ->paginate(15)
+            ->paginate(10)
             ->withQueryString();
-
 
 
         $breadcrumb = [
@@ -48,6 +65,29 @@ class TratamientoController extends Controller
             ['name' => 'Tratamientos', 'url' => route('tratamientos.index')],
         ];
         return view('tratamientos.index', compact('tratamientos', 'breadcrumb'));
+    }
+
+    public function finalizarTratamientosVencidos()
+    {
+        $hoy = Carbon::today();
+
+        $tratamientosVencidos = Tratamiento::whereNotNull('fecha_fin')
+            ->whereDate('fecha_fin', '<', $hoy)
+            ->where('estado', '!=', 'finalizado')
+            ->get();
+
+        foreach ($tratamientosVencidos as $tratamiento) {
+            $tratamiento->estado = 'finalizado';
+
+            if (!empty($tratamiento->observaciones)) {
+                $tratamiento->observaciones .= ' | Finalizado automáticamente el ' . now()->format('d/m/Y');
+            } else {
+                $tratamiento->observaciones = 'Finalizado automáticamente el ' . now()->format('d/m/Y');
+            }
+
+
+            $tratamiento->save();
+        }
     }
 
     public function create()
@@ -73,7 +113,6 @@ class TratamientoController extends Controller
             'nombre' => 'required|string|max:255',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
-            'estado_tratamiento' => 'required|string|max:50',
             'observaciones_tratamiento' => 'nullable|string',
         ]);
 
@@ -82,7 +121,7 @@ class TratamientoController extends Controller
             'nombre' => $validated['nombre'],
             'fecha_inicio' => $validated['fecha_inicio'],
             'fecha_fin' => $validated['fecha_fin'] ?? null,
-            'estado' => $validated['estado_tratamiento'],
+            'estado' => 'activo',
             'observaciones' => $validated['observaciones_tratamiento'] ?? null,
         ]);
 
@@ -118,7 +157,35 @@ class TratamientoController extends Controller
             }
         }
 
+        $tratamientoInicio = Carbon::parse($tratamiento->fecha_inicio);
+
+        // Paso 1: Verificar si ya hay una marcada como primera cita
+        $yaTienePrimeraCita = collect($citasArray)->contains(fn($cita) => !empty($cita['primera_cita']));
+
+        // Paso 2: Si NO hay una, encontrar la más cercana a la fecha de inicio
+        if (!$yaTienePrimeraCita) {
+            $citasArray = collect($citasArray)
+                ->map(function ($cita) use ($tratamientoInicio) {
+                    $cita['fecha_obj'] = Carbon::parse($cita['fecha_hora']);
+                    $cita['diff_inicio'] = abs($cita['fecha_obj']->diffInSeconds($tratamientoInicio));
+                    return $cita;
+                })
+                ->sortBy('diff_inicio') // más cercana a fecha_inicio
+                ->values()
+                ->map(function ($cita, $index) {
+                    $cita['primera_cita'] = $index === 0; // solo la primera
+                    return $cita;
+                })
+                ->toArray();
+        }
+
+
         foreach ($citasArray as $citaData) {
+
+
+
+
+
             $cita = Cita::create([
                 'paciente_id' => $tratamiento->paciente_id,
                 'tratamiento_id' => $tratamiento->id,
@@ -126,9 +193,8 @@ class TratamientoController extends Controller
                 'duracion' => $citaData['duracion'] ?? null,
                 'estado' => $citaData['estado'],
                 'observaciones' => $citaData['observaciones'] ?? null,
-                'primera_cita' => $citaData['primera_cita'] ?? null,
+                'primera_cita' => $citaData['primera_cita'] ?? false,
             ]);
-
 
             if (!empty($citaData['usuarios'])) {
                 $syncData = [];
@@ -139,6 +205,12 @@ class TratamientoController extends Controller
 
                     if ($userId) {
                         $syncData[$userId] = ['rol_en_cita' => $rol];
+
+                        $usuarioModel = User::find($userId);
+                        if ($usuarioModel) {
+                            $usuarioModel->notify(new NotificacionTratamiento($tratamiento));
+                            $usuarioModel->notify(new CitaTratamientoAsignada($cita));
+                        }
                     }
                 }
 
@@ -203,12 +275,14 @@ class TratamientoController extends Controller
 
     public function update(Request $request, Tratamiento $tratamiento)
     {
+
+
         $validated = $request->validate([
             'paciente_id' => 'required|exists:pacientes,id',
             'nombre' => 'required|string|max:255',
             'fecha_inicio' => 'required|date',
             'fecha_fin' => 'nullable|date|after_or_equal:fecha_inicio',
-            'estado' => 'required|string|max:50',
+            'estado_tratamiento' => 'required|string|max:50',
             'observaciones' => 'nullable|string',
         ]);
 
@@ -217,7 +291,7 @@ class TratamientoController extends Controller
             'nombre' => $validated['nombre'],
             'fecha_inicio' => $validated['fecha_inicio'],
             'fecha_fin' => $validated['fecha_fin'] ?? null,
-            'estado' => $validated['estado'],
+            'estado' => $validated['estado_tratamiento'],
             'observaciones' => $validated['observaciones'] ?? null,
         ]);
 
@@ -271,6 +345,12 @@ class TratamientoController extends Controller
                     if ($userId) {
                         $syncData[$userId] = ['rol_en_cita' => $rol];
                     }
+
+
+                    $usuario = User::find($userId);
+
+                    $usuario->notify(new NotificacionTratamiento($tratamiento));
+                    $usuario->notify(new CitaTratamientoAsignada($cita));
                 }
 
                 $cita->usuarios()->sync($syncData);
@@ -343,28 +423,61 @@ class TratamientoController extends Controller
     }
 
 
+    public function finalizar(Tratamiento $tratamiento)
+    {
+        $tratamiento->estado = 'finalizado';
+        $tratamiento->save();
 
+        $adminUsers = User::role('admin')->get();
+        foreach ($adminUsers as $adminUser) {
+            $adminUser->notify(new TratamientoFinalizado($tratamiento));
+        }
 
-    function Gestion(Cita $cita)
+        return redirect()->back()->with('status', 'Tratamiento Finalizado correctamente');
+    }
+
+    function Gestion(Cita $cita, $tipo)
     {
         // Breadcrumb
 
         $tratamiento = Tratamiento::find($cita->tratamiento_id);
+        if ($tipo == 1) {
+            $breadcrumb = [
+                ['name' => 'Inicio', 'url' => route('home')],
 
-        $breadcrumb = [
-            ['name' => 'Inicio', 'url' => route('home')],
-            ['name' => 'Tratamientos', 'url' => route('tratamientos.index')],
-            ['name' => 'Gestión Cita', 'url' => ''],
+                ['name' => 'Tratamientos', 'url' => route('tratamientos.index')],
+                ['name' => 'Gestión Cita', 'url' => ''],
 
-        ];
+            ];
+        } else {
+            $breadcrumb = [
+                ['name' => 'Inicio', 'url' => route('home')],
+
+                ['name' => 'Citas', 'url' => route('citas.index')],
+                ['name' => 'Gestión Cita', 'url' => ''],
+
+            ];
+        }
+
 
 
         $objetivos = Catalogo::where('categoria_id', 9)->get();
         $diagnosticos = Catalogo::where('categoria_id', 6)->get();
         $planes = Catalogo::where('categoria_id', 10)->get();
         $examenes = Catalogo::where('categoria_id', 14)->get();
+        $paciente = Paciente::find($cita->paciente_id);
 
-        return view('tratamientos.gestion_cita_t', compact('cita', 'examenes', 'planes', 'diagnosticos', 'objetivos', 'breadcrumb', 'tratamiento'));
+        $antecedente = Categoria::where('nombre', 'Diagnosticos')->first();
+
+        $antecedentes = Catalogo::where('categoria_id', $antecedente->id)->where('catalogo_estado', 1)->get();
+
+        $familia = Categoria::where('nombre', 'Familiar')->first();
+
+
+        $familiares = Catalogo::where('categoria_id', $familia->id)->where('catalogo_estado', 1)->get();
+
+
+        return view('tratamientos.gestion_cita_t', compact('paciente', 'familiares', 'antecedentes', 'cita', 'examenes', 'planes', 'diagnosticos', 'objetivos', 'breadcrumb', 'tratamiento'));
     }
 
     public function exportPDFGestion(Tratamiento $tratamiento)
@@ -383,4 +496,17 @@ class TratamientoController extends Controller
             'export' => 'gestion_tratamiento'
         ], 'tratamiento', false);
     }
+
+    public function guardarObservacion(Request $request, Tratamiento $tratamiento)
+    {
+        $request->validate([
+            'observaciones' => 'nullable|string',
+        ]);
+
+        $tratamiento->observaciones = $request->observaciones;
+        $tratamiento->save();
+
+        return response()->json(['mensaje' => 'Observación guardada']);
+    }
+
 }

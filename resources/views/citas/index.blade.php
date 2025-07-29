@@ -7,8 +7,10 @@
             <div class="card mb-3 shadow-sm mb-2">
                 <div class="card-body">
                     <h5>Módulo de Citas</h5>
-                    <a href="{{ route('citas.create') }}" class="btn btn-primary mb-1">Crear Cita</a>
-                    {{-- Puedes añadir más botones si es necesario --}}
+                    <a href="{{ route('citas.create') }}" class="btn btn-primary ">Crear Cita</a>
+                    <a href="{{ route('citas.index', ['ver_todos' => 1]) }}" class="btn btn-info">Ver Todos</a>
+                    <a href="{{ route('citas.index', ['ver_todos' => 0]) }}" class="btn btn-dark">Ver Citas sin
+                        tratamiento</a>
                 </div>
             </div>
         </div>
@@ -23,6 +25,13 @@
                     <small>- Cada cita puede tener varios usuarios asignados (como médicos o asistentes), y está asociada a
                         un paciente y un tratamiento.</small><br>
                     <small>- Puedes editar o eliminar citas según corresponda desde el listado inferior.</small>
+                    <br> <small>- Recuerda que en este apartado verás solamente el <strong>listado de Citas que no estan
+                            asociados a
+                            un
+                            tratamiento</strong> Si deseas ver el listado completo puedes verlo presionando el botón
+                        <strong> Ver todos
+                        </strong> </small>
+
                 </div>
             </div>
         </div>
@@ -31,6 +40,17 @@
 
     <div class="card mt-3">
         <div class="card-body">
+            <div class="d-flex justify-content-end">
+                <form method="GET" action="{{ route('citas.index') }}" class="d-flex" style="gap: 8px;">
+                    <input type="text" name="buscar" class="form-control" placeholder="Buscar paciente..."
+                        value="{{ request('buscar') }}" style="max-width: 250px;">
+
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+
+
+                </form>
+            </div>
+
             <div class="table-responsive">
                 <table class="table table-striped table-bordered align-middle">
                     <thead class="table-dark">
@@ -61,6 +81,14 @@
                                     @endforeach
                                 </td>
                                 <td>
+
+
+
+                                    <a href="{{ route('tratamientos.gestion_cita', ['cita' => $cita, 'tipo' => 2]) }}"
+                                        class="btn btn-sm btn-dark mt-1">
+                                        <i class="fas fa-pencil-alt me-1"></i> Empezar Gestión
+                                    </a>
+
                                     <a href="{{ route('citas.edit', $cita) }}" class="btn btn-sm btn-warning">Editar</a>
 
                                     <a type="button" class="btn btn-danger btn-sm"

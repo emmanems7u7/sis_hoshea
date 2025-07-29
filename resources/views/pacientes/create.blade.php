@@ -15,8 +15,9 @@
             <form action="{{ route('pacientes.store') }}" method="POST">
                 @csrf
                 @include('pacientes._form')
-                <button type="submit" class="btn btn-primary">Guardar</button>
+
                 <a href="{{ route('pacientes.index') }}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary">Guardar</button>
             </form>
         </div>
     </div>

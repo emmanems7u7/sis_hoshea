@@ -10,9 +10,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
     <!--     Fonts and icons     -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
-    <!-- Nucleo Icons -->
-    <link href="{{ asset('argon/css/nucleo-icons.css')  }}" rel="stylesheet" />
-    <link href="{{ asset('argon/css/nucleo-svg.css')  }}" rel="stylesheet" />
+
     <!-- Font Awesome Icons -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
@@ -102,6 +100,8 @@
   -webkit-overflow-scrolling: touch; 
 }
 </style>
+
+
 <body class="{{ isset($preferencias) && $preferencias->dark_mode ? 'dark-version' : '' }} g-sidenav-show bg-gray-100">
     <div class="min-height-300 bg-green_fondo  text-black position-absolute w-100"></div>
     <aside

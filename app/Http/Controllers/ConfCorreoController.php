@@ -22,14 +22,14 @@ class ConfCorreoController extends Controller
 
     function index()
     {
-        $conf_correo = ConfCorreo::first();
+        $config = ConfCorreo::first();
 
 
         $breadcrumb = [
             ['name' => 'Inicio', 'url' => route('home')],
             ['name' => 'Configuracion', 'url' => route('configuracion.correo.index')],
         ];
-        return view('configuracion.configuracion_correo', compact('breadcrumb', 'conf_correo'));
+        return view('configuracion.configuracion_correo', compact('breadcrumb', 'config'));
     }
 
     function store(request $request)
@@ -83,6 +83,30 @@ class ConfCorreoController extends Controller
         return redirect()->back()->with('success', 'Configuración de correo guardada correctamente.');
 
 
+    }
+    public function update(Request $request)
+    {
+        $request->validate([
+            'host' => 'required|string',
+            'port' => 'required|integer',
+            'username' => 'required|email',
+            'password' => 'required|string',
+            'encryption' => 'nullable|string',
+            'from_address' => 'required|email',
+            'from_name' => 'required|string',
+        ]);
+
+        $config = ConfCorreo::first();
+
+        if ($config) {
+            $config->update($request->all());
+        } else {
+            // Si no existe configuración, la crea
+            ConfCorreo::create($request->all());
+        }
+
+        return redirect()->back()
+            ->with('status', 'Configuración actualizada correctamente.');
     }
 
     public function enviarPrueba()

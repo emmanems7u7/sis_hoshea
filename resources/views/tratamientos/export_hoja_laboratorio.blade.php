@@ -55,7 +55,7 @@
 
         <tr>
             <td style="text-align: center;">
-                <h1 style="margin: 0;">- Hoja de laboratorio- </h1>
+                <h1 style="margin: 0;">- Hoja de laboratorio - </h1>
             </td>
             <td style="text-align: right;" width="100">
                 @if($logo_base64)
@@ -75,9 +75,14 @@
             <td width="50%" valign="top">
                 @include('tratamientos.tabla_datos_paciente')
             </td>
-            <td width="50%" valign="top">
-                @include('tratamientos.tabla_datos_tratamiento')
 
+            <td width="50%" valign="top">
+                @if($tratamiento)
+                    @include('tratamientos.tabla_datos_tratamiento')
+                @else
+                    @include('tratamientos.tabla_datos_cita')
+
+                @endif
 
             </td>
         </tr>

@@ -42,12 +42,12 @@
     </div>
 </div>
 <script>
-    var datosObjetivos = [];
+    var datosObjetivos = JSON.parse(document.getElementById('objetivos_json').value || '[]');
 
     const botones = document.querySelectorAll('.btn-objetivo');
     const inputContainer = document.getElementById('input-container');
     const resumenContainer = document.getElementById('resumen-container');
-
+    renderResumen();
     function renderResumen() {
         resumenContainer.innerHTML = '';
 

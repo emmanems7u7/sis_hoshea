@@ -41,8 +41,8 @@
 </div>
 
 <script>
-    var planes = [];
-
+    var planes = JSON.parse(document.getElementById('planes_json').value || '[]');
+    renderPlanes();
     document.getElementById('btn-agregar-plan').addEventListener('click', () => {
 
         const select = document.getElementById('tipo-plan');

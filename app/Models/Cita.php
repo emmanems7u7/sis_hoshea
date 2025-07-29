@@ -43,11 +43,11 @@ class Cita extends Model
     {
         // Diagnóstico se relaciona con Tratamiento, no con Cita directamente,
 
-        return $this->hasOne(Diagnostico::class, 'tratamiento_id', 'tratamiento_id');
+        return $this->hasOne(Diagnostico::class, 'cita_id');
     }
     public function diagnosticos()
     {
-        return $this->hasMany(Diagnostico::class, 'tratamiento_id', 'tratamiento_id');
+        return $this->hasMany(Diagnostico::class, 'cita_id');
     }
 
     // Planes (uno a muchos)

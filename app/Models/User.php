@@ -98,4 +98,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserPersonalizacion::class);
     }
+
+    public function preferredNotificationChannels()
+    {
+        //  lógica para determinar los canales preferidos por usuario
+        if ($this->preferenciaNotificacion === 'mail') {
+            return ['mail'];
+        } else {
+            return ['database'];
+        }
+    }
 }

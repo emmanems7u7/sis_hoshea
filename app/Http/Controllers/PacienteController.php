@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Catalogo;
+use App\Models\Categoria;
 use App\Models\Paciente;
 use App\Models\Diagnostico;
+use App\Models\PacienteAntecedente;
+use App\Models\Tratamiento;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Validator;
 class PacienteController extends Controller
 {
     // Mostrar listado paginado
@@ -16,7 +19,7 @@ class PacienteController extends Controller
             ['name' => 'Inicio', 'url' => route('home')],
             ['name' => 'Pacientes', 'url' => route('pacientes.index')],
         ];
-        $pacientes = Paciente::orderBy('apellido_paterno')->paginate(15);
+        $pacientes = Paciente::orderBy('created_at', 'desc')->paginate(15);
         return view('pacientes.index', compact('breadcrumb', 'pacientes'));
     }
 
@@ -35,8 +38,16 @@ class PacienteController extends Controller
 
         $paises = Catalogo::where('categoria_id', 5)->get();
 
+        $antecedente = Categoria::where('nombre', 'Diagnosticos')->first();
 
-        return view('pacientes.create', compact('paises', 'breadcrumb', 'paciente'));
+        $antecedentes = Catalogo::where('categoria_id', $antecedente->id)->where('catalogo_estado', 1)->get();
+
+        $familia = Categoria::where('nombre', 'Familiar')->first();
+
+
+        $familiares = Catalogo::where('categoria_id', $familia->id)->where('catalogo_estado', 1)->get();
+
+        return view('pacientes.create', compact('familiares', 'antecedentes', 'paises', 'breadcrumb', 'paciente'));
     }
 
     // Guardar nuevo paciente
@@ -60,10 +71,58 @@ class PacienteController extends Controller
             'activo' => 'boolean',
         ]);
 
-        Paciente::create($validated);
+        $paciente = Paciente::create($validated);
+
+        //logica Antecedente
+
+        // Validar que venga el campo y sea JSON válido
+        $validator = Validator::make($request->all(), [
+            'antecedentes_json' => ['required', 'json'],
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $antecedentes = json_decode($request->input('antecedentes_json'), true);
+
+        if (!is_array($antecedentes) || empty($antecedentes)) {
+            return back()->withErrors(['antecedentes_json' => 'El contenido de antecedentes es inválido o está vacío'])->withInput();
+        }
+
+        // Validar cada elemento del array
+        foreach ($antecedentes as $index => $item) {
+            if (!isset($item['antecedenteCodigo']) || !isset($item['familiarCodigo'])) {
+                return back()->withErrors(['antecedentes_json' => "El antecedente o familiar en la posición {$index} no es válido."])->withInput();
+            }
+
+            // Validar que los códigos existan en la tabla catalogos
+            $antecedenteExiste = Catalogo::where('catalogo_codigo', $item['antecedenteCodigo'])->exists();
+            $familiarExiste = Catalogo::where('catalogo_codigo', $item['familiarCodigo'])->exists();
+
+            if (!$antecedenteExiste) {
+                return back()->withErrors(['antecedentes_json' => "El código de antecedente '{$item['antecedenteCodigo']}' no existe en catálogo."])->withInput();
+            }
+            if (!$familiarExiste) {
+                return back()->withErrors(['antecedentes_json' => "El código de familiar '{$item['familiarCodigo']}' no existe en catálogo."])->withInput();
+            }
+        }
+
+        // Si todo está OK, borramos antecedentes anteriores y guardamos los nuevos
+        PacienteAntecedente::where('paciente_id', $paciente->id)->delete();
+
+        foreach ($antecedentes as $item) {
+            PacienteAntecedente::create([
+                'paciente_id' => $paciente->id,
+                'antecedente' => $item['antecedenteCodigo'],
+                'familiar' => $item['familiarCodigo'],
+            ]);
+        }
+
+        //logica Antecedente
 
         return redirect()->route('pacientes.index')
-            ->with('success', 'Paciente creado correctamente.');
+            ->with('status', 'Paciente creado correctamente.');
     }
 
     // Mostrar detalles de un paciente
@@ -75,8 +134,32 @@ class PacienteController extends Controller
             ['name' => 'Ver Paciente', 'url' => route('pacientes.index')],
 
         ];
+        $tratamientos = $paciente->citas()
+            ->with('tratamiento')
+            ->get()
+            ->pluck('tratamiento')
+            ->filter()
+            ->unique('id')
+            ->values();
 
-        return view('pacientes.show', compact('paciente', 'breadcrumb'));
+        $tratamientoIds = $tratamientos->pluck('id')->toArray();
+
+        $diagnosticos = Diagnostico::whereIn('tratamiento_id', $tratamientoIds)
+            ->with('catalogo') // aseguramos eager loading para eficiencia
+            ->get()
+            ->map(function ($diagnostico) {
+                return [
+                    'id' => $diagnostico->id,
+                    'tratamiento_id' => $diagnostico->tratamiento_id,
+                    'cod_diagnostico' => $diagnostico->cod_diagnostico,
+                    'criterio_clinico' => $diagnostico->criterio_clinico,
+                    'evolucion_diagnostico' => $diagnostico->evolucion_diagnostico,
+                    'fecha_diagnostico' => $diagnostico->fecha_diagnostico,
+                    'nombre_diagnostico' => $diagnostico->catalogo->catalogo_descripcion,
+                ];
+            });
+
+        return view('pacientes.show', compact('paciente', 'breadcrumb', 'diagnosticos', 'tratamientos'));
     }
 
     // Mostrar formulario edición
@@ -89,9 +172,22 @@ class PacienteController extends Controller
 
         ];
 
+        $paciente = Paciente::with(['antecedentes.catalogoAntecedente', 'antecedentes.catalogoFamiliar'])->findOrFail($paciente->id);
+
         $paises = Catalogo::where('categoria_id', 5)->get();
 
-        return view('pacientes.edit', compact('paises', 'paciente', 'breadcrumb'));
+
+        $antecedente = Categoria::where('nombre', 'Diagnosticos')->first();
+
+        $antecedentes = Catalogo::where('categoria_id', $antecedente->id)->where('catalogo_estado', 1)->get();
+
+        $familia = Categoria::where('nombre', 'Familiar')->first();
+
+
+        $familiares = Catalogo::where('categoria_id', $familia->id)->where('catalogo_estado', 1)->get();
+
+
+        return view('pacientes.edit', compact('familiares', 'antecedentes', 'paises', 'paciente', 'breadcrumb'));
     }
 
     // Actualizar paciente
@@ -117,8 +213,57 @@ class PacienteController extends Controller
 
         $paciente->update($validated);
 
+        //logica Antecedente
+
+        // Validar que venga el campo y sea JSON válido
+        $validator = Validator::make($request->all(), [
+            'antecedentes_json' => ['required', 'json'],
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $antecedentes = json_decode($request->input('antecedentes_json'), true);
+
+        if (!is_array($antecedentes) || empty($antecedentes)) {
+            return back()->withErrors(['antecedentes_json' => 'El contenido de antecedentes es inválido o está vacío'])->withInput();
+        }
+
+        // Validar cada elemento del array
+        foreach ($antecedentes as $index => $item) {
+            if (!isset($item['antecedenteCodigo']) || !isset($item['familiarCodigo'])) {
+                return back()->withErrors(['antecedentes_json' => "El antecedente o familiar en la posición {$index} no es válido."])->withInput();
+            }
+
+            // Validar que los códigos existan en la tabla catalogos
+            $antecedenteExiste = Catalogo::where('catalogo_codigo', $item['antecedenteCodigo'])->exists();
+            $familiarExiste = Catalogo::where('catalogo_codigo', $item['familiarCodigo'])->exists();
+
+            if (!$antecedenteExiste) {
+                return back()->withErrors(['antecedentes_json' => "El código de antecedente '{$item['antecedenteCodigo']}' no existe en catálogo."])->withInput();
+            }
+            if (!$familiarExiste) {
+                return back()->withErrors(['antecedentes_json' => "El código de familiar '{$item['familiarCodigo']}' no existe en catálogo."])->withInput();
+            }
+        }
+
+        // Si todo está OK, borramos antecedentes anteriores y guardamos los nuevos
+        PacienteAntecedente::where('paciente_id', $paciente->id)->delete();
+
+        foreach ($antecedentes as $item) {
+            PacienteAntecedente::create([
+                'paciente_id' => $paciente->id,
+                'antecedente' => $item['antecedenteCodigo'],
+                'familiar' => $item['familiarCodigo'],
+            ]);
+        }
+
+        //logica Antecedente
+
+
         return redirect()->route('pacientes.index')
-            ->with('success', 'Paciente actualizado correctamente.');
+            ->with('status', 'Paciente actualizado correctamente.');
     }
 
     // Eliminar paciente
@@ -133,7 +278,6 @@ class PacienteController extends Controller
     public function datos(Paciente $paciente)
     {
         // Obtener tratamientos activos o todos los tratamientos relacionados a las citas del paciente
-        // Asumiendo que en Cita el tratamiento está relacionado y quieres solo tratamientos activos o vigentes:
         $tratamientos = $paciente->citas()
             ->with('tratamiento')
             ->get()
@@ -142,15 +286,17 @@ class PacienteController extends Controller
             ->unique('id')
             ->values();
 
-        $tratamientoIds = $tratamientos->pluck('id')->toArray();
+        $citas = $paciente->citas()->get();
 
-        $diagnosticos = Diagnostico::whereIn('tratamiento_id', $tratamientoIds)
+        $citaIds = $citas->pluck('id')->toArray();
+
+        $diagnosticos = Diagnostico::whereIn('cita_id', $citaIds)
             ->with('catalogo') // aseguramos eager loading para eficiencia
             ->get()
             ->map(function ($diagnostico) {
                 return [
                     'id' => $diagnostico->id,
-                    'tratamiento_id' => $diagnostico->tratamiento_id,
+                    'tratamiento_id' => $diagnostico->cita_id,
                     'cod_diagnostico' => $diagnostico->cod_diagnostico,
                     'criterio_clinico' => $diagnostico->criterio_clinico,
                     'evolucion_diagnostico' => $diagnostico->evolucion_diagnostico,

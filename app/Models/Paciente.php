@@ -57,4 +57,11 @@ class Paciente extends Model
     {
         return $this->hasMany(Cita::class);
     }
+
+    public function antecedentes()
+    {
+        return $this->hasMany(PacienteAntecedente::class);
+    }
+
+
 }

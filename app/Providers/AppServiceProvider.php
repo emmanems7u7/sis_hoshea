@@ -42,16 +42,17 @@ class AppServiceProvider extends ServiceProvider
         $dbName = env('DB_DATABASE');
         $tableName = 'conf_correos';
         if (Schema::connection('mysql')->hasTable($dbName . '.' . $tableName)) {
-            $conf = ConfCorreo::first();
+            $config = ConfCorreo::first();
 
-            if ($conf) {
+            if ($config) {
                 config([
-                    'mail.mailers.smtp.host' => $conf->conf_smtp_host,
-                    'mail.mailers.smtp.port' => $conf->conf_smtp_port,
-                    'mail.mailers.smtp.username' => $conf->conf_smtp_user,
-                    'mail.mailers.smtp.password' => $conf->conf_smtp_pass,
-                    'mail.mailers.smtp.encryption' => $conf->conf_protocol,
-                    'mail.default' => 'smtp',
+                    'mail.mailers.smtp.host' => $config->host,
+                    'mail.mailers.smtp.port' => $config->port,
+                    'mail.mailers.smtp.encryption' => $config->encryption ?: null,
+                    'mail.mailers.smtp.username' => $config->username,
+                    'mail.mailers.smtp.password' => $config->password,
+                    'mail.from.address' => $config->from_address,
+                    'mail.from.name' => $config->from_name,
                 ]);
             }
         }

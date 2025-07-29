@@ -9,9 +9,7 @@ function agregar_cita() {
         alertify.error('Solo puede haber una primera cita.');
         return; 
     }
-    const checkbox = document.getElementById('primera_cita');
-    checkbox.checked = false;   
-    checkbox.disabled = true;   
+    
     // Capturar datos básicos
     let nuevaCita = {
 
@@ -111,22 +109,38 @@ function agregar_cita() {
     
         const fechaCita = new Date($('#fecha_hora').val());
     
-        console.log(fechaCita);
-        console.log(dFin);
-    
         if (fechaCita > dFin) {
             alertify.error('La cita no puede ser posterior al fin del tratamiento.');
             return;
         }
     }
+
+
+(async () => {
+    const result = await validar(nuevaCita);
+
+    if (!result.status) {
+        alertify.error(result.mensaje);
+        return;
+    }
+    else
+    {
+        citasData.push(nuevaCita);
+        alertify.success('Cita Agregada Correctamente');
+    
+        renderTabla();
+    
+        limpiarCampos();
+    
+        const checkbox = document.getElementById('primera_cita');
+        checkbox.checked = false;   
+        checkbox.disabled = true;  
+    }
+
+})();
     // --- Fin de validación de rango ---
 
-    citasData.push(nuevaCita);
-    alertify.success('Cita Agregada Correctamente');
-
-    renderTabla();
-
-    limpiarCampos();
+   
 }
 
 

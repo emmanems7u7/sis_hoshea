@@ -33,11 +33,13 @@
                                 };
                             @endphp
 
-                            <span style="cursor: pointer;" class="badge {{ $estadoClass }} position-absolute top-0 end-0 m-2"
-                                data-bs-toggle="modal" data-bs-target="#estadoModal" data-cita="{{ $cita->id }}"
-                                data-estado="{{ $cita->estado }}">
+                            <span style="cursor: pointer;"
+                                class="badge {{ $estadoClass }} position-absolute top-0 end-0 m-2 btn-abrir-modal_estado"
+                                data-cita="{{ $cita->id }}" data-estado="{{ $cita->estado }}"
+                                data-fecha-hora="{{ $cita->fecha_hora->format('Y-m-d H:i:s') }}">
                                 {{ ucfirst($cita->estado) }}
                             </span>
+
 
                             <div class="row mb-2">
                                 <div class="col-md-6">
@@ -59,9 +61,14 @@
                                 @endforeach
                             </div>
 
-                            <a href="{{ route('tratamientos.gestion_cita', $cita) }}" class="btn btn-sm btn-dark">
+
+
+                            <a href="{{ route('tratamientos.gestion_cita', ['cita' => $cita, 'tipo' => 1]) }}"
+                                class="btn btn-sm btn-dark mt-1">
                                 <i class="fas fa-pencil-alt me-1"></i> Empezar Gestión
                             </a>
+
+
 
                         </div>
                     @endforeach

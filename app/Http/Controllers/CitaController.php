@@ -13,12 +13,20 @@ use App\Models\CitaExamen;
 use Carbon\Carbon;
 use App\Models\Catalogo;
 use App\Models\Configuracion;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EstadoCitaCambiadoMail;
 
 use App\Exports\ExportPDF;
 
 use Illuminate\Http\Request;
 use App\Interfaces\CatalogoInterface;
+use App\Models\Categoria;
+use App\Models\PacienteAntecedente;
+use App\Notifications\CitaAsignada;
+use App\Notifications\NotificacionTratamiento;
 
 class CitaController extends Controller
 {
@@ -29,14 +37,38 @@ class CitaController extends Controller
         $this->CatalogoRepository = $CatalogoInterface;
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $citas = Cita::with(['paciente', 'tratamiento', 'usuarios'])->orderBy('fecha_hora', 'desc')->paginate(15);
+        $query = Cita::with(['paciente', 'tratamiento', 'usuarios']);
+
+        $verTodos = $request->input('ver_todos', 0); // por defecto 0 si no viene
+
+        if ($verTodos != 1) {
+
+            $query->whereNull('tratamiento_id');
+        }
+
+
+        if ($request->filled('buscar')) {
+            $buscar = $request->buscar;
+            $query->whereHas('paciente', function ($q) use ($buscar) {
+                $q->where('nombre', 'like', "%$buscar%")
+                    ->orWhere('apellido_paterno', 'like', "%$buscar%")
+                    ->orWhere('apellido_materno', 'like', "%$buscar%");
+            });
+        }
+
+        $citas = $query->orderBy('fecha_hora', 'desc')->paginate(15);
+
         $breadcrumb = [
+            ['name' => 'Inicio', 'url' => route('home')],
+
             ['name' => 'Citas', 'url' => route('citas.index')],
         ];
+
         return view('citas.index', compact('citas', 'breadcrumb'));
     }
+
 
     public function create()
     {
@@ -84,6 +116,33 @@ class CitaController extends Controller
             }
         }
 
+        // Validar conflicto de horarios antes de crear la cita
+
+
+        $inicioNuevo = Carbon::parse($validated['fecha_hora']);
+        $duracion = (int) ($validated['duracion'] ?? 0);
+        $finNuevo = $inicioNuevo->copy()->addMinutes($duracion);
+
+        foreach ($validated['usuarios'] as $userId) {
+            $conflicto = DB::table('citas')
+                ->join('cita_user', 'citas.id', '=', 'cita_user.cita_id')
+                ->where('cita_user.user_id', $userId)
+                ->where(function ($query) use ($inicioNuevo, $finNuevo) {
+                    $query->where('citas.fecha_hora', '<', $finNuevo)
+                        ->whereRaw("DATE_ADD(citas.fecha_hora, INTERVAL citas.duracion MINUTE) > ?", [$inicioNuevo]);
+                })
+                ->exists();
+
+            if ($conflicto) {
+                $usuario = User::find($userId);
+                return back()
+                    ->withInput()
+                    ->withErrors([
+                        'usuarios' => "El usuario {$usuario->name} ya tiene una cita que se superpone en el rango de tiempo indicado.",
+                    ]);
+            }
+        }
+
         // Crear cita
         $cita = Cita::create([
             'paciente_id' => $validated['paciente_id'],
@@ -102,6 +161,11 @@ class CitaController extends Controller
         foreach ($validated['usuarios'] as $index => $userId) {
             $rol = $validated['roles'][$index] ?? null;
             $syncData[$userId] = ['rol_en_cita' => $rol];
+
+            $usuario = User::find($userId);
+            $usuario->notify(new CitaAsignada($cita));
+
+
         }
         $cita->usuarios()->sync($syncData);
 
@@ -182,6 +246,10 @@ class CitaController extends Controller
         foreach ($validated['usuarios'] as $index => $userId) {
             $rol = $validated['roles'][$index] ?? null;
             $syncData[$userId] = ['rol_en_cita' => $rol];
+
+
+            $usuario = User::find($userId);
+            $usuario->notify(new CitaAsignada($cita));
         }
         $cita->usuarios()->sync($syncData);
 
@@ -215,20 +283,7 @@ class CitaController extends Controller
 
         if ($request->has('notificar') && $request->boolean('notificar')) {
 
-            switch ($cita->estado) {
-                case 'pendiente':
-
-                    break;
-                case 'confirmada':
-
-                    break;
-                case 'cancelada':
-                    break;
-                case 'completada':
-                    break;
-                default:
-                    break;
-            }
+            Mail::to($cita->paciente->email)->send(new EstadoCitaCambiadoMail($cita));
 
         }
 
@@ -237,6 +292,8 @@ class CitaController extends Controller
 
     function store_gestion(Request $request, $cita)
     {
+        session()->flash('modal_abierto', $request->input('modal'));
+        session()->flash('cita', $cita);
 
         $request->validate([
             'cod_diagnostico' => 'required|string|max:255',
@@ -266,7 +323,6 @@ class CitaController extends Controller
                 ->with('error', 'Los datos de objetivos no son válidos.')
                 ->withInput();
         }
-
         foreach ($planes as $plan) {
             if (
                 !isset($plan['tipo'], $plan['descripcion'], $plan['tipoNombre']) ||
@@ -301,11 +357,10 @@ class CitaController extends Controller
 
         $cita_ = Cita::findOrFail($cita);
 
-        $tratamiento = Tratamiento::findOrFail($cita_->tratamiento_id);
 
 
         $diagnostico = Diagnostico::create([
-            'tratamiento_id' => $tratamiento->id,
+            'cita_id' => $cita_->id,
             'cod_diagnostico' => $request->input('cod_diagnostico'),
             'fecha_diagnostico' => now(),
             'estado' => 1,
@@ -320,7 +375,6 @@ class CitaController extends Controller
                 'descripcion' => $planData['descripcion'],
             ]);
         }
-
         foreach ($datos as $dato) {
             $dato_cita = DatoCita::create([
                 'cita_id' => $cita,
@@ -336,13 +390,63 @@ class CitaController extends Controller
             ]);
         }
 
+
+
+        //logica Antecedente
+
+        // Validar que venga el campo y sea JSON válido
+        $validator = Validator::make($request->all(), [
+            'antecedentes_json' => ['required', 'json'],
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $antecedentes = json_decode($request->input('antecedentes_json'), true);
+
+        if (!is_array($antecedentes) || empty($antecedentes)) {
+            return back()->withErrors(['antecedentes_json' => 'El contenido de antecedentes es inválido o está vacío'])->withInput();
+        }
+
+        // Validar cada elemento del array
+        foreach ($antecedentes as $index => $item) {
+            if (!isset($item['antecedenteCodigo']) || !isset($item['familiarCodigo'])) {
+                return back()->withErrors(['antecedentes_json' => "El antecedente o familiar en la posición {$index} no es válido."])->withInput();
+            }
+
+            // Validar que los códigos existan en la tabla catalogos
+            $antecedenteExiste = Catalogo::where('catalogo_codigo', $item['antecedenteCodigo'])->exists();
+            $familiarExiste = Catalogo::where('catalogo_codigo', $item['familiarCodigo'])->exists();
+
+            if (!$antecedenteExiste) {
+                return back()->withErrors(['antecedentes_json' => "El código de antecedente '{$item['antecedenteCodigo']}' no existe en catálogo."])->withInput();
+            }
+            if (!$familiarExiste) {
+                return back()->withErrors(['antecedentes_json' => "El código de familiar '{$item['familiarCodigo']}' no existe en catálogo."])->withInput();
+            }
+        }
+        $paciente = Paciente::findOrFail($cita_->paciente_id);
+        // Si todo está OK, borramos antecedentes anteriores y guardamos los nuevos
+        PacienteAntecedente::where('paciente_id', $paciente->id)->delete();
+
+        foreach ($antecedentes as $item) {
+            PacienteAntecedente::create([
+                'paciente_id' => $paciente->id,
+                'antecedente' => $item['antecedenteCodigo'],
+                'familiar' => $item['familiarCodigo'],
+            ]);
+        }
+
+        //logica Antecedente
+
         $cita_->estado = 'completada';
         $cita_->gestionado = 1;
         $cita_->fecha_gestion = now();
         $cita_->save();
 
-        return redirect()->back()->with('status', 'La información de la cita se guardó correctamente. Ahora puede generar el PDF.
-        Además, se ha enviado una notificación al paciente y al personal asociado a la cita.');
+
+        return redirect()->back()->with('status', 'La información de la cita se guardó correctamente. Ahora puede generar el PDF.');
 
     }
 
@@ -402,7 +506,7 @@ class CitaController extends Controller
         $tratamiento = Tratamiento::findOrFail($cita_->tratamiento_id);
 
         // Actualizar diagnóstico
-        $diagnostico = Diagnostico::where('tratamiento_id', $tratamiento->id)->first();
+        $diagnostico = Diagnostico::where('cita_id', $cita_->id)->first();
         if ($diagnostico) {
             $diagnostico->update([
                 'cod_diagnostico' => $request->input('cod_diagnostico'),
@@ -411,7 +515,7 @@ class CitaController extends Controller
             ]);
         } else {
             Diagnostico::create([
-                'tratamiento_id' => $tratamiento->id,
+                'cita_id' => $cita->id,
                 'cod_diagnostico' => $request->input('cod_diagnostico'),
                 'fecha_diagnostico' => now(),
                 'estado' => 1,
@@ -447,6 +551,55 @@ class CitaController extends Controller
                 'valor' => $obj['valor'],
             ]);
         }
+
+        //logica Antecedente
+
+        // Validar que venga el campo y sea JSON válido
+        $validator = Validator::make($request->all(), [
+            'antecedentes_json' => ['required', 'json'],
+        ]);
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        $antecedentes = json_decode($request->input('antecedentes_json'), true);
+
+        if (!is_array($antecedentes) || empty($antecedentes)) {
+            return back()->withErrors(['antecedentes_json' => 'El contenido de antecedentes es inválido o está vacío'])->withInput();
+        }
+
+        // Validar cada elemento del array
+        foreach ($antecedentes as $index => $item) {
+            if (!isset($item['antecedenteCodigo']) || !isset($item['familiarCodigo'])) {
+                return back()->withErrors(['antecedentes_json' => "El antecedente o familiar en la posición {$index} no es válido."])->withInput();
+            }
+
+            // Validar que los códigos existan en la tabla catalogos
+            $antecedenteExiste = Catalogo::where('catalogo_codigo', $item['antecedenteCodigo'])->exists();
+            $familiarExiste = Catalogo::where('catalogo_codigo', $item['familiarCodigo'])->exists();
+
+            if (!$antecedenteExiste) {
+                return back()->withErrors(['antecedentes_json' => "El código de antecedente '{$item['antecedenteCodigo']}' no existe en catálogo."])->withInput();
+            }
+            if (!$familiarExiste) {
+                return back()->withErrors(['antecedentes_json' => "El código de familiar '{$item['familiarCodigo']}' no existe en catálogo."])->withInput();
+            }
+        }
+        $paciente = Paciente::findOrFail($cita_->paciente_id);
+
+        // Si todo está OK, borramos antecedentes anteriores y guardamos los nuevos
+        PacienteAntecedente::where('paciente_id', $paciente->id)->delete();
+
+        foreach ($antecedentes as $item) {
+            PacienteAntecedente::create([
+                'paciente_id' => $paciente->id,
+                'antecedente' => $item['antecedenteCodigo'],
+                'familiar' => $item['familiarCodigo'],
+            ]);
+        }
+
+        //logica Antecedente
 
         $cita_->estado = 'completada';
         $cita_->gestionado = 1;
@@ -591,8 +744,9 @@ class CitaController extends Controller
 
         $fecha = Carbon::now()->format('d-m-Y H:i:s');
 
-        $tratamiento = Tratamiento::with('paciente', 'citas.examenes')->find($cita->tratamiento_id);
+        $tratamiento = Tratamiento::with('citas.examenes')->find($cita->tratamiento_id);
 
+        $paciente = Paciente::find($cita->paciente_id);
 
         $proximaCita = Cita::where('tratamiento_id', $cita->tratamiento_id)
             ->where('fecha_hora', '>', $cita->fecha_hora)
@@ -639,6 +793,7 @@ class CitaController extends Controller
                 'fecha' => $fecha,
                 'logo_base64' => $base64,
                 'firma' => $firma,
+                'paciente' => $paciente,
 
                 'export' => 'gestion_tratamiento'
             ],
@@ -657,8 +812,8 @@ class CitaController extends Controller
 
         $fecha = Carbon::now()->format('d-m-Y H:i:s');
 
-        $tratamiento = Tratamiento::with('paciente')->find($cita->tratamiento_id);
-
+        $tratamiento = Tratamiento::find($cita->tratamiento_id);
+        $paciente = Paciente::find($cita->paciente_id);
         $examenes = Catalogo::where('categoria_id', 14)->get();
 
         $path = public_path('logo.png');
@@ -689,7 +844,9 @@ class CitaController extends Controller
                 'fecha' => $fecha,
                 'logo_base64' => $base64,
                 'firma' => $firma,
-                'export' => 'gestion_tratamiento'
+                'export' => 'gestion_tratamiento',
+                'paciente' => $paciente,
+
             ],
             'tratamiento',
             false,
@@ -699,6 +856,83 @@ class CitaController extends Controller
         );
     }
 
+    function Gestion(Cita $cita)
+    {
+        // Breadcrumb
 
+
+        $breadcrumb = [
+            ['name' => 'Inicio', 'url' => route('home')],
+            ['name' => 'Citas', 'url' => route('citas.index')],
+            ['name' => 'Gestión Cita', 'url' => ''],
+
+        ];
+
+        $paciente = Paciente::find($cita->paciente_id);
+        $objetivos = Catalogo::where('categoria_id', 9)->get();
+        $diagnosticos = Catalogo::where('categoria_id', 6)->get();
+        $planes = Catalogo::where('categoria_id', 10)->get();
+        $examenes = Catalogo::where('categoria_id', 14)->get();
+
+        $antecedente = Categoria::where('nombre', 'Diagnosticos')->first();
+
+        $antecedentes = Catalogo::where('categoria_id', $antecedente->id)->where('catalogo_estado', 1)->get();
+
+        $familia = Categoria::where('nombre', 'Familiar')->first();
+
+
+        $familiares = Catalogo::where('categoria_id', $familia->id)->where('catalogo_estado', 1)->get();
+
+
+        return view('citas.gestion_cita', compact('paciente', 'familiares', 'antecedentes', 'cita', 'examenes', 'planes', 'diagnosticos', 'objetivos', 'breadcrumb'));
+    }
+    public function validarConflictoCita($fechaHora, $duracion, $usuarios)
+    {
+        $inicioNuevo = Carbon::parse($fechaHora);
+        $duracion = (int) ($duracion ?? 0);
+        $finNuevo = $inicioNuevo->copy()->addMinutes($duracion);
+
+        foreach ($usuarios as $usuario) {
+            $userId = $usuario['id'] ?? null;
+            if (!$userId)
+                continue;
+
+            $conflicto = DB::table('citas')
+                ->join('cita_user', 'citas.id', '=', 'cita_user.cita_id')
+                ->where('cita_user.user_id', $userId)
+                ->where(function ($query) use ($inicioNuevo, $finNuevo) {
+                    $query->where('citas.fecha_hora', '<', $finNuevo)
+                        ->whereRaw("DATE_ADD(citas.fecha_hora, INTERVAL citas.duracion MINUTE) > ?", [$inicioNuevo]);
+                })
+                ->exists();
+
+            if ($conflicto) {
+                $usuarioModel = User::find($userId);
+                return [
+                    'status' => false,
+                    'mensaje' => "El usuario {$usuarioModel->name} ya tiene una cita que se superpone en el rango de tiempo indicado.",
+                ];
+            }
+        }
+
+        return ['status' => true];
+    }
+    public function validarConflictoAjax(Request $request)
+    {
+        $request->validate([
+            'fecha_hora' => 'required|date',
+            'duracion' => 'nullable|integer|min:1',
+            'usuarios' => 'required|array',
+            'usuarios.*.id' => 'required|integer|exists:users,id',
+        ]);
+
+        $resultado = $this->validarConflictoCita(
+            $request->input('fecha_hora'),
+            $request->input('duracion'),
+            $request->input('usuarios')
+        );
+
+        return response()->json($resultado);
+    }
 
 }

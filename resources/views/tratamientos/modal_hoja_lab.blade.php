@@ -35,7 +35,12 @@
 
                         <div class="col-md-4 mb-2">
 
-                            @include('tratamientos.datos_tratamiento')
+                            @if($tratamiento)
+                                @include('tratamientos.datos_tratamiento')
+                            @else
+                                @include('citas.datos_cita')
+
+                            @endif
                         </div>
 
                     </div>

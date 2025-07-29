@@ -11,6 +11,8 @@ use App\Models\Inventario;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
 use App\Exports\ExportPDF;
+use App\Models\Categoria;
+use App\Models\Paciente;
 use Carbon\Carbon;
 
 class ServicioController extends Controller
@@ -35,6 +37,7 @@ class ServicioController extends Controller
         ];
         $tratamiento = Tratamiento::find($cita->tratamiento_id);
 
+        $paciente = Paciente::find($cita->paciente_id);
         $objetivos = Catalogo::where('categoria_id', 9)->get();
         $diagnosticos = Catalogo::where('categoria_id', 6)->get();
         $planes = Catalogo::where('categoria_id', 10)->get();
@@ -44,10 +47,20 @@ class ServicioController extends Controller
         $serviciosDetalles = Servicio::where('activo', 1)->get();
 
 
+        $antecedente = Categoria::where('nombre', 'Diagnosticos')->first();
+
+        $antecedentes = Catalogo::where('categoria_id', $antecedente->id)->where('catalogo_estado', 1)->get();
+
+        $familia = Categoria::where('nombre', 'Familiar')->first();
+
+
+        $familiares = Catalogo::where('categoria_id', $familia->id)->where('catalogo_estado', 1)->get();
+
+
         $inventarios = Inventario::where('stock_actual', '>', 0)->pluck('nombre', 'id');
         $inventarioDetalles = Inventario::where('stock_actual', '>', 0)->get();
 
-        return view('servicios.ver_asignacion', compact('inventarios', 'inventarioDetalles', 'serviciosDetalles', 'servicios', 'breadcrumb', 'cita', 'tratamiento', 'examenes', 'planes', 'diagnosticos', 'objetivos', ));
+        return view('servicios.ver_asignacion', compact('antecedente', 'antecedentes', 'familia', 'familiares', 'paciente', 'inventarios', 'inventarioDetalles', 'serviciosDetalles', 'servicios', 'breadcrumb', 'cita', 'tratamiento', 'examenes', 'planes', 'diagnosticos', 'objetivos', ));
     }
     public function recibo(Cita $cita)
     {

@@ -21,14 +21,18 @@
                 <input type="text" id="input-text" class="form-control me-2" placeholder="Escribe un sintoma">
                 <button type="button" class="btn btn-sm btn-primary" id="btn-agregar">Agregar</button>
             </div>
+            @if($cita->primera_cita)
+                @include('pacientes.antecedentes')
+
+            @endif
         </div>
     </div>
 </div>
 
 <script>
-    var datos = [];
+    var datos = JSON.parse(document.getElementById('datos_json').value || '[]');
 
-
+    renderizarDatos()
     function renderizarDatos() {
         const contenedor = $('#contenido-1');
         contenedor.empty();

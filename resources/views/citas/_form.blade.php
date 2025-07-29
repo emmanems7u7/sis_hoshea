@@ -126,15 +126,11 @@
     </div>
 </div>
 <script>
-    new TomSelect('#paciente_id', {
-    placeholder: 'Seleccione un paciente',
-    allowEmptyOption: true,
-});
-    document.addEventListener('DOMContentLoaded', function () {
+   
+   document.addEventListener('DOMContentLoaded', function () {
         new TomSelect('#paciente_id', {
             placeholder: 'Seleccione un paciente o escriba para buscar',
-            allowEmptyOption: true,
-          
+            allowEmptyOption: true
         });
     });
 </script>

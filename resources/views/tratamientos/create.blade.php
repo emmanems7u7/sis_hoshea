@@ -96,8 +96,32 @@
             @foreach($usuarios as $id => $nombre)
                 '{{ $id }}': '{{ addslashes($nombre) }}',
             @endforeach 
-                                    };
+                                                    };
+
+        async function validar(nuevaCita) {
+            try {
+                const response = await fetch('{{ route("citas.validar.ajax") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(nuevaCita)
+                });
+
+                const data = await response.json();
+                return data;
+
+            } catch (error) {
+                alertify.error('Error en la validación.');
+                return { status: false, mensaje: 'Error en la validación.' };
+            }
+        }
+
+
     </script>
+
+
 
     <script src="{{ asset('js/citas.js') }}"></script>
 

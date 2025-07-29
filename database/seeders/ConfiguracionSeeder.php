@@ -15,7 +15,11 @@ class ConfiguracionSeeder extends Seeder
     {
         DB::table('configuracion')->insert([
             'doble_factor_autenticacion' => '0',
-            'limite_de_sesiones' => '2',
+            'limite_de_sesiones' => '20',
+            'GROQ_API_KEY' => '123',
+            'mantenimiento' => '0',
+            'firma' => '1',
+            'hoja_export' => 'A4',
             'created_at' => Carbon::parse('2025-04-08 09:18:32'),
             'updated_at' => Carbon::parse('2025-04-16 15:15:18'),
         ]);

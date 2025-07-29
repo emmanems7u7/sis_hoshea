@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Diagnostico extends Model
 {
     protected $fillable = [
-        'tratamiento_id',
+        'cita_id',
         'cod_diagnostico',
         'fecha_diagnostico',
         'estado',
@@ -15,9 +15,9 @@ class Diagnostico extends Model
         'evolucion_diagnostico',
     ];
 
-    public function tratamiento()
+    public function cita()
     {
-        return $this->belongsTo(Tratamiento::class);
+        return $this->belongsTo(Cita::class);
     }
 
     public function diagnosticos()

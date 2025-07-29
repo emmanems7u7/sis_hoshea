@@ -21,7 +21,7 @@
     </tr>
     <tr>
         <td style="color: #6c757d;">Tratamiento:</td>
-        <td style="font-weight: bold;">{{ $tratamiento->nombre }}</td>
+        <td style="font-weight: bold;">{{ $tratamiento->nombre ?? 'Sin tratamiento' }}</td>
     </tr>
     <tr>
         <td style="color: #6c757d;">Observaciones:</td>

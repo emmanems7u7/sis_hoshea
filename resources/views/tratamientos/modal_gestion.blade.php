@@ -4,9 +4,12 @@
 
         <form id="form-gestion-cita" method="POST">
             @csrf
-            <input type="hidden" name="planes_json" id="planes_json">
-            <input type="hidden" name="datos_json" id="datos_json">
-            <input type="hidden" name="objetivos_json" id="objetivos_json">
+
+            <input type="hidden" name="modal" id="modal" value="modal_gestion">
+            <input type="hidden" name="planes_json" id="planes_json" value="{{ old('planes_json') }}">
+            <input type="hidden" name="datos_json" id="datos_json" value="{{ old('datos_json') }}">
+            <input type="hidden" name="objetivos_json" id="objetivos_json" value="{{ old('objetivos_json') }}">
+
             <div
                 class="modal-content {{ auth()->user()->preferences && auth()->user()->preferences->dark_mode ? 'bg-dark text-white' : 'bg-white text-dark' }}">
 
@@ -34,11 +37,11 @@
                     <div class="row mb-2">
                         <h6 class="fw-bold border-bottom pb-1">Datos del paciente</h6>
                         <div class="col-md-6"><strong>Nombre del paciente:</strong>
-                            {{ $tratamiento->paciente->nombre_completo }}</div>
+                            {{ $paciente->nombre_completo }}</div>
                         <div class="col-md-3"><strong>Edad:</strong>
-                            {{ \Carbon\Carbon::parse($tratamiento->paciente->fecha_nacimiento)->age }} años</div>
+                            {{ \Carbon\Carbon::parse($paciente->fecha_nacimiento)->age }} años</div>
                         <div class="col-md-3"><strong>Género:</strong>
-                            {{ $tratamiento->paciente->genero == 'M' ? 'Masculino' : 'Femenino' }}</div>
+                            {{ $paciente->genero == 'M' ? 'Masculino' : 'Femenino' }}</div>
                     </div>
 
                     <div class="accordion-1">
@@ -75,3 +78,21 @@
     </div>
     </form>
 </div>
+<script>
+    @if(session('cita'))
+        let cita = @json(session('cita'));
+        console.log('Cita recibida:', cita);
+    @else
+        let cita = null;
+    @endif
+</script>
+
+@if (session('modal_abierto') === 'modal_gestion' && $errors->any())
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            post_gestion(cita)
+            var myModal = new bootstrap.Modal(document.getElementById('modal_gestion'));
+            myModal.show();
+        });
+    </script>
+@endif
