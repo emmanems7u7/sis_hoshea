@@ -150,7 +150,7 @@ class PacienteController extends Controller
             ->map(function ($diagnostico) {
                 return [
                     'id' => $diagnostico->id,
-                    'tratamiento_id' => $diagnostico->tratamiento_id,
+                    'tratamiento_id' => $diagnostico->cita_id,
                     'cod_diagnostico' => $diagnostico->cod_diagnostico,
                     'criterio_clinico' => $diagnostico->criterio_clinico,
                     'evolucion_diagnostico' => $diagnostico->evolucion_diagnostico,
