@@ -178,7 +178,17 @@ class ServicioController extends Controller
         $inventarios = Inventario::where('stock_actual', '>', 0)->pluck('nombre', 'id');
         $inventarioDetalles = Inventario::where('stock_actual', '>', 0)->get();
 
-        return view('servicios.asignar', compact('inventarios', 'inventarioDetalles', 'serviciosDetalles', 'servicios', 'breadcrumb', 'cita', 'tratamiento', 'examenes', 'planes', 'diagnosticos', 'objetivos', 'paciente'));
+
+
+        $antecedente = Categoria::where('nombre', 'Diagnosticos')->first();
+
+        $antecedentes = Catalogo::where('categoria_id', $antecedente->id)->where('catalogo_estado', 1)->get();
+
+        $familia = Categoria::where('nombre', 'Familiar')->first();
+
+        $familiares = Catalogo::where('categoria_id', $familia->id)->where('catalogo_estado', 1)->get();
+
+        return view('servicios.asignar', compact('antecedente', 'antecedentes', 'familia', 'familiares', 'inventarios', 'inventarioDetalles', 'serviciosDetalles', 'servicios', 'breadcrumb', 'cita', 'tratamiento', 'examenes', 'planes', 'diagnosticos', 'objetivos', 'paciente'));
     }
 
     public function guardar_asignacion(Request $request, $id)
