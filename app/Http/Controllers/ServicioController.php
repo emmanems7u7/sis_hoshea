@@ -71,6 +71,7 @@ class ServicioController extends Controller
 
         $tratamiento = Tratamiento::with('paciente', 'citas.examenes')->find($cita->tratamiento_id);
 
+        $paciente = Paciente::find($cita->paciente_id);
 
         $path = public_path('logo.png');
 
@@ -88,6 +89,8 @@ class ServicioController extends Controller
             'servicios.recibo',
             [
                 'cita' => $cita,
+                'paciente' => $paciente,
+
                 'fecha' => $fecha,
                 'user' => $user,
                 'tratamiento' => $tratamiento,
