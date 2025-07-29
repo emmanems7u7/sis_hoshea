@@ -89,12 +89,7 @@
 
 
 <style>
-    html, body {
-  height: 100%;
-  overflow: hidden;
-  margin: 0;
-  padding: 0;
-}
+   
 .main-content {
   height: 100vh; 
   -webkit-overflow-scrolling: touch; 
