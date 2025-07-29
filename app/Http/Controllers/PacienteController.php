@@ -142,9 +142,11 @@ class PacienteController extends Controller
             ->unique('id')
             ->values();
 
-        $tratamientoIds = $tratamientos->pluck('id')->toArray();
+        $citas = $paciente->citas()->get();
 
-        $diagnosticos = Diagnostico::whereIn('tratamiento_id', $tratamientoIds)
+        $citaIds = $citas->pluck('id')->toArray();
+
+        $diagnosticos = Diagnostico::whereIn('cita_id', $citaIds)
             ->with('catalogo') // aseguramos eager loading para eficiencia
             ->get()
             ->map(function ($diagnostico) {
