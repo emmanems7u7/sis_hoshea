@@ -132,8 +132,7 @@ Route::middleware(['auth', 'can:Configuración'])->group(function () {
         ->middleware('can:configuracion_correo.actualizar');
 
     Route::get('/correo/prueba', [ConfCorreoController::class, 'enviarPrueba'])
-        ->name('correo.prueba')
-        ->middleware('can:configuracion.correo');
+        ->name('correo.prueba');
 
     Route::get('/correos/plantillas', [CorreoController::class, 'index'])
         ->name('correos.index')
