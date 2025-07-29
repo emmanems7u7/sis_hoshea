@@ -19,6 +19,8 @@ class ServicioController extends Controller
 {
     public function index()
     {
+
+
         $breadcrumb = [
             ['name' => 'Inicio', 'url' => route('home')],
             ['name' => 'Servicios', 'url' => route('servicios.index')],
@@ -170,11 +172,11 @@ class ServicioController extends Controller
 
         $servicios = Servicio::where('activo', 1)->pluck('nombre', 'id');
         $serviciosDetalles = Servicio::where('activo', 1)->get();
-
+        $paciente = Paciente::find($cita->id);
         $inventarios = Inventario::where('stock_actual', '>', 0)->pluck('nombre', 'id');
         $inventarioDetalles = Inventario::where('stock_actual', '>', 0)->get();
 
-        return view('servicios.asignar', compact('inventarios', 'inventarioDetalles', 'serviciosDetalles', 'servicios', 'breadcrumb', 'cita', 'tratamiento', 'examenes', 'planes', 'diagnosticos', 'objetivos', ));
+        return view('servicios.asignar', compact('inventarios', 'inventarioDetalles', 'serviciosDetalles', 'servicios', 'breadcrumb', 'cita', 'tratamiento', 'examenes', 'planes', 'diagnosticos', 'objetivos', 'paciente'));
     }
 
     public function guardar_asignacion(Request $request, $id)
