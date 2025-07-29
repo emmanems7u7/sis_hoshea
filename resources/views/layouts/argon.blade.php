@@ -99,8 +99,25 @@
   height: 100vh; 
   -webkit-overflow-scrolling: touch; 
 }
+#loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
 </style>
 
+<div id="loader" style="display: none;">
+    <div id="loader-spinner" class="spinner-border text-light" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+</div>
 
 <body class="{{ isset($preferencias) && $preferencias->dark_mode ? 'dark-version' : '' }} g-sidenav-show bg-gray-100">
     <div class="min-height-300 bg-green_fondo  text-black position-absolute w-100"></div>
