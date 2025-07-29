@@ -172,7 +172,9 @@ class ServicioController extends Controller
 
         $servicios = Servicio::where('activo', 1)->pluck('nombre', 'id');
         $serviciosDetalles = Servicio::where('activo', 1)->get();
+
         $paciente = Paciente::find($cita->id);
+
         $inventarios = Inventario::where('stock_actual', '>', 0)->pluck('nombre', 'id');
         $inventarioDetalles = Inventario::where('stock_actual', '>', 0)->get();
 

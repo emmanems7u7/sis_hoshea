@@ -1,7 +1,7 @@
 <h6 class="fw-bold border-bottom pb-1 mb-2">Datos del Paciente</h6>
 <div class="row mb-1 small">
     <div class="col-5 text-muted">Nombre:</div>
-    <div class="col-7 fw-semibold">{{ $paciente->nombre_completo }}</div>
+    <div class="col-7 fw-semibold">{{ $paciente->nombre_completo ?? '' }}</div>
 </div>
 <div class="row mb-1 small">
     <div class="col-5 text-muted">Género:</div>
