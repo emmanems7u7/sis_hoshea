@@ -328,7 +328,7 @@ Route::prefix('tratamientos')->name('tratamientos.')->group(function () {
     Route::get('/{tratamiento}/finalizar', [TratamientoController::class, 'finalizar'])->name('finalizar')->middleware('can:tratamientos.finalizar');
 
     Route::post('/tratamientos/{tratamiento}/observaciones', [TratamientoController::class, 'guardarObservacion'])
-        ->name('guardarObservacion');
+        ->name('guardarObservacion')->middleware('can:tratamientos.agregar_observacion');
 
 
 
@@ -344,7 +344,7 @@ Route::prefix('citas')->name('citas.')->group(function () {
     Route::delete('/{cita}', [CitaController::class, 'destroy'])->name('destroy')->middleware('can:citas.eliminar');
     Route::put('/', [CitaController::class, 'cambiar_estado'])->name('cambiarEstado')->middleware('can:citas.cambiar_estado');
 
-    Route::post('gestion/{cita}', [CitaController::class, 'store_gestion'])->name('gestion');
+    Route::post('gestion/{cita}', [CitaController::class, 'store_gestion'])->name('gestion')->middleware('can:citas.guardar_gestion');
 
     // Ruta para obtener los datos de una cita para edición (AJAX)
     Route::get('editar-gestion/{cita}', [CitaController::class, 'edit_gestion'])->name('editar_gestion');
@@ -369,6 +369,7 @@ Route::prefix('citas')->name('citas.')->group(function () {
     Route::post('/validar-cita', [CitaController::class, 'validarConflictoAjax'])->name('validar.ajax');
 
 });
+
 Route::prefix('tratamientos')->group(function () {
     Route::get('diagnosticos', [DiagnosticoController::class, 'index'])->name('diagnosticos.index');
     Route::get('diagnosticos/create', [DiagnosticoController::class, 'create'])->name('diagnosticos.create');
