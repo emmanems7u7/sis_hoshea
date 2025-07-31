@@ -17,13 +17,17 @@
             <div class="card shadow-sm mb-2">
                 <div class="card-body">
                     <h5>Información sobre Roles</h5>
-                    <small>- Aquí puedes gestionar los <strong>roles del sistema</strong>, cada uno con sus respectivos
-                        permisos.</small><br>
-                    <small>- Los roles definen lo que un usuario puede o no puede hacer dentro de la plataforma.</small><br>
-                    <small>- Puedes asignar múltiples permisos a un rol, editar su configuración o eliminarlo si ya no es
+                    <small>- En esta sección puedes gestionar los <strong>roles del sistema</strong>, cada uno con sus
+                        respectivos permisos.</small><br>
+                    <small>- Los roles determinan qué acciones puede realizar un usuario dentro de la
+                        plataforma.</small><br>
+                    <small>- Puedes asignar múltiples permisos a un rol, editar sus configuraciones o eliminarlo si ya no es
                         necesario.</small><br>
-                    <small>- Utiliza el botón <strong>"Crear Nuevo Rol"</strong> para agregar uno nuevo con los permisos
-                        correspondientes.</small>
+                    <small>- Para agregar un nuevo rol, utiliza el botón <strong>"Crear Nuevo Rol"</strong> y selecciona los
+                        permisos adecuados.</small><br>
+                    <small class="text-danger">- Se recomienda <strong>no eliminar ni modificar el nombre de los roles ya
+                            existentes</strong>, ya que estan asociados a funciones críticas del sistema.</small>
+
                 </div>
             </div>
         </div>

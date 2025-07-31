@@ -63,12 +63,15 @@
           <i class="fas fa-trash text-danger" style="cursor:pointer;"></i>
         `;
 
-            // Eliminar con animación
+            // Animación de ocultar y eliminar
             div.querySelector('.fa-trash').addEventListener('click', () => {
-                $(div).fadeOut(300, () => {
+                div.style.transition = 'opacity 0.3s';
+                div.style.opacity = 0;
+
+                setTimeout(() => {
                     datosObjetivos.splice(index, 1);
                     renderResumen();
-                });
+                }, 300);
             });
 
             const icon = div.querySelector('.fa-edit');
@@ -78,7 +81,7 @@
                 const nombreSpan = flexDiv.querySelector('.nombre-objetivo');
                 const valorSpan = flexDiv.querySelector('.valor-objetivo');
 
-                if (div.querySelector('input')) return; // ya en edición
+                if (div.querySelector('input')) return;
 
                 const valorActual = valorSpan.textContent;
 
@@ -124,13 +127,20 @@
 
             icon.addEventListener('click', activarEdicion);
 
-            $(div).hide();
+            div.style.opacity = 0;
+            div.style.transition = 'opacity 0.3s';
+
             resumenContainer.appendChild(div);
-            $(div).fadeIn(300);
+
+            // Pequeña animación para simular fadeIn
+            setTimeout(() => {
+                div.style.opacity = 1;
+            }, 10);
         });
 
         document.getElementById('objetivos_json').value = JSON.stringify(datosObjetivos);
     }
+
 
 
     botones.forEach(btn => {

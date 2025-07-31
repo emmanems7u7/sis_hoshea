@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportPDF;
 use App\Models\Catalogo;
 use App\Models\Categoria;
+use App\Models\Configuracion;
 use App\Models\Paciente;
 use App\Models\Diagnostico;
 use App\Models\PacienteAntecedente;
 use App\Models\Tratamiento;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 class PacienteController extends Controller
@@ -134,13 +137,7 @@ class PacienteController extends Controller
             ['name' => 'Ver Paciente', 'url' => route('pacientes.index')],
 
         ];
-        $tratamientos = $paciente->citas()
-            ->with('tratamiento')
-            ->get()
-            ->pluck('tratamiento')
-            ->filter()
-            ->unique('id')
-            ->values();
+        $tratamientos = Tratamiento::with('citas')->where('paciente_id', $paciente->id)->get();
 
         $citas = $paciente->citas()->get();
 
@@ -164,6 +161,72 @@ class PacienteController extends Controller
         return view('pacientes.show', compact('paciente', 'breadcrumb', 'diagnosticos', 'tratamientos'));
     }
 
+
+    public function ExportPaciente(Paciente $paciente)
+    {
+
+        $tratamientos = Tratamiento::with('citas')->where('paciente_id', $paciente->id)->get();
+
+        $citas = $paciente->citas()->get();
+
+        $citaIds = $citas->pluck('id')->toArray();
+
+        $diagnosticos = Diagnostico::whereIn('cita_id', $citaIds)
+            ->with('catalogo') // aseguramos eager loading para eficiencia
+            ->get()
+            ->map(function ($diagnostico) {
+                return [
+                    'id' => $diagnostico->id,
+                    'tratamiento_id' => $diagnostico->cita_id,
+                    'cod_diagnostico' => $diagnostico->cod_diagnostico,
+                    'criterio_clinico' => $diagnostico->criterio_clinico,
+                    'evolucion_diagnostico' => $diagnostico->evolucion_diagnostico,
+                    'fecha_diagnostico' => $diagnostico->fecha_diagnostico,
+                    'nombre_diagnostico' => $diagnostico->catalogo->catalogo_descripcion,
+                ];
+            });
+
+
+        $user = auth()->user();
+
+        $fecha = Carbon::now()->format('d-m-Y H:i:s');
+
+
+        $path = public_path('logo.png');
+
+        if (file_exists($path)) {
+            $type = pathinfo($path, PATHINFO_EXTENSION);
+            $data = file_get_contents($path);
+            $base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+        } else {
+            $base64 = null;
+        }
+        $config = Configuracion::first();
+        $firma = $config->firma;
+        //dd($cita);
+
+
+        return ExportPDF::exportPdf(
+            'pacientes.export_paciente',
+            [
+                'diagnosticos' => $diagnosticos,
+                'tratamientos' => $tratamientos,
+                'user' => $user,
+                'fecha' => $fecha,
+                'logo_base64' => $base64,
+                'firma' => $firma,
+                'paciente' => $paciente,
+                'export' => 'paciente'
+            ],
+            'paciente',
+            false,
+            [
+                'margin_bottom' => 25,
+            ]
+        );
+
+        return view('pacientes.show', compact('', 'breadcrumb', '', ''));
+    }
     // Mostrar formulario edición
     public function edit(Paciente $paciente)
     {

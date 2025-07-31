@@ -379,52 +379,64 @@
 
 
 
-    function cargarGestion(citaId) {
-        const urlEditarGestionBase = "{{ route('citas.editar_gestion', ['cita' => '__ID__']) }}";
-        const url = urlEditarGestionBase.replace('__ID__', citaId);
-        $.ajax({
-            url: url,
-            method: 'GET',
-            dataType: 'json',
-            success: function (data) {
-                // Asignar valores simples
-                $('#cod_diagnostico').val(data.cod_diagnostico).trigger('change'); // si usas Select2
-                $('#criterio_clinico').val(data.criterio_clinico);
-                $('#evolucion_diagnostico').val(data.evolucion_diagnostico);
+function cargarGestion(citaId) {
+    const urlEditarGestionBase = "{{ route('citas.editar_gestion', ['cita' => '__ID__']) }}";
+    const url = urlEditarGestionBase.replace('__ID__', citaId);
 
-                // Asignar arrays a las variables globales
-                datos = data.datos || [];
-                datosObjetivos = data.objetivos || [];
-                planes = data.planes || [];
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) throw new Error('Error en la respuesta');
+        return response.json();
+    })
+    .then(data => {
+        // Asignar valores simples
+        document.getElementById('cod_diagnostico').value = data.cod_diagnostico || '';
+        // Si usas Select2 y quieres disparar el evento "change":
+        const select = document.getElementById('cod_diagnostico');
+        if (select) {
+            const event = new Event('change', { bubbles: true });
+            select.dispatchEvent(event);
+        }
 
-                // Renderizar con tus funciones existentes
-                renderizarDatos();
-                renderResumen();
-                renderPlanes();
+        document.getElementById('criterio_clinico').value = data.criterio_clinico || '';
+        document.getElementById('evolucion_diagnostico').value = data.evolucion_diagnostico || '';
 
-                // Mostrar modal edición
-                const modalEl = document.getElementById('modal_gestion');
-                let modalInstance = bootstrap.Modal.getInstance(modalEl);
-                if (!modalInstance) {
-                    modalInstance = new bootstrap.Modal(modalEl);
-                }
-                modalInstance.show();
+        // Asignar arrays a variables globales
+        datos = data.datos || [];
+        datosObjetivos = data.objetivos || [];
+        planes = data.planes || [];
 
-                // Opcional: si usas validación o algún plugin, reinícialo aquí
-            },
-            error: function () {
-                alertify.error('Error cargando datos de la cita.');
-            }
-        });
-    }
+        // Llama a tus funciones para renderizar
+        renderizarDatos();
+        renderResumen();
+        renderPlanes();
+
+        // Mostrar modal edición usando Bootstrap 5
+        const modalEl = document.getElementById('modal_gestion');
+        let modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (!modalInstance) {
+            modalInstance = new bootstrap.Modal(modalEl);
+        }
+        modalInstance.show();
+    })
+    .catch(() => {
+        alertify.error('Error cargando datos de la cita.');
+    });
+}
+
 </script>
 <script>
-    $(document).ready(function () {
-        $('.btn-gestionar').on('click', function (e) {
+  document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.btn-gestionar').forEach(function (button) {
+        button.addEventListener('click', function (e) {
             e.preventDefault();
 
-            const citaId = $(this).data('cita-id');
-
+            const citaId = this.getAttribute('data-cita-id');
             if (!citaId) return;
 
             const modalEl = document.getElementById('modal_gestion');
@@ -434,40 +446,41 @@
                 modalInstance = new bootstrap.Modal(modalEl);
             }
             modalInstance.show();
-
-
         });
     });
-    document.getElementById('btnCerrarModal').addEventListener('click', function () {
-        alertify.confirm(
-            'Confirmación',
-            '¿Estás seguro? <br> <strong>Los cambios no se guardarán.</strong>',
-            function () {
-                datos = [];
-                datosObjetivos = [];
-                planes = [];
+});
 
-                renderizarDatos();
-                renderResumen();
-                renderPlanes();
-                $('#modal_gestion').modal('hide');
+document.getElementById('btnCerrarModal').addEventListener('click', function () {
+    alertify.confirm(
+        'Confirmación',
+        '¿Estás seguro? <br> <strong>Los cambios no se guardarán.</strong>',
+        function () {
+            // Limpiar arrays
+            datos = [];
+            datosObjetivos = [];
+            planes = [];
 
-            },
-            function () {
-                // Cancelado: no hacer nada
+            // Renderizar nuevamente
+            renderizarDatos();
+            renderResumen();
+            renderPlanes();
+
+            // Cerrar el modal con Bootstrap 5
+            const modalEl = document.getElementById('modal_gestion');
+            const modalInstance = bootstrap.Modal.getInstance(modalEl);
+            if (modalInstance) {
+                modalInstance.hide();
             }
-        ).set('labels', { ok: 'Sí, cerrar', cancel: 'Cancelar' });
-    });
+
+        },
+        function () {
+            // Cancelado: no hacer nada
+        }
+    ).set('labels', { ok: 'Sí, cerrar', cancel: 'Cancelar' });
+});
+
 </script>
 
-<script>
-    $(document).ready(function () {
-        $('.select2').select2({
-            width: '100%',
-            placeholder: 'Seleccione un diagnostico',
-            dropdownParent: $('#modal_gestion') // Reemplaza con el ID real del modal
-        });
-    });
-</script>
+
 
 @endsection

@@ -89,9 +89,11 @@ class DatabaseSeeder extends Seeder
         //INICIO SEEDERS PERMISOS
 
 
+
         $this->call(SeederPermisos_20250718::class);
         $this->call(SeederPermisos_20250726::class);
         $this->call(SeederPermisos_20250728::class);
+        $this->call(SeederPermisos_20250731::class);
         //FIN SEEDERS PERMISOS
 
 

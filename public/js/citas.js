@@ -9,14 +9,18 @@ function agregar_cita() {
         alertify.error('Solo puede haber una primera cita.');
         return; 
     }
-    
+
+    const fecha_hora = document.getElementById('fecha_hora').value;
+    const duracion = document.getElementById('duracion').value;
+    const estado = document.getElementById('estado').value;
+    const observaciones = document.getElementById('observaciones').value;
     // Capturar datos básicos
     let nuevaCita = {
 
-        fecha_hora: $('#fecha_hora').val(),
-        duracion: $('#duracion').val(),
-        estado: $('#estado').val(),
-        observaciones: $('#observaciones').val(),
+        fecha_hora,
+        duracion,
+        estado,
+        observaciones,
         primera_cita:  checkPrimeraCita ? 1 : 0,
         usuarios: [],
       
@@ -30,30 +34,34 @@ function agregar_cita() {
 
    let validacionCorrecta = true;
 
-   $('input[name^="usuarios["]').each(function () {
-       if ($(this).is(':checked')) {
-           let id = $(this).val();
-           let nombre = $('label[for="' + $(this).attr('id') + '"]').text().trim();
-           let rolInput = $('input[name="roles[' + id + ']"]');
-           let rol = rolInput.val().trim();
+   const inputsUsuarios = document.querySelectorAll('input[name^="usuarios["]');
+   nuevaCita.usuarios = [];
    
-           if (rol === '') {
-               // Mostrar mensaje de error o marcar el input
-               rolInput.addClass('is-invalid'); // Bootstrap: marca el input en rojo
-               alertify.error('Por favor, completa la responsabilidad de ' + nombre);
-               validacionCorrecta = false;
-               return false; // Sale del each()
-           } else {
-               rolInput.removeClass('is-invalid'); // Limpia error anterior si aplica
-           }
+   for (const input of inputsUsuarios) {
+     if (input.checked) {
+       const id = input.value;
+       const label = document.querySelector('label[for="' + input.id + '"]');
+       const nombre = label ? label.textContent.trim() : '';
+       const rolInput = document.querySelector('input[name="roles[' + id + ']"]');
+       const rol = rolInput ? rolInput.value.trim() : '';
    
-           nuevaCita.usuarios.push({
-               id: id,
-               nombre: nombre,
-               rol: rol
-           });
+       if (rol === '') {
+         if (rolInput) rolInput.classList.add('is-invalid');
+         alertify.error('Por favor, completa la responsabilidad de ' + nombre);
+         validacionCorrecta = false;
+         break; // Sale del loop
+       } else {
+         if (rolInput) rolInput.classList.remove('is-invalid');
        }
-   });
+   
+       nuevaCita.usuarios.push({
+         id: id,
+         nombre: nombre,
+         rol: rol
+       });
+     }
+   }
+   
    
   
    if (!validacionCorrecta) {
@@ -88,8 +96,9 @@ function agregar_cita() {
 
 
     // --- Validar que la cita esté dentro del rango del tratamiento ---
-    const inicioTratamiento = $('#fecha_inicio').val();
-    const finTratamiento = $('#fecha_fin').val();
+    const inicioTratamiento = document.getElementById('fecha_inicio').value;
+    const finTratamiento = document.getElementById('fecha_fin').value;
+    
 
     const fechaCita = new Date(nuevaCita.fecha_hora);
 
@@ -157,94 +166,111 @@ renderTabla();
 
 // Render tabla
 function renderTabla() {
- 
+    const citasContainer = document.getElementById('citas');
+    const citasJsonInput = document.getElementById('citas_json');
+
+    if (!citasContainer || !citasJsonInput) {
+        console.error('No se encontraron los elementos #citas o #citas_json');
+        return;
+    }
+
     if (citasData.length === 0) {
-        $('#citas').html('<p>No hay citas agregadas.</p>');
+        citasContainer.innerHTML = '<p>No hay citas agregadas.</p>';
         return;
     }
 
     let html = `
-                                                                                                                                                                                                                                                                                            <div class="table-responsive">
-                         <table class="table table-striped table-bordered align-middle">
-                             <thead class="table-dark">
-                                 <tr>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Fecha y Hora</th>
+                        <th>Duración (Min.)</th>
+                        <th>Estado</th>
+                        <th>Observaciones</th>
+                        <th>Primera Cita</th>
+                        <th>Usuarios asignados</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
 
-                                     <th>Fecha y Hora</th>
-                                     <th>Duración (Min.)</th>
-                                     <th>Estado</th>
-                                     <th>Observaciones</th>
-                                     <th>Primera Cita</th>
-                                     <th>Usuarios asignados</th>
-                                 <th>Acciones</th>
-                                 </tr>
-                             </thead>
-                             <tbody>
-                 `;
+    citasData.forEach((cita, i) => {
+        let usuariosConRoles = cita.usuarios.map(usuario => {
+            const nombre = usuario.nombre || 'Desconocido';
+            const rol = usuario.rol || '-';
+            return `- ${nombre} (${rol})`;
+        }).join('<br>');
 
-                 citasData.forEach((cita, i) => {
-                    // Construir la lista de usuarios con nombre y rol
-                    let usuariosConRoles = cita.usuarios.map(usuario => {
-                        const nombre = usuario.nombre || 'Desconocido';
-                        const rol = usuario.rol || '-';
-                        return `- ${nombre} (${rol})`;
-                    }).join('<br>');
-                
-                    const partes = cita.fecha_hora.split('T'); // ["2025-07-13", "21:20"]
-                    const fecha = `${partes[0]} ${partes[1]}`;
-                
-                    html += `
-                        <tr data-index="${i}">
-                            <td>${fecha}</td>
-                            <td>${cita.duracion  || '-'}</td>
-                            <td>${cita.estado}</td>
-                            <td>${cita.observaciones || '-'}</td>
-                            <td>${cita.primera_cita == 1 ? 'Primera Cita' : '-'}</td>
-                            <td>${usuariosConRoles}</td>
-                            <td>
-                                <button class="btn btn-danger btn-sm btn-eliminar" data-index="${i}">
-                                    Eliminar
-                                </button>
-                            </td>
-                        </tr>
-                    `;
-                });
-                
+        const partes = cita.fecha_hora.split('T'); // ["2025-07-13", "21:20"]
+        const fecha = `${partes[0]} ${partes[1]}`;
+
+        html += `
+            <tr data-index="${i}">
+                <td>${fecha}</td>
+                <td>${cita.duracion || '-'}</td>
+                <td>${cita.estado}</td>
+                <td>${cita.observaciones || '-'}</td>
+                <td>${cita.primera_cita == 1 ? 'Primera Cita' : '-'}</td>
+                <td>${usuariosConRoles}</td>
+                <td>
+                    <button class="btn btn-danger btn-sm btn-eliminar" data-index="${i}">
+                        Eliminar
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
 
     html += `
-                                </tbody>
-                            </table>
-                        </div>
-                    `;
+                </tbody>
+            </table>
+        </div>
+    `;
 
-    $('#citas').html(html);
-    $('#citas_json').val(JSON.stringify(citasData));
+    citasContainer.innerHTML = html;
+    citasJsonInput.value = JSON.stringify(citasData);
 
+    // Añadir evento click a los botones eliminar, ya que no se puede usar jQuery
+    const btnsEliminar = citasContainer.querySelectorAll('.btn-eliminar');
+    btnsEliminar.forEach(btn => {
+        btn.addEventListener('click', function () {
+            const index = this.getAttribute('data-index');
+            if (index !== null) {
+                // Aquí puedes manejar la eliminación, por ejemplo:
+                citasData.splice(index, 1);
+                renderTabla(); // Volver a renderizar la tabla tras eliminar
+            }
+        });
+    });
 }
+
 // Limpiar campos que se van a agregar al array
 function limpiarCampos() {
-    $('#fecha_hora').val('');
-    $('#duracion').val('');
-    $('#estado').val('pendiente');
-    $('#observaciones').val('');
-
+    document.getElementById('fecha_hora').value = '';
+    document.getElementById('duracion').value = '';
+    document.getElementById('estado').value = 'pendiente';
+    document.getElementById('observaciones').value = '';
 }
 
 
-// Eliminar fila del array y refrescar tabla
-$('#citas').on('click', '.btn-eliminar', function () {
-    let index = $(this).data('index');
-    alertify.confirm('Confirmación', '¿Deseas eliminar esta cita?',
-        function () {
 
-            citasData.splice(index, 1);
-            renderTabla();
-            alertify.success('Cita eliminada.');
-        },
-        function () {
+document.getElementById('citas').addEventListener('click', function (e) {
+    if (e.target.classList.contains('btn-eliminar')) {
+        const index = e.target.getAttribute('data-index');
 
-            alertify.error('Eliminación cancelada.');
-        }
-    );
+        alertify.confirm('Confirmación', '¿Deseas eliminar esta cita?',
+            function () {
+                citasData.splice(index, 1);
+                renderTabla();
+                alertify.success('Cita eliminada.');
+            },
+            function () {
+                alertify.error('Eliminación cancelada.');
+            }
+        );
+    }
 });
 
 // Inicializar tabla vacía

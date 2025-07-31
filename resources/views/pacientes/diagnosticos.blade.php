@@ -10,9 +10,9 @@
             @foreach($agrupados as $codigo => $grupo)
                 <div class="col-6">
                     <div class="card p-2 shadow-sm h-100">
-                        <div class="card-header bg-light">
+                        <div class="card-header ">
                             <div class="d-flex justify-content-between align-items-center">
-                                <strong class="text-primary">diagnostico:
+                                <strong class="">diagnostico:
                                     {{ $grupo[0]['nombre_diagnostico'] ?? 'Sin nombre' }}</strong>
                                 <span class="badge bg-secondary" title="Cantidad de veces">
                                     {{ count($grupo) }} veces

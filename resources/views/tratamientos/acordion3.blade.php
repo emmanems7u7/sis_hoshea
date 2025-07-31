@@ -87,39 +87,45 @@ document.addEventListener('DOMContentLoaded', function () {
         allowEmptyOption: true
     });
 });
-                                            $(document).ready(function () {
+document.addEventListener('DOMContentLoaded', function () {
+    const btnAgregar = document.getElementById('btn-agregar_diagnostico');
+    const inputDiagnostico = document.getElementById('diagnostico');
 
-$('#btn-agregar_diagnostico').on('click', function (e) {
-    e.preventDefault();
-    const descripcion = $('#diagnostico').val().trim();
+    btnAgregar.addEventListener('click', function (e) {
+        e.preventDefault();
 
-    if (descripcion === '') {
-        alertify.error('El campo no puede estar vacío.');
-        return;
-    }
-
-    $.ajax({
-        url: '{{ route("diagnostico.store_ajax") }}',
-        method: 'POST',
-        data: {
-            descripcion: descripcion,
-            _token: '{{ csrf_token() }}'
-        },
-        success: function (response) {
-            if (response.success) {
-                // Agregar nueva opción al select
-                tomSelectDiagnostico.addOption({ value: response.id, text: response.descripcion });
-                    tomSelectDiagnostico.setValue(response.id);
-
-                    $('#diagnostico').val('');  // limpia input
-                    alertify.success('Diagnóstico agregado con éxito.');
-            }
-        },
-        error: function (xhr) {
-            alertify.error('Error al guardar el diagnóstico.');
+        const descripcion = inputDiagnostico.value.trim();
+        if (descripcion === '') {
+            alertify.error('El campo no puede estar vacío.');
+            return;
         }
+
+        fetch('{{ route("diagnostico.store_ajax") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ descripcion: descripcion })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Error en la solicitud');
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                tomSelectDiagnostico.addOption({ value: data.id, text: data.descripcion });
+                tomSelectDiagnostico.setValue(data.id);
+                inputDiagnostico.value = '';
+                alertify.success('Diagnóstico agregado con éxito.');
+            }
+        })
+        .catch(() => {
+            alertify.error('Error al guardar el diagnóstico.');
+        });
     });
 });
-});
+
                                  
 </script>

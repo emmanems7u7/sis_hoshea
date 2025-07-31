@@ -26,23 +26,15 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 
-    <!-- Select2 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-
-
     <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
 
-    <!-- jQuery (si aún no está incluido) -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-    <!-- Select2 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
-
+   
     @vite(['resources/js/app.js'])
-
+    
     <link href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
@@ -50,7 +42,6 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales-all.global.min.js"></script>
-
 
     @php
         use App\Models\Seccion;
@@ -86,8 +77,7 @@
 
     @endphp
 </head>
-
-
+ 
 
 <style>
    
@@ -270,6 +260,7 @@
 </script>
 @endif
     </aside>
+     
     <main class="main-content position-relative border-radius-lg ">
         <!-- Navbar -->
         <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl " id="navbarBlur"
@@ -376,6 +367,7 @@
         <!-- End Navbar -->
         <div class="container">
         <div class="main-content position-relative max-height-vh-100 h-100">
+       
         <script>
     document.addEventListener('DOMContentLoaded', function () {
         alertify.set('notifier', 'position', 'top-right');
@@ -392,15 +384,17 @@
             @endforeach
         @endif
     });
-</script>
-
+        </script>
+      
         @yield('content')
+      
           </div>
-           
+            
         </div>
 
-        
+  
     </main>
+
 
     <div class="fixed-plugin">
         <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
@@ -480,7 +474,7 @@
         </div>
     </div>
 
-    
+  
     <script>
         function sidebarColor(a) {
           
@@ -732,15 +726,16 @@
 
     </script>
 
-    
+
  
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
     <!--   Core JS Files   -->
-    <script src="{{asset('argon/js/core/popper.min.js')}}"></script>
-
+  <script src="{{ asset('argon/js/core/bootstrap.bundle.min.js') }}"></script>
     <script src="{{asset('argon/js/plugins/perfect-scrollbar.min.js')}}"></script>
     <script src="{{asset('argon/js/plugins/smooth-scrollbar.min.js')}}"></script>
     <script src="{{asset('argon/js/plugins/chartjs.min.js')}}"></script>
+
+
 
     
 <style>

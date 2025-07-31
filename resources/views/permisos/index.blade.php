@@ -62,9 +62,7 @@
 
                     </div>
                     <div class="card-footer">
-                        <button class="btn btn-sm btn-info" onclick="editarPermiso({{ $permiso->id }})">
-                            <i class="fas fa-edit"></i> Editar
-                        </button>
+
                         <form action="{{ route('permissions.destroy', $permiso->id) }}" method="POST" class="d-inline"
                             onsubmit="return confirm('¿Seguro que deseas eliminar este permiso?')">
                             @csrf
@@ -84,33 +82,35 @@
     </div>
 
     {{-- Paginación --}}
-    <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center">
+    <div class="table-responsive">
 
-            <li class="page-item {{ $permissions->onFirstPage() ? 'disabled' : '' }}">
-                <a class="page-link" href="{{ $permissions->previousPageUrl() }}" aria-label="Previous">
-                    <i class="fa fa-angle-left"></i>
-                    <span class="sr-only">Anterior</span>
-                </a>
-            </li>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
 
-
-            @foreach ($permissions->getUrlRange(1, $permissions->lastPage()) as $page => $url)
-                <li class="page-item {{ $page == $permissions->currentPage() ? 'active' : '' }}">
-                    <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                <li class="page-item {{ $permissions->onFirstPage() ? 'disabled' : '' }}">
+                    <a class="page-link" href="{{ $permissions->previousPageUrl() }}" aria-label="Previous">
+                        <i class="fa fa-angle-left"></i>
+                        <span class="sr-only">Anterior</span>
+                    </a>
                 </li>
-            @endforeach
 
 
-            <li class="page-item {{ $permissions->hasMorePages() ? '' : 'disabled' }}">
-                <a class="page-link" href="{{ $permissions->nextPageUrl() }}" aria-label="Next">
-                    <i class="fa fa-angle-right"></i>
-                    <span class="sr-only">Siguiente</span>
-                </a>
-            </li>
-        </ul>
-    </nav>
+                @foreach ($permissions->getUrlRange(1, $permissions->lastPage()) as $page => $url)
+                    <li class="page-item {{ $page == $permissions->currentPage() ? 'active' : '' }}">
+                        <a class="page-link" href="{{ $url }}">{{ $page }}</a>
+                    </li>
+                @endforeach
 
+
+                <li class="page-item {{ $permissions->hasMorePages() ? '' : 'disabled' }}">
+                    <a class="page-link" href="{{ $permissions->nextPageUrl() }}" aria-label="Next">
+                        <i class="fa fa-angle-right"></i>
+                        <span class="sr-only">Siguiente</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 
 
 

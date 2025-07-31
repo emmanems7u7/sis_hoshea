@@ -84,58 +84,65 @@
         const urlVerGestionBase = "{{ route('citas.ver_gestion', ['cita' => '__ID__']) }}";
         const url = urlVerGestionBase.replace('__ID__', citaId);
 
-        $.ajax({
-            url: url,
-            method: 'GET',
-            dataType: 'json',
-            success: function (data) {
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
                 // Mostrar valores en texto
-                $('#vista_cod_diagnostico').text(data.cod_diagnostico || '-');
-                $('#vista_criterio_clinico').text(data.criterio_clinico || '-');
-                $('#vista_evolucion_diagnostico').text(data.evolucion_diagnostico || '-');
+                document.getElementById('vista_cod_diagnostico').textContent = data.cod_diagnostico || '-';
+                document.getElementById('vista_criterio_clinico').textContent = data.criterio_clinico || '-';
+                document.getElementById('vista_evolucion_diagnostico').textContent = data.evolucion_diagnostico || '-';
 
                 // Datos simples
-                const contenedorDatos = $('#vista_datos');
-                contenedorDatos.empty();
-
-
+                const contenedorDatos = document.getElementById('vista_datos');
+                contenedorDatos.innerHTML = '';
 
                 (data.datos || []).forEach(d => {
-                    contenedorDatos.append(`
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-2">
-            <div class="border rounded bg-green_tarjetas_claro px-3 py-2 shadow-sm small text-muted">
-                ${d}
-            </div>
-        </div>
- `);
+                    const divCol = document.createElement('div');
+                    divCol.className = 'col-12 col-sm-6 col-md-4 col-lg-3 mb-2';
+
+                    const divInner = document.createElement('div');
+                    divInner.className = 'border rounded bg-green_tarjetas_claro px-3 py-2 shadow-sm small text-muted';
+                    divInner.textContent = d;
+
+                    divCol.appendChild(divInner);
+                    contenedorDatos.appendChild(divCol);
                 });
 
-
-
-                const listaObjetivos = $('#vista_objetivos');
-                listaObjetivos.empty();
+                // Lista de objetivos
+                const listaObjetivos = document.getElementById('vista_objetivos');
+                listaObjetivos.innerHTML = '';
 
                 (data.objetivos || []).forEach(obj => {
-                    const tarjeta = $(`
-        <div class="col-12 col-sm-6 col-lg-4">
-        
-            <div class="border rounded px-3 py-2 mb-2 bg-green_tarjetas_claro shadow-sm">
-            <div class="d-flex justify-content-between align-items-center small">
-                    <span class="fw-semibold text-muted">${obj.nombre}</span>
-                    <span class="text-dark">${obj.valor}</span>
-                </div>
-            </div>
-        </div>
-    `);
+                    const divCol = document.createElement('div');
+                    divCol.className = 'col-12 col-sm-6 col-lg-4';
 
-                    listaObjetivos.append(tarjeta);
+                    const divCard = document.createElement('div');
+                    divCard.className = 'border rounded px-3 py-2 mb-2 bg-green_tarjetas_claro shadow-sm';
+
+                    const divFlex = document.createElement('div');
+                    divFlex.className = 'd-flex justify-content-between align-items-center small';
+
+                    const spanNombre = document.createElement('span');
+                    spanNombre.className = 'fw-semibold text-muted';
+                    spanNombre.textContent = obj.nombre;
+
+                    const spanValor = document.createElement('span');
+                    spanValor.className = 'text-dark';
+                    spanValor.textContent = obj.valor;
+
+                    divFlex.appendChild(spanNombre);
+                    divFlex.appendChild(spanValor);
+
+                    divCard.appendChild(divFlex);
+                    divCol.appendChild(divCard);
+                    listaObjetivos.appendChild(divCol);
                 });
 
-                const listaPlanes = $('#vista_planes');
-                listaPlanes.empty();
+                // Lista de planes
+                const listaPlanes = document.getElementById('vista_planes');
+                listaPlanes.innerHTML = '';
 
                 const gruposPlanes = {};
-
                 (data.planes || []).forEach(plan => {
                     if (!gruposPlanes[plan.tipoNombre]) {
                         gruposPlanes[plan.tipoNombre] = [];
@@ -144,37 +151,49 @@
                 });
 
                 // Contenedor general en filas
-                const fila = $('<div class="row g-2"></div>');
+                const fila = document.createElement('div');
+                fila.className = 'row g-2';
 
                 for (const tipoNombre in gruposPlanes) {
                     const descripciones = gruposPlanes[tipoNombre];
 
-                    const tarjeta = $(`
-        <div class="col-12 col-md-6 col-lg-4">
-            <div class="border rounded bg-green_tarjetas_claro shadow-sm p-2 h-100">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <strong class="small text-muted">${tipoNombre}</strong>
-                    <span class="badge text-dark" >${descripciones.length}</span>
-                </div>
-                <div class="d-flex flex-column gap-1 contenido-descripciones"></div>
-            </div>
-        </div>
-    `);
+                    const divCol = document.createElement('div');
+                    divCol.className = 'col-12 col-md-6 col-lg-4';
 
-                    const contenedorDescripciones = tarjeta.find('.contenido-descripciones');
+                    const divCard = document.createElement('div');
+                    divCard.className = 'border rounded bg-green_tarjetas_claro shadow-sm p-2 h-100';
+
+                    const divHeader = document.createElement('div');
+                    divHeader.className = 'd-flex justify-content-between align-items-center mb-2';
+
+                    const strong = document.createElement('strong');
+                    strong.className = 'small text-muted';
+                    strong.textContent = tipoNombre;
+
+                    const spanBadge = document.createElement('span');
+                    spanBadge.className = 'badge text-dark';
+                    spanBadge.textContent = descripciones.length;
+
+                    divHeader.appendChild(strong);
+                    divHeader.appendChild(spanBadge);
+
+                    const divContenido = document.createElement('div');
+                    divContenido.className = 'd-flex flex-column gap-1 contenido-descripciones';
 
                     descripciones.forEach(descripcion => {
-                        contenedorDescripciones.append(`
-            <div class="small border rounded bg-light px-2 py-1 text-dark" >
-                ${descripcion}
-            </div>
-        `);
+                        const descDiv = document.createElement('div');
+                        descDiv.className = 'small border rounded bg-light px-2 py-1 text-dark';
+                        descDiv.textContent = descripcion;
+                        divContenido.appendChild(descDiv);
                     });
 
-                    fila.append(tarjeta);
+                    divCard.appendChild(divHeader);
+                    divCard.appendChild(divContenido);
+                    divCol.appendChild(divCard);
+                    fila.appendChild(divCol);
                 }
 
-                listaPlanes.append(fila);
+                listaPlanes.appendChild(fila);
 
                 // Mostrar el modal de solo visualización
                 const modalEl = document.getElementById('modal_gestion_vista');
@@ -183,10 +202,10 @@
                     modalInstance = new bootstrap.Modal(modalEl);
                 }
                 modalInstance.show();
-            },
-            error: function () {
+            })
+            .catch(() => {
                 alertify.error('Error cargando la gestión para visualizar.');
-            }
-        });
+            });
     }
+
 </script>

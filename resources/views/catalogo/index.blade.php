@@ -62,10 +62,12 @@
                             @endforeach
                         </div>
                     </div>
-
-                    <div class="d-flex justify-content-center">
-                        {{ $categorias->links('pagination::bootstrap-4') }}
+                    <div class="table-responsive">
+                        <div class="d-flex justify-content-center">
+                            {{ $categorias->links('pagination::bootstrap-4') }}
+                        </div>
                     </div>
+
 
                 </div>
 

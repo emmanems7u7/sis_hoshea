@@ -34,39 +34,52 @@
 
     renderizarDatos()
     function renderizarDatos() {
-        const contenedor = $('#contenido-1');
-        contenedor.empty();
+        const contenedor = document.getElementById('contenido-1');
+        contenedor.innerHTML = ''; // Limpia
 
         datos.forEach((item, index) => {
-            const p = $(`
-            <p class="mb-2 mt-2 d-flex justify-content-between align-items-center border rounded p-2">
-              <span class="texto-item flex-grow-1">${item}</span>
-              <i class="fas fa-edit text-primary me-3" style="cursor:pointer;"></i>
-              <i class="fas fa-trash text-danger" style="cursor:pointer;"></i>
-            </p>
-        `);
+            const p = document.createElement('p');
+            p.className = 'mb-2 mt-2 d-flex justify-content-between align-items-center border rounded p-2';
+
+            const span = document.createElement('span');
+            span.className = 'texto-item flex-grow-1';
+            span.textContent = item;
+
+            const iconEdit = document.createElement('i');
+            iconEdit.className = 'fas fa-edit text-primary me-3';
+            iconEdit.style.cursor = 'pointer';
+
+            const iconDelete = document.createElement('i');
+            iconDelete.className = 'fas fa-trash text-danger';
+            iconDelete.style.cursor = 'pointer';
+
+            p.appendChild(span);
+            p.appendChild(iconEdit);
+            p.appendChild(iconDelete);
+            contenedor.appendChild(p);
 
             // Función para manejar edición
             function activarEdicion() {
-                const icon = p.find('.fa-edit');
-                const span = p.find('.texto-item');
-                const textoActual = span.text();
+                if (p.querySelector('input')) return; // Evita duplicados
 
-                if (p.find('input').length > 0) return;
+                const textoActual = span.textContent;
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.className = 'form-control form-control-sm';
+                input.value = textoActual;
 
-                const input = $(`<input type="text" class="form-control form-control-sm" value="${textoActual}">`);
-                span.replaceWith(input);
+                p.replaceChild(input, span);
                 input.focus();
 
-                icon.removeClass('fa-edit text-primary').addClass('fa-check text-success');
-                icon.off('click').on('click', guardarEdicion);
+                iconEdit.classList.remove('fa-edit', 'text-primary');
+                iconEdit.classList.add('fa-check', 'text-success');
+                iconEdit.onclick = guardarEdicion;
             }
 
             // Función para guardar edición
             function guardarEdicion() {
-                const icon = p.find('.fa-check');
-                const input = p.find('input');
-                const nuevoTexto = input.val().trim();
+                const input = p.querySelector('input');
+                const nuevoTexto = input.value.trim();
 
                 if (nuevoTexto === '') {
                     alertify.error('El texto no puede estar vacío.');
@@ -75,44 +88,60 @@
                 }
 
                 datos[index] = nuevoTexto;
-                input.replaceWith(`<span class="texto-item flex-grow-1">${nuevoTexto}</span>`);
-                icon.removeClass('fa-check text-success').addClass('fa-edit text-primary');
-                icon.off('click').on('click', activarEdicion);
+
+                const nuevoSpan = document.createElement('span');
+                nuevoSpan.className = 'texto-item flex-grow-1';
+                nuevoSpan.textContent = nuevoTexto;
+
+                p.replaceChild(nuevoSpan, input);
+
+                iconEdit.classList.remove('fa-check', 'text-success');
+                iconEdit.classList.add('fa-edit', 'text-primary');
+                iconEdit.onclick = activarEdicion;
 
                 document.getElementById('datos_json').value = JSON.stringify(datos);
             }
 
             // Evento eliminar
-            p.find('.fa-trash').on('click', function () {
-                p.fadeOut(400, function () {
-                    datos.splice(index, 1);
-                    renderizarDatos();
-                });
-            });
+            iconDelete.onclick = function () {
+                p.style.opacity = '1';
+                let fadeOut = setInterval(() => {
+                    if (p.style.opacity > 0) {
+                        p.style.opacity -= 0.1;
+                    } else {
+                        clearInterval(fadeOut);
+                        p.remove();
+                        datos.splice(index, 1);
+                        renderizarDatos(); // Re-render
+                    }
+                }, 30);
+            };
 
             // Evento editar inicial
-            p.find('.fa-edit').on('click', activarEdicion);
+            iconEdit.onclick = activarEdicion;
 
-            // Actualizar input oculto en cada render
+            // Actualizar input oculto
             document.getElementById('datos_json').value = JSON.stringify(datos);
-            contenedor.append(p.hide().fadeIn(400));
         });
     }
 
-    $('#btn-agregar').on('click', () => {
+    document.getElementById('btn-agregar').addEventListener('click', () => {
+        const input = document.getElementById('input-text');
+        const valor = input.value.trim();
 
-        const valor = $('#input-text').val().trim();
         if (valor === '') {
-            alertify.error('Por favor ingrese un sintoma');
+            alertify.error('Por favor ingrese un síntoma');
             return;
-        };
+        }
 
         datos.push(valor);
-        renderizarDatos();
+        renderizarDatos(); // Asegúrate de tener esta función en JS puro
 
-        $('#input-text').val('').focus();
-        console.log('Array actual:', datos);
+        input.value = '';
+        input.focus();
+
     });
+
 
 
 

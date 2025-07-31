@@ -391,55 +391,55 @@ class CitaController extends Controller
         }
 
 
+        if ($cita_->primera_cita == 1) {
+            //logica Antecedente
 
-        //logica Antecedente
-
-        // Validar que venga el campo y sea JSON válido
-        $validator = Validator::make($request->all(), [
-            'antecedentes_json' => ['required', 'json'],
-        ]);
-
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        $antecedentes = json_decode($request->input('antecedentes_json'), true);
-
-        if (!is_array($antecedentes) || empty($antecedentes)) {
-            return back()->withErrors(['antecedentes_json' => 'El contenido de antecedentes es inválido o está vacío'])->withInput();
-        }
-
-        // Validar cada elemento del array
-        foreach ($antecedentes as $index => $item) {
-            if (!isset($item['antecedenteCodigo']) || !isset($item['familiarCodigo'])) {
-                return back()->withErrors(['antecedentes_json' => "El antecedente o familiar en la posición {$index} no es válido."])->withInput();
-            }
-
-            // Validar que los códigos existan en la tabla catalogos
-            $antecedenteExiste = Catalogo::where('catalogo_codigo', $item['antecedenteCodigo'])->exists();
-            $familiarExiste = Catalogo::where('catalogo_codigo', $item['familiarCodigo'])->exists();
-
-            if (!$antecedenteExiste) {
-                return back()->withErrors(['antecedentes_json' => "El código de antecedente '{$item['antecedenteCodigo']}' no existe en catálogo."])->withInput();
-            }
-            if (!$familiarExiste) {
-                return back()->withErrors(['antecedentes_json' => "El código de familiar '{$item['familiarCodigo']}' no existe en catálogo."])->withInput();
-            }
-        }
-        $paciente = Paciente::findOrFail($cita_->paciente_id);
-        // Si todo está OK, borramos antecedentes anteriores y guardamos los nuevos
-        PacienteAntecedente::where('paciente_id', $paciente->id)->delete();
-
-        foreach ($antecedentes as $item) {
-            PacienteAntecedente::create([
-                'paciente_id' => $paciente->id,
-                'antecedente' => $item['antecedenteCodigo'],
-                'familiar' => $item['familiarCodigo'],
+            // Validar que venga el campo y sea JSON válido
+            $validator = Validator::make($request->all(), [
+                'antecedentes_json' => ['required', 'json'],
             ]);
+
+            if ($validator->fails()) {
+                return back()->withErrors($validator)->withInput();
+            }
+
+            $antecedentes = json_decode($request->input('antecedentes_json'), true);
+
+            if (!is_array($antecedentes) || empty($antecedentes)) {
+                return back()->withErrors(['antecedentes_json' => 'El contenido de antecedentes es inválido o está vacío'])->withInput();
+            }
+
+            // Validar cada elemento del array
+            foreach ($antecedentes as $index => $item) {
+                if (!isset($item['antecedenteCodigo']) || !isset($item['familiarCodigo'])) {
+                    return back()->withErrors(['antecedentes_json' => "El antecedente o familiar en la posición {$index} no es válido."])->withInput();
+                }
+
+                // Validar que los códigos existan en la tabla catalogos
+                $antecedenteExiste = Catalogo::where('catalogo_codigo', $item['antecedenteCodigo'])->exists();
+                $familiarExiste = Catalogo::where('catalogo_codigo', $item['familiarCodigo'])->exists();
+
+                if (!$antecedenteExiste) {
+                    return back()->withErrors(['antecedentes_json' => "El código de antecedente '{$item['antecedenteCodigo']}' no existe en catálogo."])->withInput();
+                }
+                if (!$familiarExiste) {
+                    return back()->withErrors(['antecedentes_json' => "El código de familiar '{$item['familiarCodigo']}' no existe en catálogo."])->withInput();
+                }
+            }
+            $paciente = Paciente::findOrFail($cita_->paciente_id);
+            // Si todo está OK, borramos antecedentes anteriores y guardamos los nuevos
+            PacienteAntecedente::where('paciente_id', $paciente->id)->delete();
+
+            foreach ($antecedentes as $item) {
+                PacienteAntecedente::create([
+                    'paciente_id' => $paciente->id,
+                    'antecedente' => $item['antecedenteCodigo'],
+                    'familiar' => $item['familiarCodigo'],
+                ]);
+            }
+
+            //logica Antecedente
         }
-
-        //logica Antecedente
-
         $cita_->estado = 'completada';
         $cita_->gestionado = 1;
         $cita_->fecha_gestion = now();

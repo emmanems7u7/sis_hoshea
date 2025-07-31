@@ -300,6 +300,9 @@ Route::get('/pacientes/{paciente}/edit', [PacienteController::class, 'edit'])->n
 Route::put('/pacientes/{paciente}', [PacienteController::class, 'update'])->name('pacientes.update')->middleware('can:pacientes.actualizar');
 Route::delete('/pacientes/{paciente}', [PacienteController::class, 'destroy'])->name('pacientes.destroy')->middleware('can:pacientes.eliminar');
 Route::get('/pacientes/{paciente}/datos', [PacienteController::class, 'datos'])->name('pacientes.datos');
+Route::get('/paciente/exportar/{paciente}', [PacienteController::class, 'ExportPaciente'])->name('pacientes.exportar');
+
+
 
 /* -------------------- INVENTARIO -------------------- */
 Route::prefix('inventario')->group(function () {

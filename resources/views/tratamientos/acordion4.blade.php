@@ -68,51 +68,58 @@
     });
 
     function renderPlanes() {
-        const contenedor = $('#plan-tratamiento-contenedor');
-        contenedor.empty();
+        const contenedor = document.getElementById('plan-tratamiento-contenedor');
+        contenedor.innerHTML = ''; // Vaciar contenedor
 
         planes.forEach((plan, index) => {
-            const div = $(`
-            <div class="mb-2 border p-2 rounded d-flex justify-content-between align-items-center">
-                <div class="flex-grow-1">
-                    <strong>${plan.tipoNombre}:</strong> <span class="descripcion-plan">${plan.descripcion}</span>
-                </div>
-                <i class="fas fa-edit text-primary me-3" style="cursor:pointer;"></i>
-                <i class="fas fa-trash text-danger" style="cursor:pointer;"></i>
+            const div = document.createElement('div');
+            div.className = 'mb-2 border p-2 rounded d-flex justify-content-between align-items-center';
+
+            div.innerHTML = `
+            <div class="flex-grow-1">
+                <strong>${plan.tipoNombre}:</strong> <span class="descripcion-plan">${plan.descripcion}</span>
             </div>
-        `);
+            <i class="fas fa-edit text-primary me-3" style="cursor:pointer;"></i>
+            <i class="fas fa-trash text-danger" style="cursor:pointer;"></i>
+        `;
 
             // Eliminar
-            div.find('.fa-trash').on('click', function () {
-                div.fadeOut(300, () => {
+            div.querySelector('.fa-trash').addEventListener('click', () => {
+                div.style.transition = 'opacity 0.3s';
+                div.style.opacity = '0';
+                setTimeout(() => {
                     planes.splice(index, 1);
                     renderPlanes();
-                });
+                }, 300);
             });
 
-            const icon = div.find('.fa-edit');
+            // Editar
+            const icon = div.querySelector('.fa-edit');
 
-            // Función editar
             function activarEdicion() {
-                const descripcionSpan = div.find('.descripcion-plan');
+                const descripcionSpan = div.querySelector('.descripcion-plan');
+                if (div.querySelector('textarea')) return;
 
-                if (div.find('textarea').length > 0) return; // ya en edición
+                const descripcionActual = descripcionSpan.textContent;
+                const textarea = document.createElement('textarea');
+                textarea.className = 'form-control form-control-sm';
+                textarea.rows = 4;
+                textarea.value = descripcionActual;
 
-                const descripcionActual = descripcionSpan.text();
-                const textarea = $(`<textarea class="form-control form-control-sm" rows="4">${descripcionActual}</textarea>`);
                 descripcionSpan.replaceWith(textarea);
                 textarea.focus();
 
-                icon.removeClass('fa-edit text-primary').addClass('fa-check text-success');
-                icon.off('click').on('click', guardarEdicion);
+                icon.classList.remove('fa-edit', 'text-primary');
+                icon.classList.add('fa-check', 'text-success');
+                icon.removeEventListener('click', activarEdicion);
+                icon.addEventListener('click', guardarEdicion);
             }
 
-            // Función guardar
             function guardarEdicion() {
-                const textarea = div.find('textarea');
-                const nuevaDescripcion = textarea.val().trim();
+                const textarea = div.querySelector('textarea');
+                const nuevaDescripcion = textarea.value.trim();
 
-                if (nuevaDescripcion === '') {
+                if (!nuevaDescripcion) {
                     alertify.error('La descripción no puede estar vacía.');
                     textarea.focus();
                     return;
@@ -120,23 +127,30 @@
 
                 planes[index].descripcion = nuevaDescripcion;
 
-                const nuevoSpan = $(`<span class="descripcion-plan">${nuevaDescripcion}</span>`);
+                const nuevoSpan = document.createElement('span');
+                nuevoSpan.className = 'descripcion-plan';
+                nuevoSpan.textContent = nuevaDescripcion;
                 textarea.replaceWith(nuevoSpan);
 
-                icon.removeClass('fa-check text-success').addClass('fa-edit text-primary');
-                icon.off('click').on('click', activarEdicion);
+                icon.classList.remove('fa-check', 'text-success');
+                icon.classList.add('fa-edit', 'text-primary');
+                icon.removeEventListener('click', guardarEdicion);
+                icon.addEventListener('click', activarEdicion);
 
                 document.getElementById('planes_json').value = JSON.stringify(planes);
             }
 
-            icon.on('click', activarEdicion);
+            icon.addEventListener('click', activarEdicion);
 
-            // Actualizar input oculto en cada render
+            contenedor.appendChild(div);
+            setTimeout(() => {
+                div.style.opacity = '1';
+            }, 10);
+
+            // Actualizar input oculto
             document.getElementById('planes_json').value = JSON.stringify(planes);
-            contenedor.append(div.hide().fadeIn(300));
         });
     }
-
 
     function eliminarPlan(index) {
         planes.splice(index, 1);
