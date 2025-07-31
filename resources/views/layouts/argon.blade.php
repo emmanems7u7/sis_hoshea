@@ -90,7 +90,9 @@
 
 
 <style>
-   
+   body {
+  overflow-y: hidden;
+}
 
 #loader {
     position: fixed;
@@ -741,8 +743,6 @@
     <script src="{{asset('argon/js/plugins/perfect-scrollbar.min.js')}}"></script>
     <script src="{{asset('argon/js/plugins/smooth-scrollbar.min.js')}}"></script>
     <script src="{{asset('argon/js/plugins/chartjs.min.js')}}"></script>
-
-
 
     
 <style>
