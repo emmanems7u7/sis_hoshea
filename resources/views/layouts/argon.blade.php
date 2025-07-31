@@ -90,10 +90,7 @@
 
 <style>
    
-.main-content {
-  height: 100vh; 
-  -webkit-overflow-scrolling: touch; 
-}
+
 #loader {
     position: fixed;
     top: 0;

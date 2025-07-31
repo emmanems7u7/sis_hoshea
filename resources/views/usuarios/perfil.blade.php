@@ -172,48 +172,7 @@
 
                     </form>
                           
-                            <hr class="horizontal dark">
-                            <p class="text-uppercase text-sm">Informacion Adicional</p>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="example-text-input" class="form-control-label text-black">Address</label>
-                                        <input class="form-control" type="text"
-                                            value="Bld Mihail Kogalniceanu, nr. 8 Bl 1, Sc 1, Ap 09">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="example-text-input" class="form-control-label text-black">City</label>
-                                        <input class="form-control" type="text" value="New York">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="example-text-input" class="form-control-label text-black">Country</label>
-                                        <input class="form-control" type="text" value="United States">
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="example-text-input" class="form-control-label text-black">Postal code</label>
-                                        <input class="form-control" type="text" value="437300">
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <hr class="horizontal dark">
-                            <p class="text-uppercase text-sm">About me</p>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="form-group">
-                                        <label for="example-text-input" class="form-control-label text-black">About me</label>
-                                        <input class="form-control" type="text"
-                                            value="A beautiful Dashboard for Bootstrap 5. It is Free and Open Source.">
-                                    </div>
-                                </div>
-                            </div>
+                           
                         </div>
                     </div>
                 </div>
