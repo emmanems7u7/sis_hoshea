@@ -55,7 +55,9 @@ class UserController extends Controller
             ['name' => 'Perfil', 'url' => route('users.index')],
         ];
 
-        return view('usuarios.perfil', compact('user', 'breadcrumb'));
+
+        $paises = Catalogo::where('categoria_id', 5)->get();
+        return view('usuarios.perfil', compact('paises', 'user', 'breadcrumb'));
     }
 
     // Almacenar un nuevo usuario

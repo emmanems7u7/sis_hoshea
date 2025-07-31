@@ -28,7 +28,7 @@ class MenuController extends Controller
 
         $secciones = Seccion::all();
 
-        $menus = Menu::with('seccion')->paginate(10);
+        $menus = Menu::with('seccion')->orderBy('seccion_id')->paginate(10);
 
         $routes = Route::getRoutes();
         //dd($routes);

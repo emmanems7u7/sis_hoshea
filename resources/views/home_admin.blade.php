@@ -74,6 +74,9 @@
 </div>
 
 <script>
+
+
+
     function getToolbarConfig() {
         if (window.innerWidth < 576) {
             // Móvil: toolbar simple
@@ -110,7 +113,7 @@
 
             events: [
                 @foreach ($citas as $cita)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {
                         title: '{{ $cita->paciente->nombre_completo }}',
                         start: '{{ $cita->fecha_hora }}',
                         extendedProps: {
@@ -153,7 +156,7 @@
             aspectRatio: 1.35,
             events: [
                 @foreach ($tratamientos as $tratamiento)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {
                         title: '{{ $tratamiento->paciente->nombre_completo }} - {{ $tratamiento->nombre }}',
                         start: '{{ $tratamiento->fecha_inicio->format('Y-m-d') }}',
                         end: '{{ $tratamiento->fecha_fin ? $tratamiento->fecha_fin->addDay()->format('Y-m-d') : $tratamiento->fecha_inicio->format('Y-m-d') }}',

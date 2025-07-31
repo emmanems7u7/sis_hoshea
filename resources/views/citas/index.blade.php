@@ -51,7 +51,7 @@
                 </form>
             </div>
 
-            <div class="table-responsive">
+            <div class="table-responsive mt-3">
                 <table class="table table-striped table-bordered align-middle">
                     <thead class="table-dark">
                         <tr>
@@ -106,8 +106,9 @@
                     </tbody>
                 </table>
             </div>
-
-            {{ $citas->links() }}
+            <div class="d-flex justify-content-center mt-3">
+                {{ $citas->links('pagination::bootstrap-4') }}
+            </div>
         </div>
     </div>
 

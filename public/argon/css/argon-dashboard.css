@@ -5797,6 +5797,33 @@ fieldset:disabled .btn {
   list-style: none;
 }
 
+.dark-version .pagination {
+  --bs-pagination-padding-x: 0.75rem;
+  --bs-pagination-padding-y: 0.375rem;
+  --bs-pagination-font-size: 1rem;
+  --bs-pagination-color:#566d64;
+  --bs-pagination-bg: #121c41;
+  --bs-pagination-border-width: 1px;
+  --bs-pagination-border-color: #dee2e6;
+  --bs-pagination-border-radius: 0.5rem;
+  --bs-pagination-hover-color: rgb(35.2579787234, 61.375, 210.2420212766);
+  --bs-pagination-hover-bg: #e9ecef;
+  --bs-pagination-hover-border-color: #dee2e6;
+  --bs-pagination-focus-color: rgb(35.2579787234, 61.375, 210.2420212766);
+  --bs-pagination-focus-bg: #e9ecef;
+  --bs-pagination-focus-box-shadow: 0 0 0 0.2rem rgba(94, 114, 228, 0.25);
+  --bs-pagination-active-color: #fafafa;
+  --bs-pagination-active-bg: #566d64;
+  --bs-pagination-active-border-color: #566d64;
+  --bs-pagination-disabled-color: #6c757d;
+  --bs-pagination-disabled-bg: #212637;
+  --bs-pagination-disabled-border-color: #dee2e6;
+  display: flex;
+  padding-left: 0;
+  list-style: none;
+}
+
+
 .page-link {
   position: relative;
   display: block;
@@ -26598,7 +26625,7 @@ p {
   opacity: 0.8;
 }
 .dark-version .accordion-item {
-  color: #fafafa;
+  color: #000;
 }
 
 .dark-version .table> :not(caption)>*>* {

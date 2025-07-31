@@ -51,6 +51,7 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/locales-all.global.min.js"></script>
 
+
     @php
         use App\Models\Seccion;
         use Carbon\Carbon;
@@ -470,7 +471,7 @@
                     <h6 class="mb-0">Claro / Oscuro</h6>
                     <div class="form-check form-switch ps-0 ms-auto my-auto">
                         <input class="form-check-input mt-1 ms-auto" type="checkbox" id="dark-version"
-                            onclick="darkMode(this)" {{ isset($preferencias) && $preferencias->dark_mode ? 'checked' : '' }}>>
+                            onclick="darkMode(this)" {{ isset($preferencias) && $preferencias->dark_mode ? 'checked' : '' }}>
 
                     </div>
                 </div>
@@ -736,12 +737,14 @@
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" crossorigin=""></script>
     <!--   Core JS Files   -->
     <script src="{{asset('argon/js/core/popper.min.js')}}"></script>
-    <script src="{{asset('argon/js/core/bootstrap.min.js')}}"></script>
 
     <script src="{{asset('argon/js/plugins/perfect-scrollbar.min.js')}}"></script>
     <script src="{{asset('argon/js/plugins/smooth-scrollbar.min.js')}}"></script>
     <script src="{{asset('argon/js/plugins/chartjs.min.js')}}"></script>
 
+
+
+    
 <style>
     .alertify .ajs-modal {
     display: flex !important;

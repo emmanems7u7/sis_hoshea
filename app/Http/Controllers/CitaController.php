@@ -58,7 +58,7 @@ class CitaController extends Controller
             });
         }
 
-        $citas = $query->orderBy('fecha_hora', 'desc')->paginate(15);
+        $citas = $query->orderBy('fecha_hora', 'desc')->paginate(2);
 
         $breadcrumb = [
             ['name' => 'Inicio', 'url' => route('home')],
