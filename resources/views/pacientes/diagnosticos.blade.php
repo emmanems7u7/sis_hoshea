@@ -8,7 +8,7 @@
 
         <div class="row g-2">
             @foreach($agrupados as $codigo => $grupo)
-                <div class="col-6">
+                <div class="col-12 col-md-6">
                     <div class="card p-2 shadow-sm h-100">
                         <div class="card-header ">
                             <div class="d-flex justify-content-between align-items-center">

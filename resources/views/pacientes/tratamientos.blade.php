@@ -5,7 +5,7 @@
     @else
         <div class="row g-2">
         @foreach($tratamientos as $t)
-    <div class="col-4">
+    <div class="col-12 col-md-6 col-lg-4">
         <div class="card p-2 shadow-sm h-100">
             <div class="row">
                 <div class="col-6">
