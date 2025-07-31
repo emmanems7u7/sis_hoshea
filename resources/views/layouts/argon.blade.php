@@ -90,9 +90,7 @@
 
 
 <style>
-   body {
-  overflow-y: hidden;
-}
+   
 
 #loader {
     position: fixed;
