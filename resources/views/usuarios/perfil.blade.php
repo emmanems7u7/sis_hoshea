@@ -152,16 +152,7 @@
         <input id="usuario_direccion" class="form-control @error('usuario_direccion') is-invalid @enderror" name="usuario_direccion" type="text" value="{{ old('usuario_direccion', $user->usuario_direccion) }}">
         @error('usuario_direccion') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
     </div>
-    <div class="col-md-4 mb-3">
-        <label for="role" class="form-label">Rol</label>
-        <select name="role" id="role" class="form-control" required>
-            @foreach(\Spatie\Permission\Models\Role::all() as $role)
-                <option value="{{ $role->name }}" {{ (isset($user) && $user->getRoleNames()->first() === $role->name) ? 'selected' : '' }}>
-                    {{ ucfirst($role->name) }}
-                </option>
-            @endforeach
-        </select>
-    </div>
+    
 
     {{-- Fila 5: País, departamento, ciudad --}}
     <div class="col-md-4 mb-3">

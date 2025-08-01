@@ -77,7 +77,7 @@ class BienController extends Controller
         $data = $request->validate([
             'categoria_id' => 'required|exists:categorias,id',
             'nombre' => 'required|string|max:255',
-            'foto' => 'nullable|string|max:255',
+            'foto' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'descripcion' => 'nullable|string',
             'cantidad' => 'required|integer|min:1',
             'ubicacion' => 'nullable|string|max:255',
