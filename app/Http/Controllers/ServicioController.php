@@ -15,6 +15,10 @@ use App\Models\Categoria;
 use App\Models\Paciente;
 use Carbon\Carbon;
 
+use App\Models\User;
+use App\Notifications\StockAlerta;
+use Illuminate\Support\Facades\Notification;
+
 class ServicioController extends Controller
 {
     public function index()
@@ -237,18 +241,64 @@ class ServicioController extends Controller
 
         $cita->servicios()->sync($serviciosIds);
 
+        if ($request->filled('inventario_eliminado')) {
+            $itemsEliminados = json_decode($request->inventario_eliminado, true);
+
+            foreach ($itemsEliminados as $item) {
+                $inventario = Inventario::find($item['id']);
+                if ($inventario) {
+                    $inventario->stock_actual += $item['cantidad'];
+                    $inventario->save();
+                }
+            }
+        }
+
+
+
         // === LÓGICA DE INVENTARIO ===
         if ($request->filled('inventario_utilizado')) {
             $inventarios = json_decode($request->input('inventario_utilizado'), true);
 
             $dataSincronizada = [];
 
+            // Inventarios previamente sincronizados con la cita
+            $inventariosPrevios = $cita->inventarios()->get()->keyBy('id');
+
             foreach ($inventarios as $item) {
-                // Validar que exista el inventario
                 $inventario = Inventario::find($item['id']);
+
                 if ($inventario) {
+                    $cantidadNueva = (int) $item['cantidad'];
+
+                    // Verificar si ya existe en la cita
+                    $cantidadAnterior = $inventariosPrevios->has($item['id'])
+                        ? (int) $inventariosPrevios[$item['id']]->pivot->cantidad
+                        : 0;
+
+                    // Solo restar stock si la cantidad nueva es mayor que la anterior (uso adicional)
+                    if ($cantidadNueva > $cantidadAnterior) {
+                        $diferencia = $cantidadNueva - $cantidadAnterior;
+
+                        $inventario->stock_actual -= $diferencia;
+                        $inventario->save();
+
+                        // Verificar niveles de stock y notificar si es necesario
+                        $stockMinimo = $inventario->stock_minimo;
+                        $stockActual = $inventario->stock_actual;
+                        $porcentaje = 0.2; // 20%
+                        $stockCercano = $stockMinimo + ($stockMinimo * $porcentaje);
+
+                        if ($stockActual <= $stockMinimo) {
+                            $this->notificarAdmins($inventario, 'crítico');
+                        } elseif ($stockActual <= $stockCercano) {
+                            $this->notificarAdmins($inventario, 'bajo');
+                        }
+                    }
+                    // Si la cantidad disminuyó, podrías considerar devolver stock aquí (opcional)
+
+                    // Preparar para sincronizar
                     $dataSincronizada[$item['id']] = [
-                        'cantidad' => $item['cantidad'],
+                        'cantidad' => $cantidadNueva,
                         'created_at' => now(),
                         'updated_at' => now(),
                     ];
@@ -259,7 +309,15 @@ class ServicioController extends Controller
             $cita->inventarios()->sync($dataSincronizada);
         }
 
+
+
         return redirect()->back()->with('status', 'Servicios e inventario asignados correctamente.');
+    }
+
+    function notificarAdmins($inventario, $nivel)
+    {
+        $admins = User::role('admin')->get(); // Spatie Role
+        Notification::send($admins, new StockAlerta($inventario, $nivel));
     }
 
 

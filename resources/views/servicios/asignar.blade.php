@@ -49,9 +49,11 @@
                     <h5 class="card-title" id="inv_nombre"></h5>
                     <p class="card-text" id="inv_descripcion"></p>
                     <p class="card-text"><strong>Precio Unitario:</strong> Bs. <span id="inv_precio"></span></p>
-                    <p class="card-text"><strong>Stock Actual:</strong> <span id="inv_stock"></span> <span
-                            id="inv_unidad"></span>
+                    <p class="card-text"><strong>Stock Actual:</strong> <span id="inv_stock"></span>
                     </p>
+                    <p class="card-text"><strong>Unidad:</strong> <span id="inv_unidad"></span>
+                        </span>
+
                     <div class="mb-2">
                         <label for="inv_cantidad" class="form-label">Cantidad a usar</label>
                         <input type="number" min="1" class="form-control" id="inv_cantidad">
@@ -153,6 +155,9 @@
 
         <!-- INPUT OCULTO -->
         <input type="hidden" name="inventario_utilizado" id="inventario_utilizado">
+        <input type="hidden" name="inventario_eliminado" id="inventario_eliminado">
+
+
         <button type="button" id="btnCancelar" class="btn btn-sm btn-danger">Cancelar</button>
 
         <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
@@ -213,13 +218,13 @@
             inventarioUsado.forEach((item, index) => {
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
-                                                                                                                                                                                                                                <td>${item.nombre}</td>
-                                                                                                                                                                                                                                <td>${item.cantidad}</td>
-                                                                                                                                                                                                                                <td>${item.unidad_medida}</td>
-                                                                                                                                                                                                                                <td>Bs. ${Number(item.precio_unitario).toFixed(2)}</td>
-                                                                                                                                                                                                                                <td>Bs. ${Number(item.subtotal).toFixed(2)}</td>
-                                                                                                                                                                                                                                <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarInventario(${index})">Eliminar</button></td>
-                                                                                                                                                                                                                            `;
+                                                                                                                                                                                                                                                                                            <td>${item.nombre}</td>
+                                                                                                                                                                                                                                                                                            <td>${item.cantidad}</td>
+                                                                                                                                                                                                                                                                                            <td>${item.unidad_medida}</td>
+                                                                                                                                                                                                                                                                                            <td>Bs. ${Number(item.precio_unitario).toFixed(2)}</td>
+                                                                                                                                                                                                                                                                                            <td>Bs. ${Number(item.subtotal).toFixed(2)}</td>
+                                                                                                                                                                                                                                                                                            <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarInventario(${index})">Eliminar</button></td>
+                                                                                                                                                                                                                                                                                        `;
                 tbody.appendChild(fila);
             });
 
@@ -246,7 +251,7 @@
                     id: {{ $servicio->id }},
                     nombre: "{{ $servicio->nombre }}",
                     precio: {{ $servicio->precio }}
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                });
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    });
             @endforeach
         @endif
 
@@ -308,10 +313,10 @@
             serviciosAgregados.forEach((servicio, index) => {
                 const fila = document.createElement('tr');
                 fila.innerHTML = `
-                                                                                                                                                                                                                                                                                                                                                                <td>${servicio.nombre}</td>
-                                                                                                                                                                                                                                                                                                                                                                <td>Bs. ${Number(servicio.precio).toFixed(2)}</td>
-                                                                                                                                                                                                                                                                                                                                                                <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarServicio(${index})">Eliminar</button></td>
-                                                                                                                                                                                                                                                                                                                                                            `;
+                                                                                                                                                                                                                                                                                                                                                                                                                            <td>${servicio.nombre}</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                            <td>Bs. ${Number(servicio.precio).toFixed(2)}</td>
+                                                                                                                                                                                                                                                                                                                                                                                                                            <td><button type="button" class="btn btn-danger btn-sm" onclick="eliminarServicio(${index})">Eliminar</button></td>
+                                                                                                                                                                                                                                                                                                                                                                                                                        `;
                 tbody.appendChild(fila);
             });
 
@@ -326,10 +331,23 @@
         }
 
         function eliminarServicio(index) {
-            serviciosAgregados.splice(index, 1);
-            actualizarTabla();
-            actualizarTotalGeneral();
-            actualizarTotal();
+            alertify.confirm(
+                'Confirmar eliminación',
+                '¿Estás seguro de que deseas eliminar este servicio?',
+                function () {
+                    // Confirmado
+                    serviciosAgregados.splice(index, 1);
+                    actualizarTabla();
+                    actualizarInventarioTabla();
+                    actualizarTotal();
+                    actualizarInventarioTotal();
+                    actualizarTotalGeneral();
+                },
+                function () {
+                    // Cancelado
+                    alertify.error('Cancelado');
+                }
+            ).set('labels', { ok: 'Sí', cancel: 'No' });
         }
 
 
@@ -383,22 +401,44 @@
                 subtotal: (item.precio_unitario * cantidad)
             });
 
+            actualizarTabla();
             actualizarInventarioTabla();
+            actualizarTotal();
             actualizarInventarioTotal();
             actualizarTotalGeneral();
-            actualizarTotal();
 
         }
-
-
+        let inventarioEliminado = [];
 
         function eliminarInventario(index) {
-            inventarioUsado.splice(index, 1);
-            actualizarInventarioTabla();
-            actualizarInventarioTotal();
-            actualizarTotal();
-            actualizarTotalGeneral();
+            const itemEliminado = inventarioUsado[index]; // Capturar antes de eliminar
+
+            alertify.confirm(
+                'Confirmar eliminación',
+                '¿Estás seguro de que deseas eliminar este ítem del inventario?',
+                function () {
+                    // Guardar en array para enviar al backend
+                    inventarioEliminado.push({
+                        id: itemEliminado.id,
+                        cantidad: itemEliminado.cantidad
+                    });
+                    document.getElementById('inventario_eliminado').value = JSON.stringify(inventarioEliminado);
+
+                    // Eliminar visualmente
+                    inventarioUsado.splice(index, 1);
+                    actualizarTabla();
+                    actualizarInventarioTabla();
+                    actualizarTotal();
+                    actualizarInventarioTotal();
+                    actualizarTotalGeneral();
+                },
+                function () {
+                    alertify.error('Cancelado');
+                }
+            ).set('labels', { ok: 'Sí', cancel: 'No' });
         }
+
+
 
 
     </script>
