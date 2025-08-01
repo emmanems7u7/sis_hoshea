@@ -116,8 +116,7 @@ function agregar_cita() {
         const partes = finTratamiento.split('-');
         const dFin = new Date(partes[0], partes[1] - 1, partes[2], 23, 59, 59, 999); // Local, sin problemas de zona horaria
     
-        const fechaCita = new Date($('#fecha_hora').val());
-    
+        const fechaCita = new Date(document.getElementById('fecha_hora').value);
         if (fechaCita > dFin) {
             alertify.error('La cita no puede ser posterior al fin del tratamiento.');
             return;
