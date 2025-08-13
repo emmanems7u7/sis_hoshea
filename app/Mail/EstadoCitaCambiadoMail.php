@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class EstadoCitaCambiadoMail extends Mailable
+class EstadoCitaCambiadoMail extends configuracion_correo
 {
     use Queueable, SerializesModels;
 

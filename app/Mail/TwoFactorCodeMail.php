@@ -8,7 +8,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class TwoFactorCodeMail extends Mailable
+class TwoFactorCodeMail extends configuracion_correo
 {
     use Queueable, SerializesModels;
 

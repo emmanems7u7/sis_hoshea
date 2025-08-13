@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class CorreoDesdePlantilla extends Mailable
+class CorreoDesdePlantilla extends configuracion_correo
 {
     use Queueable, SerializesModels;
 
