@@ -115,7 +115,6 @@ class ConfCorreoController extends Controller
 
         $conf = ConfCorreo::first();
 
-        dd($conf);
 
         if (!$conf) {
             return response()->json(['error' => 'Configuración no encontrada'], 404);
@@ -123,12 +122,15 @@ class ConfCorreoController extends Controller
 
 
         config([
-            'mail.mailers.smtp.host' => $conf->conf_smtp_host,
-            'mail.mailers.smtp.port' => $conf->conf_smtp_port,
-            'mail.mailers.smtp.username' => $conf->conf_smtp_user,
-            'mail.mailers.smtp.password' => $conf->conf_smtp_pass,
-            'mail.mailers.smtp.encryption' => $conf->conf_protocol,
-            'mail.default' => 'smtp',
+            'mail.mailers.smtp.host' => $conf->host,
+            'mail.mailers.smtp.port' => $conf->port,
+            'mail.mailers.smtp.username' => $conf->username,
+            'mail.mailers.smtp.password' => $conf->password,
+            'mail.mailers.smtp.encryption' => $conf->encryption,
+            'mail.default' => $conf->mailer,
+
+            'mail.from.address' => $conf->from_address,
+            'mail.from.name' => $conf->from_name,
         ]);
 
         // Enviar el correo de prueba
