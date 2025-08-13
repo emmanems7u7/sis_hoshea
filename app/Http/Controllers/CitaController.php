@@ -19,11 +19,13 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EstadoCitaCambiadoMail;
 
+use Illuminate\Support\Facades\Schema;
 use App\Exports\ExportPDF;
 
 use Illuminate\Http\Request;
 use App\Interfaces\CatalogoInterface;
 use App\Models\Categoria;
+use App\Models\ConfCorreo;
 use App\Models\PacienteAntecedente;
 use App\Notifications\CitaAsignada;
 use App\Notifications\NotificacionTratamiento;
@@ -282,6 +284,24 @@ class CitaController extends Controller
 
 
         if ($request->has('notificar') && $request->boolean('notificar')) {
+
+            $dbName = env('DB_DATABASE');
+            $tableName = 'conf_correos';
+            if (Schema::connection('mysql')->hasTable($dbName . '.' . $tableName)) {
+                $config = ConfCorreo::first();
+
+                if ($config) {
+                    config([
+                        'mail.mailers.smtp.host' => $config->host,
+                        'mail.mailers.smtp.port' => $config->port,
+                        'mail.mailers.smtp.encryption' => $config->encryption ?: null,
+                        'mail.mailers.smtp.username' => $config->username,
+                        'mail.mailers.smtp.password' => $config->password,
+                        'mail.from.address' => $config->from_address,
+                        'mail.from.name' => $config->from_name,
+                    ]);
+                }
+            }
 
             Mail::to($cita->paciente->email)->send(new EstadoCitaCambiadoMail($cita));
 
