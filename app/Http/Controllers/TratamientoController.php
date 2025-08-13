@@ -312,17 +312,22 @@ class TratamientoController extends Controller
         foreach ($citasArray as $citaData) {
             $fechaCita = Carbon::parse($citaData['fecha_hora']);
 
-            if ($fechaCita->lt($fechaInicio)) {
+            $fechaCitaNormalizada = $fechaCita->copy()->second(0)->microsecond(0);
+            $fechaInicioNormalizada = $fechaInicio->copy()->second(0)->microsecond(0);
+            $fechaFinNormalizada = $fechaFin ? $fechaFin->copy()->second(0)->microsecond(0) : null;
+
+            if ($fechaCitaNormalizada->lt($fechaInicioNormalizada)) {
                 return redirect()->back()
                     ->withInput()
                     ->with('error', 'La fecha de la cita (' . $fechaCita->format('d/m/Y H:i') . ') no puede ser anterior al inicio del tratamiento.');
             }
 
-            if ($fechaFin && $fechaCita->gt($fechaFin)) {
+            if ($fechaFinNormalizada && $fechaCitaNormalizada->gt($fechaFinNormalizada)) {
                 return redirect()->back()
                     ->withInput()
                     ->with('error', 'La fecha de la cita (' . $fechaCita->format('d/m/Y H:i') . ') no puede ser posterior al fin del tratamiento.');
             }
+
 
             $cita = Cita::create([
                 'paciente_id' => $tratamiento->paciente_id,
