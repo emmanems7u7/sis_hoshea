@@ -285,22 +285,8 @@ class CitaController extends Controller
 
         if ($request->has('notificar') && $request->boolean('notificar')) {
 
-            $dbName = env('DB_DATABASE');
-            $tableName = 'conf_correos';
-            if (Schema::connection('mysql')->hasTable($dbName . '.' . $tableName)) {
-                $config = ConfCorreo::first();
-
-                if ($config) {
-                    config([
-                        'mail.mailers.smtp.host' => $config->host,
-                        'mail.mailers.smtp.port' => $config->port,
-                        'mail.mailers.smtp.encryption' => $config->encryption ?: null,
-                        'mail.mailers.smtp.username' => $config->username,
-                        'mail.mailers.smtp.password' => $config->password,
-                        'mail.from.address' => $config->from_address,
-                        'mail.from.name' => $config->from_name,
-                    ]);
-                }
+            if (!$conf) {
+                return response()->json(['error' => 'Configuración no encontrada'], 404);
             }
 
             Mail::to($cita->paciente->email)->send(new EstadoCitaCambiadoMail($cita));

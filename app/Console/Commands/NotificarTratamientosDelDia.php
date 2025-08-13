@@ -23,24 +23,20 @@ class NotificarTratamientosDelDia extends Command
     public function handle(): int
     {
 
-        $dbName = env('DB_DATABASE');
-        $tableName = 'conf_correos';
-        if (Schema::connection('mysql')->hasTable($dbName . '.' . $tableName)) {
-            $config = ConfCorreo::first();
+        $conf = ConfCorreo::first();
 
-            if ($config) {
-                config([
-                    'mail.mailers.smtp.host' => $config->host,
-                    'mail.mailers.smtp.port' => $config->port,
-                    'mail.mailers.smtp.encryption' => $config->encryption ?: null,
-                    'mail.mailers.smtp.username' => $config->username,
-                    'mail.mailers.smtp.password' => $config->password,
-                    'mail.from.address' => $config->from_address,
-                    'mail.from.name' => $config->from_name,
-                ]);
-            }
-        }
 
+        config([
+            'mail.mailers.smtp.host' => $conf->host,
+            'mail.mailers.smtp.port' => $conf->port,
+            'mail.mailers.smtp.username' => $conf->username,
+            'mail.mailers.smtp.password' => $conf->password,
+            'mail.mailers.smtp.encryption' => $conf->encryption,
+            'mail.default' => $conf->mailer,
+
+            'mail.from.address' => $conf->from_address,
+            'mail.from.name' => $conf->from_name,
+        ]);
 
         $hoy = Carbon::today();
 
