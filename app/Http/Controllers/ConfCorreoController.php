@@ -115,6 +115,8 @@ class ConfCorreoController extends Controller
 
         $conf = ConfCorreo::first();
 
+        dd($conf);
+
         if (!$conf) {
             return response()->json(['error' => 'Configuración no encontrada'], 404);
         }
