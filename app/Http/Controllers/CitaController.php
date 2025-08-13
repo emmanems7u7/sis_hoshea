@@ -285,9 +285,21 @@ class CitaController extends Controller
 
         if ($request->has('notificar') && $request->boolean('notificar')) {
 
-            if (!$conf) {
-                return response()->json(['error' => 'Configuración no encontrada'], 404);
-            }
+            $conf = ConfCorreo::first();
+
+
+            config([
+                'mail.mailers.smtp.host' => $conf->host,
+                'mail.mailers.smtp.port' => $conf->port,
+                'mail.mailers.smtp.username' => $conf->username,
+                'mail.mailers.smtp.password' => $conf->password,
+                'mail.mailers.smtp.encryption' => $conf->encryption,
+                'mail.default' => $conf->mailer,
+
+                'mail.from.address' => $conf->from_address,
+                'mail.from.name' => $conf->from_name,
+            ]);
+
 
             Mail::to($cita->paciente->email)->send(new EstadoCitaCambiadoMail($cita));
 
