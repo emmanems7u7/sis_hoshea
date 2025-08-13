@@ -130,9 +130,9 @@ class ConfCorreoController extends Controller
         ]);
 
         // Enviar el correo de prueba
-        // Mail::to($conf->conf_smtp_user)->send(new CorreoPrueba('Este es un correo de prueba.'));
+        Mail::to('emmanuelz7u7@gmail.com')->send(new CorreoPrueba('Este es un correo de prueba.'));
 
-        $this->enviarCorreoPrueba(1, 'emmanuelz7u7@gmail.com');
+        //$this->enviarCorreoPrueba(1, 'emmanuelz7u7@gmail.com');
 
         return response()->json(['mensaje' => 'Correo enviado correctamente.']);
     }
