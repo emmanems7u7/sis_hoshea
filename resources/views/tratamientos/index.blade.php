@@ -98,13 +98,13 @@
                         <div class="mb-2">
                             <span
                                 class="me-3
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            {{ $tratamiento->fecha_inicio->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ $tratamiento->fecha_inicio->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
                                 <strong>Fecha Inicio:</strong> {{ $tratamiento->fecha_inicio->format('d-m-Y') }}
                             </span>
 
                             <span
                                 class="me-3
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            {{ $tratamiento->fecha_fin && $tratamiento->fecha_fin->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ $tratamiento->fecha_fin && $tratamiento->fecha_fin->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
                                 <strong>Fecha Fin:</strong>
                                 {{ $tratamiento->fecha_fin ? $tratamiento->fecha_fin->format('d-m-Y') : '-' }}
                             </span>
@@ -228,19 +228,20 @@
             </form>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
+    <script>document.addEventListener('DOMContentLoaded', function () {
             const modalEl = document.getElementById('estadoModal');
             const modal = new bootstrap.Modal(modalEl);
 
             document.querySelectorAll('.btn-abrir-modal_estado').forEach(span => {
                 span.addEventListener('click', function () {
-                    const fechaHoraStr = this.dataset.fechaHora; // "YYYY-MM-DD HH:mm:ss"
-                    const [fecha, hora] = fechaHoraStr.split(' ');
-                    const [anio, mes, dia] = fecha.split('-');
-                    const [horas, minutos, segundos] = hora.split(':');
+                    const fechaHoraStr = this.dataset.fechaHora; // formato: "YYYY-MM-DD HH:mm:ss"
 
-                    // Crear fecha local sin interpretaciones raras
+                    // Separar fecha y hora
+                    const [fecha, hora] = fechaHoraStr.split(' ');
+                    const [anio, mes, dia] = fecha.split('-').map(Number);
+                    const [horas, minutos, segundos] = hora.split(':').map(Number);
+
+                    // Crear fecha en hora local (sin desfase UTC)
                     const citaFechaHora = new Date(anio, mes - 1, dia, horas, minutos, segundos);
 
                     const ahora = new Date();
@@ -250,8 +251,8 @@
                     if (diffHoras >= 24) {
                         modal.show();
                         document.getElementById('cita_id').value = this.dataset.cita;
-                        modalEl.querySelector('#inputCitaId').value = this.dataset.cita;
-                        modalEl.querySelector('#inputEstado').value = this.dataset.estado;
+                        modalEl.querySelector('#cita_id').value = this.dataset.cita;
+                        modalEl.querySelector('#nuevo_estado').value = this.dataset.estado;
                     } else {
                         alertify.error('La cita debe ser con al menos 24 horas de anticipación para modificar el estado.');
                     }
@@ -259,16 +260,17 @@
             });
 
         });
+    </script>
 
-        <script>
+    <script>
 
 
 
-            document.addEventListener('DOMContentLoaded', function () {
-                    const modal = new bootstrap.Modal(document.getElementById('modalObservacion'));
+        document.addEventListener('DOMContentLoaded', function () {
+            const modal = new bootstrap.Modal(document.getElementById('modalObservacion'));
             const form = document.getElementById('formObservacion');
 
-                    document.querySelectorAll('.btn-abrir-modal').forEach(button => {
+            document.querySelectorAll('.btn-abrir-modal').forEach(button => {
                 button.addEventListener('click', function (e) {
                     e.preventDefault();
 
@@ -280,72 +282,72 @@
 
                     modal.show();
                 });
-                    });
+            });
 
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
 
-            const tratamientoId = document.getElementById('tratamiento_id').value;
-            const observaciones = document.getElementById('observaciones').value;
-            const token = document.querySelector('input[name="_token"]').value;
+                const tratamientoId = document.getElementById('tratamiento_id').value;
+                const observaciones = document.getElementById('observaciones').value;
+                const token = document.querySelector('input[name="_token"]').value;
 
 
-            const urlGuardarObservacion = "{{ route('tratamientos.guardarObservacion', ['tratamiento' => ':id']) }}";
-            const url = urlGuardarObservacion.replace(':id', tratamientoId);
-            fetch(url, {
-                method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': token,
-            'Accept': 'application/json',
-                            },
-            body: JSON.stringify({observaciones}),
-                        })
-                            .then(response => {
-                                if (!response.ok) throw new Error('Error al guardar');
-            return response.json();
-                            })
-                            .then(data => {
-                alertify.success('Observación guardada correctamente');
-            modal.hide();
+                const urlGuardarObservacion = "{{ route('tratamientos.guardarObservacion', ['tratamiento' => ':id']) }}";
+                const url = urlGuardarObservacion.replace(':id', tratamientoId);
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ observaciones }),
+                })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Error al guardar');
+                        return response.json();
+                    })
+                    .then(data => {
+                        alertify.success('Observación guardada correctamente');
+                        modal.hide();
 
 
-            const btn = document.querySelector(`.btn-abrir-modal[data-id="${tratamientoId}"]`);
+                        const btn = document.querySelector(`.btn-abrir-modal[data-id="${tratamientoId}"]`);
 
-            var observacion = document.getElementById('observacion_' + tratamientoId);
-            if (observacion) {
-                observacion.textContent = observaciones;
-                                }
-
-
-            if (btn) btn.dataset.observaciones = observaciones;
-                            })
-                            .catch(() => alert('Error al guardar la observación'));
-                    });
-                });
+                        var observacion = document.getElementById('observacion_' + tratamientoId);
+                        if (observacion) {
+                            observacion.textContent = observaciones;
+                        }
 
 
-            document.addEventListener('show.bs.modal', function (event) {
-                    const trigger = event.relatedTarget;
+                        if (btn) btn.dataset.observaciones = observaciones;
+                    })
+                    .catch(() => alert('Error al guardar la observación'));
+            });
+        });
+
+
+        document.addEventListener('show.bs.modal', function (event) {
+            const trigger = event.relatedTarget;
             const modal = event.target;
 
             modal.querySelector('#cita_id').value = trigger.dataset.cita;
             modal.querySelector('#nuevo_estado').value = trigger.dataset.estado;
-                });
+        });
 
 
-            function confirmarFinalizacion(event, element) {
-                event.preventDefault();
+        function confirmarFinalizacion(event, element) {
+            event.preventDefault();
 
             alertify.confirm('¿Estás seguro?', 'Esta acción finalizará la gestión del tratamiento.',
-            function () {
-                window.location.href = element.href;
-                        },
-            function () {
+                function () {
+                    window.location.href = element.href;
+                },
+                function () {
 
-            }
-            ).set('labels', {cancel: 'Cancelar', ok: 'Sí, finalizar' });
                 }
+            ).set('labels', { cancel: 'Cancelar', ok: 'Sí, finalizar' });
+        }
 
     </script>
 
