@@ -181,7 +181,7 @@
                         <div class="medi-info">
                             <h3>Caso de emergencia</h3>
                             <p>EN CASOS DE EMERGENCIA, ES CRUCIAL COMUNICAR INFORMACIÓN DE MANERA CLARA Y CONCISA.
-                                LLAMAR AL NÚMERO DE EMERGENCIAS O LLAMAR AL 77734436 .
+                                LLAMAR AL NÚMERO DE EMERGENCIAS O LLAMAR AL {{ $config->celular }} .
                             </p>
                         </div>
                     </div>
