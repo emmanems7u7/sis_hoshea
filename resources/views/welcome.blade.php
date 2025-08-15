@@ -46,9 +46,17 @@
     $usuarios = User::role($roles)->get();
 
 
-    $coords = explode(',', $config->geolocalizacion); // [lat, lng]
-    $lat = trim($coords[0]);
-    $lng = trim($coords[1]);
+    $coords = explode(',', $config->geolocalizacion ?? '');
+
+    $lat = isset($coords[0]) ? trim($coords[0]) : null;
+    $lng = isset($coords[1]) ? trim($coords[1]) : null;
+
+    // Opcional: asignar valores por defecto si no existen
+    if ($lat === null || $lng === null) {
+        // Manejo de error, log o valores predeterminados
+        $lat = '0';
+        $lng = '0';
+    }
 
 
 @endphp

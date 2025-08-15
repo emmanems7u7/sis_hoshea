@@ -65,7 +65,7 @@ class DatabaseSeeder extends Seeder
 
         //INICIO SEEDERS SECCION
 
-        $this->call(SeederSeccion_20250812::class);
+      //  $this->call(SeederSeccion_20250812::class);
 
         //FIN SEEDERS SECCION
 
@@ -83,8 +83,8 @@ class DatabaseSeeder extends Seeder
 
         //INICIO SEEDERS MENU
 
-        $this->call(SeederMenu_20250812::class);
-        $this->call(SeederMenu_20250813::class);
+        //$this->call(SeederMenu_20250812::class);
+       // $this->call(SeederMenu_20250813::class);
 
         // $this->call(SeederMenu_20250718::class);
 
@@ -99,8 +99,8 @@ class DatabaseSeeder extends Seeder
         // $this->call(SeederPermisos_20250726::class);
         // $this->call(SeederPermisos_20250728::class);
         // $this->call(SeederPermisos_20250731::class);
-        $this->call(SeederPermisos_20250812::class);
-        $this->call(SeederPermisos_20250813::class);
+       // $this->call(SeederPermisos_20250812::class);
+       // $this->call(SeederPermisos_20250813::class);
 
         //FIN SEEDERS PERMISOS
 
