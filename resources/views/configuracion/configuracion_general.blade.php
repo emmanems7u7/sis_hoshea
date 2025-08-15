@@ -97,6 +97,7 @@
                 id="geolocalizacion" 
                 name="geolocalizacion" 
                 class="form-control" 
+                value="{{ $config->geolocalizacion }}"
                 readonly 
                 placeholder="Seleccione en el mapa">
         </div>
