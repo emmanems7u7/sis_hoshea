@@ -22,6 +22,29 @@ class ConfiguracionController extends Controller
     public function update(Request $request)
     {
 
+        $request->validate([
+            'doble_factor_autenticacion' => 'nullable|boolean',
+            'limite_de_sesiones' => 'nullable|integer|min:1',
+            'GROQ_API_KEY' => 'nullable|string|max:255',
+            'mantenimiento' => 'nullable|boolean',
+            'firma' => 'nullable|boolean',
+            'hoja_export' => 'nullable|string|max:255',
+            'dias_atencion' => 'nullable|array',
+            'dias_atencion.*' => 'string|max:20',
+            'roles_landing' => 'nullable|array',
+            'roles_landing.*' => 'string|max:50',
+            'titulo_presentacion' => 'nullable|string|max:255',
+            'descripcion_presentacion' => 'nullable|string',
+            'direccion' => 'nullable|string|max:255',
+            'celular' => 'nullable|string|regex:/^[0-9+\-\s]{6,20}$/',
+            'geolocalizacion' => [
+                'nullable',
+                'regex:/^-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+$/'
+            ],
+        ]);
+
+
+
         $diasInput = $request->input('dias', []);
 
         $diasCompletos = [];
