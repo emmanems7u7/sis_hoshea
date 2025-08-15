@@ -33,12 +33,12 @@ class ConfiguracionController extends Controller
             'dias_atencion.*' => 'string|max:20',
             'roles_landing' => 'nullable|array',
             'roles_landing.*' => 'string|max:50',
-            'titulo_presentacion' => 'nullable|string|max:255',
-            'descripcion_presentacion' => 'nullable|string',
-            'direccion' => 'nullable|string|max:255',
-            'celular' => 'nullable|string|regex:/^[0-9+\-\s]{6,20}$/',
+            'titulo_presentacion' => 'required|string|max:255',
+            'descripcion_presentacion' => 'required|string',
+            'direccion' => 'required|string|max:255',
+            'celular' => 'required|string|regex:/^[0-9+\-\s]{6,20}$/',
             'geolocalizacion' => [
-                'nullable',
+                'required',
                 'regex:/^-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+$/'
             ],
         ]);
