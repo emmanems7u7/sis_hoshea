@@ -22,6 +22,8 @@ use App\Http\Controllers\DiagnosticoController;
 use App\Http\Controllers\ArtisanController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\BienController;
+use App\Http\Controllers\ServicioLandingController;
+use App\Http\Controllers\AcercaLandingController;
 
 use App\Http\Controllers\UserPersonalizacionController;
 use App\Http\Controllers\ServicioController;
@@ -39,7 +41,7 @@ Route::middleware(['auth', 'can:ejecutar-artisan'])->group(function () {
 });
 
 Route::get('/', function () {
-    return redirect('/login');
+    return view('welcome');
 });
 
 //notificaciones
@@ -231,6 +233,11 @@ Route::middleware(['auth', 'can:Configuración General'])->group(function () {
     Route::put('/admin/configuracion', [ConfiguracionController::class, 'update'])
         ->name('admin.configuracion.update')
         ->middleware('can:configuracion.actualizar');
+
+    Route::put('/servicio/configuracion', [ConfiguracionController::class, 'update_servicio'])
+        ->name('configuracion.servicio');
+    Route::put('/acerca/configuracion', [ConfiguracionController::class, 'update_acercade'])
+        ->name('configuracion.acercade');
 
 });
 
@@ -428,3 +435,17 @@ Route::prefix('biens')->name('biens.')->group(function () {
 
 });
 
+
+Route::get('servicios/landing', [ServicioLandingController::class, 'index'])->name('servicios_landing.index');
+Route::get('servicios/landing/create', [ServicioLandingController::class, 'create'])->name('servicios_landing.create');
+Route::post('servicios/landing', [ServicioLandingController::class, 'store'])->name('servicios_landing.store');
+Route::get('servicios/landing/{servicio}/edit', [ServicioLandingController::class, 'edit'])->name('servicios_landing.edit');
+Route::put('servicios/landing/{servicio}', [ServicioLandingController::class, 'update'])->name('servicios_landing.update');
+Route::delete('servicios/landing/{servicio}', [ServicioLandingController::class, 'destroy'])->name('servicios_landing.destroy');
+
+Route::get('acerca_landings', [AcercaLandingController::class, 'index'])->name('acerca_landings.index');
+Route::get('acerca_landings/create', [AcercaLandingController::class, 'create'])->name('acerca_landings.create');
+Route::post('acerca_landings', [AcercaLandingController::class, 'store'])->name('acerca_landings.store');
+Route::get('acerca_landings/{id}/edit', [AcercaLandingController::class, 'edit'])->name('acerca_landings.edit');
+Route::put('acerca_landings/{id}', [AcercaLandingController::class, 'update'])->name('acerca_landings.update');
+Route::delete('acerca_landings/{id}', [AcercaLandingController::class, 'destroy'])->name('acerca_landings.destroy');

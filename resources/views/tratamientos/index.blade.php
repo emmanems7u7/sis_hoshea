@@ -98,13 +98,13 @@
                         <div class="mb-2">
                             <span
                                 class="me-3
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ $tratamiento->fecha_inicio->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            {{ $tratamiento->fecha_inicio->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
                                 <strong>Fecha Inicio:</strong> {{ $tratamiento->fecha_inicio->format('d-m-Y') }}
                             </span>
 
                             <span
                                 class="me-3
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ $tratamiento->fecha_fin && $tratamiento->fecha_fin->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            {{ $tratamiento->fecha_fin && $tratamiento->fecha_fin->isSameDay($hoy) ? 'text-warning rounded px-2' : '' }}">
                                 <strong>Fecha Fin:</strong>
                                 {{ $tratamiento->fecha_fin ? $tratamiento->fecha_fin->format('d-m-Y') : '-' }}
                             </span>
@@ -162,7 +162,8 @@
                     @csrf
                     <input type="hidden" name="tratamiento_id" id="tratamiento_id">
 
-                    <div class="modal-content">
+                    <div
+                        class="modal-content {{ auth()->user()->preferences && auth()->user()->preferences->dark_mode ? 'bg-dark text-white' : 'bg-white text-dark' }}">
                         <div class="modal-header">
                             <h5 class="modal-title" id="modalObservacionLabel">Editar Observación</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>

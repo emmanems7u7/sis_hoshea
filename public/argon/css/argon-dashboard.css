@@ -28393,3 +28393,8 @@ pre[class*=language-] {
   background: #f9f9f9;
 }
 
+
+.dark-version .ck-content {
+  color: #000 !important;
+  background-color: #333 !important;
+}

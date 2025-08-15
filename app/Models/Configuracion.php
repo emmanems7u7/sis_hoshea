@@ -12,7 +12,18 @@ class Configuracion extends Model
         'GROQ_API_KEY',
         'mantenimiento',
         'firma',
-        'hoja_export'
+        'hoja_export',
+        'dias_atencion',
+        'titulo_servicio',
+        'descripcion_servicio',
+        'titulo_acercade',
+        'descripcion_acercade',
+        'roles_landing',
+        'titulo_presentacion',
+        'descripcion_presentacion',
+        'direccion',
+        'celular',
+        'geolocalizacion'
     ];
 
     protected $table = 'configuracion';
