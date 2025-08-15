@@ -83,6 +83,24 @@
                                 <li class=""><a href="#about">ACERCA DE NOSOTROS </a></li>
                                 <!--li class=""><a href="#testimonial">TESTIMONIO</a></li-->
                                 <li class=""><a href="#contact">CONTACTO</a></li>
+                                <li class="">
+
+                                    @if (Route::has('login'))
+
+                                        @auth
+                                            <a href="{{ url('/home') }}">
+                                                inicio
+                                            </a>
+                                        @else
+                                            <a href="{{ route('login') }}">
+                                                Ingresar
+                                            </a>
+
+
+                                        @endauth
+
+                                    @endif
+                                </li>
                             </ul>
                         </div>
                     </div>
