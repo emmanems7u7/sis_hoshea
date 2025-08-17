@@ -26,7 +26,7 @@ class ConfiguracionController extends Controller
             'doble_factor_autenticacion' => 'nullable|boolean',
             'limite_de_sesiones' => 'nullable|integer|min:1',
             'GROQ_API_KEY' => 'nullable|string|max:255',
-            'mantenimiento' => 'nullable|boolean',
+
             'firma' => 'nullable|boolean',
             'hoja_export' => 'nullable|string|max:255',
             'dias_atencion' => 'nullable|array',
