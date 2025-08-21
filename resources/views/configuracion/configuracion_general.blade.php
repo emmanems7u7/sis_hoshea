@@ -3,6 +3,8 @@
 @section('content')
 
 <form method="POST" action="{{ route('admin.configuracion.update') }}" enctype="multipart/form-data">
+@csrf
+@method('PUT')
 
         <div class="card shadow-lg mx-4  text-black">
             <div class="card-body p-3">
@@ -19,23 +21,21 @@
         <div class="container py-4">
             <div class="row">
                 <div class="col-md-12">
-
-                <div class="card">
-                    <div class="card-body">
-                    <div class="accordion" id="configuracionAccordion">
+                    
+                <div class="accordion" id="configuracionAccordion">
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingConfig">
-                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseConfig" aria-expanded="true" aria-controls="collapseConfig">
+                        <button class="accordion-button shadow-lg border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseConfig" aria-expanded="true" aria-controls="collapseConfig">
                             Configuración del sistema
                         </button>
                     </h2>
                     <div id="collapseConfig" class="accordion-collapse collapse show" aria-labelledby="headingConfig" >
                         <div class="accordion-body text-black">
-                            <form method="POST" action="{{ route('admin.configuracion.update') }}" enctype="multipart/form-data">
-                                @csrf
-                                @method('PUT')
-
-                                <!-- API KEY IA GROQ -->
+                           
+                               
+                              <div class="card shadow-lg">
+                                  <div class="card-body">
+                                        <!-- API KEY IA GROQ -->
                                 <div class="mb-3">
                                     <label for="GROQ_API_KEY" class="form-label text-black">API KEY IA GROQ</label>
                                     <input type="text" class="form-control" id="GROQ_API_KEY"
@@ -87,6 +87,8 @@
                                         @endforeach
                                     </select>
                                 </div>
+                                  </div>
+                              </div>
 
                           
                         </div>
@@ -94,17 +96,19 @@
                 </div>
                 <div class="card mt-3">
                     <div class="card-body">
-                <h5 class=""> Configuración Landing Page</h5>
+                          <h5 class=""> Configuración Landing Page</h5>
                         
                     </div>
                 </div>
                 <div class="accordion-item mt-3">
-                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePresentacion" aria-expanded="false" aria-controls="collapsePresentacion">
+                        <button class="accordion-button shadow-lg border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePresentacion" aria-expanded="false" aria-controls="collapsePresentacion">
                         Imagenes y texto de presentación Landing Page
                         </button>
 
                         <div id="collapsePresentacion" class="accordion-collapse collapse hide" aria-labelledby="headingConfig" >
-                            <div class="row">
+                           <div class="card shadow-lg mt-3">
+                               <div class="card-body">
+                               <div class="row">
                             <!-- Columna izquierda (IMÁGENES) -->
                             <div class="col-md-6">
 
@@ -200,16 +204,22 @@
                            
                             </div>
                             </div>
+                               </div>
+                           </div>
+                        
+                      
                         </div>
                 </div>
               
                 <div class="accordion-item mt-3">
-                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmergencias" aria-expanded="false" aria-controls="collapseEmergencias">
+                        <button class="accordion-button shadow-lg border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmergencias" aria-expanded="false" aria-controls="collapseEmergencias">
                         Texto para Emergencias
                         </button>
 
                         <div id="collapseEmergencias" class="accordion-collapse collapse hide" aria-labelledby="headingConfig" >
-                        <div class="mb-3">
+                       <div class="card shadow-lg mt-3">
+                           <div class="card-body">
+                           <div class="mb-3">
                                 <label for="titulo_emergencia" class="form-label">Título Emergencia</label>
                                 <input type="text" name="titulo_emergencia" id="titulo_emergencia" class="form-control @error('titulo_emergencia') is-invalid @enderror"
                                     value="{{ old('titulo_emergencia',  $config->titulo_emergencia ) }}" required maxlength="255">
@@ -227,15 +237,21 @@
                                 @enderror
                             </div>
                         </div>
+                           </div>
+                       </div>
                 </div>
 
                 <div class="accordion-item mt-3">
-                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContacto" aria-expanded="false" aria-controls="collapseContacto">
+                        <button class="accordion-button shadow-lg border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContacto" aria-expanded="false" aria-controls="collapseContacto">
                         Información de contacto
                         </button>
 
                         <div id="collapseContacto" class="accordion-collapse collapse hide" aria-labelledby="headingConfig" >
-                        <div class="mb-3">
+                        
+                        
+                         <div class="card shadow-lg mt-3">
+                             <div class="card-body">
+                             <div class="mb-3">
                                 <label for="direccion" class="form-label text-black">Direccion Clínica</label>
                                 <input type="text" class="form-control" id="direccion"
                                                             name="direccion" value="{{ $config->direccion }}">
@@ -257,16 +273,20 @@
                                     readonly 
                                     placeholder="Seleccione en el mapa">
                             </div>
+                             </div>
+                         </div>
                         </div>
                 </div>
 
                 <div class="accordion-item mt-3">
-                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAtencion" aria-expanded="false" aria-controls="collapseAtencion">
+                        <button class="accordion-button shadow-lg border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAtencion" aria-expanded="false" aria-controls="collapseAtencion">
                         Dias de atención 
                         </button>
 
                         <div id="collapseAtencion" class="accordion-collapse collapse hide" aria-labelledby="headingConfig" >
-                                @php
+                               <div class="card shadow-lg mt-3">
+                                   <div class="card-body">
+                                   @php
                                     $dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
                                 @endphp
 
@@ -300,17 +320,21 @@
                                             <input type="time" class="form-control" id="fin_{{ $dia }}" name="dias[{{ $dia }}][fin]" value="{{ $horaFin }}">
                                         </div>
                                     </div>
-                                @endforeach
+                                @endforeach  
+                                   </div>
+                               </div>
                         </div>
                 </div>
 
                 <div class="accordion-item mt-3">
-                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRoles" aria-expanded="false" aria-controls="collapseRoles">
+                        <button class="accordion-button shadow-lg border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRoles" aria-expanded="false" aria-controls="collapseRoles">
                         Roles que se visualizan en Landing Page
                         </button>
 
                         <div id="collapseRoles" class="accordion-collapse collapse hide" aria-labelledby="headingConfig" >
-                                @foreach ($roles as $rol)
+                               <div class="card shadow-lg mt-3">
+                                   <div class="card-body">
+                                   @foreach ($roles as $rol)
                                     <div class="form-check mb-2">
                                         <input 
                                             class="form-check-input" 
@@ -324,16 +348,20 @@
                                         </label>
                                     </div>
                                 @endforeach
+                                   </div>
+                               </div>
                         </div>
                 </div>
 
                 <div class="accordion-item mt-3">
-                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSobre" aria-expanded="false" aria-controls="collapseSobre">
+                        <button class="accordion-button shadow-lg border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSobre" aria-expanded="false" aria-controls="collapseSobre">
                         Texto Sobre Nosotros
                         </button>
 
                         <div id="collapseSobre" class="accordion-collapse collapse hide" aria-labelledby="headingConfig">
-                        <div class="mb-3">
+                        <div class="card shadow-lg mt-3">
+                            <div class="card-body">
+                            <div class="mb-3">
                                 <label for="titulo_presentacion" class="form-label">Título</label>
                                 <input type="text" name="titulo_presentacion" id="titulo_presentacion" class="form-control @error('titulo_presentacion') is-invalid @enderror"
                                     value="{{ old('titulo_presentacion',  $config->titulo_presentacion ) }}" required maxlength="255">
@@ -351,9 +379,9 @@
                                 @enderror
                             </div>
                         </div>
-                </div>
-                </div>
-                    </div>
+                            </div>
+                        </div>
+                        </div>
                 </div>
 
                   
