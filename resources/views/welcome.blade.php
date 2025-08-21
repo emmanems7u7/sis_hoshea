@@ -208,10 +208,8 @@
                     <div class="col-md-4 col-sm-4 bor-left">
                         <div class="mt-boxy-color"></div>
                         <div class="medi-info">
-                            <h3>Caso de emergencia</h3>
-                            <p>EN CASOS DE EMERGENCIA, ES CRUCIAL COMUNICAR INFORMACIÓN DE MANERA CLARA Y CONCISA.
-                                LLAMAR AL NÚMERO DE EMERGENCIAS O LLAMAR AL {{ $config->celular }} .
-                            </p>
+                            <h3>{{ $config->titulo_emergencia }}</h3>
+                            {!! $config->descripcion_emergencia !!}
                         </div>
                     </div>
 
