@@ -19,7 +19,10 @@
         <div class="container py-4">
             <div class="row">
                 <div class="col-md-12">
-                <div class="accordion" id="configuracionAccordion">
+
+                <div class="card">
+                    <div class="card-body">
+                    <div class="accordion" id="configuracionAccordion">
                 <div class="accordion-item">
                     <h2 class="accordion-header" id="headingConfig">
                         <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseConfig" aria-expanded="true" aria-controls="collapseConfig">
@@ -349,7 +352,9 @@
                             </div>
                         </div>
                 </div>
-            </div>
+                </div>
+                    </div>
+                </div>
 
                   
                 </div>
