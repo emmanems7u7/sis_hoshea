@@ -515,7 +515,7 @@
                             `*Mensaje:*%0A${message}`;
 
                         // Reemplaza con tu número de WhatsApp (con código de país, sin + ni espacios)
-                        const phoneNumber = '59164156932'; // Ejemplo: Argentina (54) 9 11 1234-5678
+                        const phoneNumber = '591{{ $config->celular }}'; // Ejemplo: Argentina (54) 9 11 1234-5678
 
                         // Abrir WhatsApp con el mensaje formateado
                         window.open(`https://wa.me/${phoneNumber}?text=${whatsappMessage}`, '_blank');
