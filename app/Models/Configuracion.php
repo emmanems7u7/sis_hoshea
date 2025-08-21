@@ -23,7 +23,16 @@ class Configuracion extends Model
         'descripcion_presentacion',
         'direccion',
         'celular',
-        'geolocalizacion'
+        'geolocalizacion',
+
+        'imagen_fondo',
+        'logo_empresa',
+        'titulo_cabecera',
+        'descripcion_cabecera',
+        'imagen_cabecera',
+
+        'titulo_emergencia',
+        'descripcion_emergencia',
     ];
 
     protected $table = 'configuracion';

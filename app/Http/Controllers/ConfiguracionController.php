@@ -41,6 +41,13 @@ class ConfiguracionController extends Controller
                 'required',
                 'regex:/^-?\d{1,3}\.\d+,\s*-?\d{1,3}\.\d+$/'
             ],
+            'imagen_fondo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'logo_empresa' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'titulo_cabecera' => 'required|string|max:255',
+            'descripcion_cabecera' => 'nullable|string',
+            'imagen_cabecera' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'titulo_emergencia' => 'required|string|max:255',
+            'descripcion_emergencia' => 'nullable|string',
         ]);
 
 
@@ -61,6 +68,8 @@ class ConfiguracionController extends Controller
         }
         $config = Configuracion::first();
 
+
+        // Update campos simples
         $config->update([
             'doble_factor_autenticacion' => $request->has('doble_factor_autenticacion'),
             'limite_de_sesiones' => $request->input('limite_de_sesiones'),
@@ -74,11 +83,59 @@ class ConfiguracionController extends Controller
             'descripcion_presentacion' => $request->input('descripcion_presentacion'),
             'direccion' => $request->input('direccion'),
             'celular' => $request->input('celular'),
-            'geolocalizacion' => $request->input('geolocalizacion')
-
+            'geolocalizacion' => $request->input('geolocalizacion'),
+            'titulo_cabecera' => $request->input('titulo_cabecera'),
+            'descripcion_cabecera' => $request->input('descripcion_cabecera'),
+            'titulo_emergencia' => $request->input('titulo_emergencia'),
+            'descripcion_emergencia' => $request->input('descripcion_emergencia'),
 
         ]);
 
+        // Carpeta destino en public
+        $uploadPath = public_path('storage/config/');
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0777, true);
+        }
+
+        // Imagen de fondo
+        if ($request->hasFile('imagen_fondo')) {
+            // eliminar imagen anterior si existe
+            if ($config->imagen_fondo && file_exists(public_path($config->imagen_fondo))) {
+                unlink(public_path($config->imagen_fondo));
+            }
+
+            $file = $request->file('imagen_fondo');
+            $filename = time() . '_fondo.' . $file->getClientOriginalExtension();
+            $file->move($uploadPath, $filename);
+            $config->imagen_fondo = 'storage/config/' . $filename;
+        }
+
+        // Logo empresa
+        if ($request->hasFile('logo_empresa')) {
+            if ($config->logo_empresa && file_exists(public_path($config->logo_empresa))) {
+                unlink(public_path($config->logo_empresa));
+            }
+
+            $file = $request->file('logo_empresa');
+            $filename = time() . '_logo.' . $file->getClientOriginalExtension();
+            $file->move($uploadPath, $filename);
+            $config->logo_empresa = 'storage/config/' . $filename;
+        }
+
+        // Imagen cabecera
+        if ($request->hasFile('imagen_cabecera')) {
+            if ($config->imagen_cabecera && file_exists(public_path($config->imagen_cabecera))) {
+                unlink(public_path($config->imagen_cabecera));
+            }
+
+            $file = $request->file('imagen_cabecera');
+            $filename = time() . '_cabecera.' . $file->getClientOriginalExtension();
+            $file->move($uploadPath, $filename);
+            $config->imagen_cabecera = 'storage/config/' . $filename;
+        }
+
+        // Guardar cambios
+        $config->save();
 
         return redirect()->back()->with('status', 'Configuración actualizada.');
     }

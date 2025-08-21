@@ -62,6 +62,16 @@
 
 <body id="myPage" data-spy="scroll" data-target=".navbar" data-offset="60">
     <!--banner-->
+
+    <style>
+        #banner {
+            background: url('{{ $config->imagen_fondo ? asset($config->imagen_fondo) : '#' }}') no-repeat fixed;
+            background-size: cover;
+            min-height: 650px;
+            position: relative;
+        }
+    </style>
+
     <section id="banner" class="banner">
         <div class="bg-color">
             <nav class="navbar navbar-default navbar-fixed-top">
@@ -106,20 +116,22 @@
                     </div>
                 </div>
             </nav>
+
+
             <div class="container">
                 <div class="row">
                     <div class="banner-info">
                         <div class="banner-logo text-center">
-                            <img src="{{ asset('landing/img/logo1.png') }}" width="400" height="200"
-                                class="img-responsive">
+                            <img src="{{ $config->logo_empresa ? asset($config->logo_empresa) : '#' }}" width="400"
+                                height="200" class="img-responsive">
                         </div>
                         <div class="banner-text text-center">
-                            <h1 class="white">"TU BIENESTAR ES NUESTRA PRIORIDAD, CON CALIDEZ Y COMPROMISO"</h1>
-                            <p>"La salud es la riqueza real."</p>
+                            <h1 class="white">{{ $config->titulo_cabecera ?? '' }}</h1>
+                            {!!  $config->descripcion_cabecera ?? '' !!}
                         </div>
                         <div class="banner-logo text-center">
-                            <img src="{{ asset('landing/img/hospital.png') }}" width="50" height="50"
-                                class="img-responsive">
+                            <img src="{{ $config->imagen_cabecera ? asset($config->imagen_cabecera) : '#' }}" width="50"
+                                height="50" class="img-responsive">
                         </div>
                         <br>
                     </div>

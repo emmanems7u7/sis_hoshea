@@ -2,27 +2,41 @@
 
 @section('content')
 
-        <div class="card shadow-lg mx-4 card-profile-bottom text-black">
+<form method="POST" action="{{ route('admin.configuracion.update') }}" enctype="multipart/form-data">
+
+        <div class="card shadow-lg mx-4  text-black">
             <div class="card-body p-3">
                 <p>Configuración General del Sistema</p>
+
+                @can('configuracion.actualizar')
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary mt-3">Guardar cambios</button>
+                    </div>
+                @endcan
             </div>
         </div>
-        <form method="POST" action="{{ route('admin.configuracion.update') }}">
 
-        <div class="container-fluid py-4">
+        <div class="container py-4">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="card text-black">
-
-                        <div class="card-body">
-
+                <div class="accordion" id="configuracionAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingConfig">
+                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseConfig" aria-expanded="true" aria-controls="collapseConfig">
+                            Configuración del sistema
+                        </button>
+                    </h2>
+                    <div id="collapseConfig" class="accordion-collapse collapse show" aria-labelledby="headingConfig" >
+                        <div class="accordion-body text-black">
+                            <form method="POST" action="{{ route('admin.configuracion.update') }}" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
-                                  <!-- API KEY IA GROQ -->
-                                  <div class="mb-3">
-                                    <label for="GROQ_API_KEY" class="form-label text-black"> API KEY IA GROQ</label>
+
+                                <!-- API KEY IA GROQ -->
+                                <div class="mb-3">
+                                    <label for="GROQ_API_KEY" class="form-label text-black">API KEY IA GROQ</label>
                                     <input type="text" class="form-control" id="GROQ_API_KEY"
-                                        name="GROQ_API_KEY" value="{{ $config->GROQ_API_KEY }}">
+                                        name="GROQ_API_KEY" value="{{ old('GROQ_API_KEY', $config->GROQ_API_KEY) }}">
                                 </div>
 
                                 <!-- Activación de 2FA -->
@@ -34,6 +48,7 @@
                                     </label>
                                 </div>
 
+                                <!-- Modo mantenimiento -->
                                 <div class="form-check form-switch mb-3">
                                     <input class="form-check-input" type="checkbox" id="mant"
                                         name="mantenimiento" {{ $config->mantenimiento ? 'checked' : '' }}>
@@ -42,73 +57,207 @@
                                     </label>
                                 </div>
 
-                                
+                                <!-- Reportes con firma -->
                                 <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" id="mant"
+                                    <input class="form-check-input" type="checkbox" id="firmaSwitch"
                                         name="firma" {{ $config->firma ? 'checked' : '' }}>
-                                    <label class="form-check-label text-black" for="mant">
+                                    <label class="form-check-label text-black" for="firmaSwitch">
                                         Los reportes tienen Firma
                                     </label>
                                 </div>
-                                
+
                                 <!-- Límite de sesiones -->
                                 <div class="mb-3">
                                     <label for="limite_de_sesiones" class="form-label text-black">Límite de sesiones</label>
                                     <input type="number" class="form-control" id="limite_de_sesiones"
-                                        name="limite_de_sesiones" value="{{ $config->limite_de_sesiones }}">
+                                        name="limite_de_sesiones" value="{{ old('limite_de_sesiones', $config->limite_de_sesiones) }}">
                                 </div>
 
-                                <div class="form-group">
-                                    <label for="hoja_export">Tamaño de hoja para reportes</label>
+                                <!-- Tamaño de hoja -->
+                                <div class="mb-3">
+                                    <label for="hoja_export" class="form-label">Tamaño de hoja para reportes</label>
                                     <select class="form-control" name="hoja_export" id="hoja_export">
-                                        <option value="A4" {{ $config->hoja_export == 'A4' ? 'selected' : '' }}>A4 (210 x 297 mm)</option>
-                                        <option value="Letter" {{ $config->hoja_export == 'Letter' ? 'selected' : '' }}>Letter (216 x 279 mm)</option>
-                                        <option value="Legal" {{ $config->hoja_export == 'Legal' ? 'selected' : '' }}>Legal (216 x 356 mm)</option>
-                                        <option value="A5" {{ $config->hoja_export == 'A5' ? 'selected' : '' }}>A5 (148 x 210 mm)</option>
-                                        <option value="A3" {{ $config->hoja_export == 'A3' ? 'selected' : '' }}>A3 (297 x 420 mm)</option>
-                                        <option value="B5" {{ $config->hoja_export == 'B5' ? 'selected' : '' }}>B5 (176 x 250 mm)</option>
-                                        <option value="Folio" {{ $config->hoja_export == 'Folio' ? 'selected' : '' }}>Folio (210 x 330 mm)</option>
-                                        <option value="Executive" {{ $config->hoja_export == 'Executive' ? 'selected' : '' }}>Executive (184 x 267 mm)</option>
+                                        @foreach(['A4','Letter','Legal','A5','A3','B5','Folio','Executive'] as $hoja)
+                                            <option value="{{ $hoja }}" {{ $config->hoja_export == $hoja ? 'selected' : '' }}>
+                                                {{ $hoja }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
+
+                          
                         </div>
-
                     </div>
+                </div>
+                <h5 class="mt-3"> Configuración Landing Page</h5>
+                <div class="accordion-item mt-3">
+                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePresentacion" aria-expanded="false" aria-controls="collapsePresentacion">
+                        Imagenes y texto de presentación Landing Page
+                        </button>
 
-<div class="card mt-3">
-    <div class="card-body">
+                        <div id="collapsePresentacion" class="accordion-collapse collapse hide" aria-labelledby="headingConfig" >
+                            <div class="row">
+                            <!-- Columna izquierda (IMÁGENES) -->
+                            <div class="col-md-6">
 
-    <h5>Informacion de contacto</h5>
-        <div class="mb-3">
-            <label for="direccion" class="form-label text-black">Direccion Clínica</label>
-            <input type="text" class="form-control" id="direccion"
-                                        name="direccion" value="{{ $config->direccion }}">
-        </div>
+                                <!-- Imagen de fondo -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Imagen de fondo</label>
+                                    <input type="file" name="imagen_fondo" id="imagen_fondo" 
+                                        class="form-control" accept="image/*" 
+                                        onchange="previewImage(event, 'preview_fondo')">
 
-        <div class="mb-3">
-            <label for="celular" class="form-label text-black">Telefono Contacto</label>
-            <input type="number" class="form-control" id="celular"
-                                        name="celular" value="{{ $config->celular }}">
-        </div>
+                                    <div class="mt-3 d-flex justify-content-center">
+                                        <div class="border rounded-3 shadow-sm p-3 bg-light" 
+                                            style="width: 100%; max-width: 400px; height: 220px; display:flex; align-items:center; justify-content:center;">
+                                            <img id="preview_fondo" 
+                                                src="{{ $config->imagen_fondo ? asset($config->imagen_fondo) : '#' }}" 
+                                                alt="Previsualización" 
+                                                class="img-fluid rounded {{ $config->imagen_fondo ? '' : 'd-none' }}" 
+                                                style="max-height: 100%; max-width: 100%; object-fit: cover;">
+                                        </div>
+                                    </div>
+                                </div>
 
-        <div class="mb-3">
-            <label for="geolocalizacion" class="form-label">Geolocalización</label>
-            <input type="text" 
-                id="geolocalizacion" 
-                name="geolocalizacion" 
-                class="form-control" 
-                value="{{ $config->geolocalizacion }}"
-                readonly 
-                placeholder="Seleccione en el mapa">
-        </div>
+                                <!-- Logo empresa -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Logo de la empresa</label>
+                                    <input type="file" name="logo_empresa" id="logo_empresa" 
+                                        class="form-control" accept="image/*" 
+                                        onchange="previewImage(event, 'preview_logo')">
 
-    </div>
-</div>
+                                    <div class="mt-3 d-flex justify-content-center">
+                                        <div class="border rounded-3 shadow-sm p-3 bg-light" style="width: 200px; height: 200px; display:flex; align-items:center; justify-content:center;">
+                                            <img id="preview_logo" 
+                                                src="{{ $config->logo_empresa ? asset($config->logo_empresa) : '#' }}" 
+                                                alt="Previsualización" 
+                                                class="img-fluid rounded-circle {{ $config->logo_empresa ? '' : 'd-none' }}" 
+                                                style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                                        </div>
+                                    </div>
+                                </div>
 
-                    <div class="card mt-3">
-                        <div class="card-body">
                             
-                        <h5>Dias de atencion </h5>
+                            </div>
+
+                            <!-- Columna derecha (TEXTOS) -->
+                            <div class="col-md-6">
+
+                             <!-- Imagen cabecera -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Imagen cabecera</label>
+                                <input type="file" name="imagen_cabecera" id="imagen_cabecera" 
+                                    class="form-control" accept="image/*" 
+                                    onchange="previewImage(event, 'preview_cabecera')">
+
+                                <div class="mt-3 d-flex justify-content-center">
+                                    <div class="border rounded-3 shadow-sm p-3 bg-light" 
+                                        style="width: 100%; max-width: 400px; height: 220px; display:flex; align-items:center; justify-content:center;">
+                                        <img id="preview_cabecera" 
+                                            src="{{ $config->imagen_cabecera ? asset($config->imagen_cabecera) : '#' }}" 
+                                            alt="Previsualización" 
+                                            class="img-fluid rounded {{ $config->imagen_cabecera ? '' : 'd-none' }}" 
+                                            style="max-height: 100%; max-width: 100%; object-fit: cover;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            
+                            <!-- Título cabecera -->
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Título cabecera</label>
+                                    <input type="text" 
+                                        name="titulo_cabecera" 
+                                        class="form-control" 
+                                        placeholder="Ingrese título de la cabecera" 
+                                        value="{{ old('titulo_cabecera', $config->titulo_cabecera ?? '') }}">
+                                </div>
+
+                              
+
+                            </div>
+
+                            <div class="col-md-12">
+                                  <!-- Descripción cabecera -->
+                                  <div class="mb-4">
+                                  <label for="descripcion_cabecera" class="form-label">Descripción cabecera</label>
+                                <textarea name="descripcion_cabecera" id="descripcion_cabecera" rows="5"
+                                    class="form-control @error('descripcion_cabecera') is-invalid @enderror">{{ old('descripcion_cabecera', $config->descripcion_cabecera) }}</textarea>
+                                @error('descripcion_cabecera')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                </div>
+
+
+                           
+                            </div>
+                            </div>
+                        </div>
+                </div>
+              
+                <div class="accordion-item mt-3">
+                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmergencias" aria-expanded="false" aria-controls="collapseEmergencias">
+                        Texto para Emergencias
+                        </button>
+
+                        <div id="collapseEmergencias" class="accordion-collapse collapse hide" aria-labelledby="headingConfig" >
+                        <div class="mb-3">
+                                <label for="titulo_emergencia" class="form-label">Título Emergencia</label>
+                                <input type="text" name="titulo_emergencia" id="titulo_emergencia" class="form-control @error('titulo_emergencia') is-invalid @enderror"
+                                    value="{{ old('titulo_emergencia',  $config->titulo_emergencia ) }}" required maxlength="255">
+                                @error('titulo_emergencia')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="descripcion_emergencia" class="form-label">Descripción Emergencia</label>
+                                <textarea name="descripcion_emergencia" id="descripcion_emergencia" rows="5"
+                                    class="form-control @error('descripcion_emergencia') is-invalid @enderror">{{ old('descripcion_emergencia', $config->descripcion_emergencia) }}</textarea>
+                                @error('descripcion_emergencia')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                </div>
+
+                <div class="accordion-item mt-3">
+                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseContacto" aria-expanded="false" aria-controls="collapseContacto">
+                        Información de contacto
+                        </button>
+
+                        <div id="collapseContacto" class="accordion-collapse collapse hide" aria-labelledby="headingConfig" >
+                        <div class="mb-3">
+                                <label for="direccion" class="form-label text-black">Direccion Clínica</label>
+                                <input type="text" class="form-control" id="direccion"
+                                                            name="direccion" value="{{ $config->direccion }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="celular" class="form-label text-black">Telefono Contacto</label>
+                                <input type="number" class="form-control" id="celular"
+                                                            name="celular" value="{{ $config->celular }}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="geolocalizacion" class="form-label">Geolocalización</label>
+                                <input type="text" 
+                                    id="geolocalizacion" 
+                                    name="geolocalizacion" 
+                                    class="form-control" 
+                                    value="{{ $config->geolocalizacion }}"
+                                    readonly 
+                                    placeholder="Seleccione en el mapa">
+                            </div>
+                        </div>
+                </div>
+
+                <div class="accordion-item mt-3">
+                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAtencion" aria-expanded="false" aria-controls="collapseAtencion">
+                        Dias de atención 
+                        </button>
+
+                        <div id="collapseAtencion" class="accordion-collapse collapse hide" aria-labelledby="headingConfig" >
                                 @php
                                     $dias = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
                                 @endphp
@@ -144,15 +293,15 @@
                                         </div>
                                     </div>
                                 @endforeach
-
-                               
-
                         </div>
-                    </div>
+                </div>
 
-                    <div class="card mt-3">
-                        <div class="card-body">
-                        <h5>Roles que se visualizan en Landing</h5>
+                <div class="accordion-item mt-3">
+                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRoles" aria-expanded="false" aria-controls="collapseRoles">
+                        Roles que se visualizan en Landing Page
+                        </button>
+
+                        <div id="collapseRoles" class="accordion-collapse collapse hide" aria-labelledby="headingConfig" >
                                 @foreach ($roles as $rol)
                                     <div class="form-check mb-2">
                                         <input 
@@ -167,17 +316,16 @@
                                         </label>
                                     </div>
                                 @endforeach
-
-
-                                
-                          
                         </div>
-                    </div>
+                </div>
 
-                    <div class="card mt-3">
-                        <div class="card-body">
-                        <h5>Texto Presentación</h5>
-                            <div class="mb-3">
+                <div class="accordion-item mt-3">
+                        <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSobre" aria-expanded="false" aria-controls="collapseSobre">
+                        Texto Sobre Nosotros
+                        </button>
+
+                        <div id="collapseSobre" class="accordion-collapse collapse hide" aria-labelledby="headingConfig">
+                        <div class="mb-3">
                                 <label for="titulo_presentacion" class="form-label">Título</label>
                                 <input type="text" name="titulo_presentacion" id="titulo_presentacion" class="form-control @error('titulo_presentacion') is-invalid @enderror"
                                     value="{{ old('titulo_presentacion',  $config->titulo_presentacion ) }}" required maxlength="255">
@@ -195,17 +343,16 @@
                                 @enderror
                             </div>
                         </div>
-                    </div>  
+                </div>
+            </div>
+
+                  
                 </div>
             </div>
 
         </div>
 
          
-        @can('configuracion.actualizar')
-                                <button type="submit" class="btn btn-primary mt-3">Guardar cambios</button>
-                                @endcan
-
         </form>
 
 
@@ -233,9 +380,53 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+ <!-- Script para previsualización -->
+ <script>
+                            function previewImage(event, idPreview) {
+                                const input = event.target;
+                                const reader = new FileReader();
+
+                                reader.onload = function(){
+                                    const preview = document.getElementById(idPreview);
+                                    preview.src = reader.result;
+                                    preview.classList.remove('d-none');
+                                };
+                                if(input.files[0]){
+                                    reader.readAsDataURL(input.files[0]);
+                                }
+                            }
+                        </script>
+<script>
+    ClassicEditor
+        .create(document.querySelector('#descripcion_cabecera'))
+        .then(editor => {
+            // Accede al editable y cambia estilos
+            const editable = editor.ui.view.editable.element;
+
+            editable.style.minHeight = '150px';
+            editable.style.color = '#000';
+            editable.style.backgroundColor = '#fff';
+        })
+        .catch(error => {
+            console.error(error);
+        });
 
 
-        <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+        ClassicEditor
+        .create(document.querySelector('#descripcion_emergencia'))
+        .then(editor => {
+            // Accede al editable y cambia estilos
+            const editable = editor.ui.view.editable.element;
+
+            editable.style.minHeight = '150px';
+            editable.style.color = '#000';
+            editable.style.backgroundColor = '#fff';
+        })
+        .catch(error => {
+            console.error(error);
+        });
+</script>
                             <script>
                                 ClassicEditor
                                     .create(document.querySelector('#descripcion_presentacion'))
