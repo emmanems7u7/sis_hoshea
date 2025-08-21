@@ -268,10 +268,13 @@
                             <div class="more-features-box-text">
                                 <div class="more-features-box-text-icon"> <i class="{{ $acerca->icono }}"
                                         aria-hidden="true"></i> </div>
-                                <div class="more-features-box-text-description">
+                                <div class="more-features-box-text-description acerca-info">
+
 
                                     {!! $acerca->descripcion !!}
+
                                 </div>
+
                             </div>
 
                         @endforeach

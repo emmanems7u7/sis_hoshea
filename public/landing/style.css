@@ -533,9 +533,6 @@ footer
 
     list-style-type: disc;
     /* viñetas clásicas */
-
-
-
 }
 
 .service-info ul li {
@@ -543,4 +540,14 @@ footer
     /* espacio entre ítems */
     line-height: 1.4;
     /* mejor lectura */
+}
+
+.acerca-info ul {
+    padding-left: 20px !important;
+    list-style-type: disc !important;
+}
+
+.acerca-info ul li {
+    margin-bottom: 0.5em !important;
+    line-height: 1.4 !important;
 }
