@@ -7,6 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('img/apple-icon.png')  }}">
     <link rel="icon" type="image/png" href="{{ asset('logo.png')  }}">
+    
     <title>{{ config('app.name', 'Laravel') }}</title>
     <!--     Fonts and icons     -->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
@@ -367,8 +368,7 @@
             </div>
         </nav>
         <!-- End Navbar -->
-        <div class="container">
-        <div class="main-content position-relative max-height-vh-100 h-100">
+        <div class="container-fluid py-4">
        
         <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -390,8 +390,6 @@
       
         @yield('content')
       
-          </div>
-            
         </div>
 
   
@@ -775,14 +773,7 @@
             ).set('labels', { ok: 'Eliminar', cancel: 'Cancelar' });
         }
 
-        var win = navigator.platform.indexOf('Win') > -1;
-        if (win && document.querySelector('#sidenav-scrollbar')) {
-            var options = {
-                damping: '0.5'
-            }
-            Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-        }
-
+    
        
     </script>
 
