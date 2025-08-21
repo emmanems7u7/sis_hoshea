@@ -89,7 +89,12 @@
                         </div>
                     </div>
                 </div>
-                <h5 class="mt-3"> Configuración Landing Page</h5>
+                <div class="card mt-3">
+                    <div class="card-body">
+                <h5 class=""> Configuración Landing Page</h5>
+                        
+                    </div>
+                </div>
                 <div class="accordion-item mt-3">
                         <button class="accordion-button border-bottom font-weight-bold collapsed bg-green_tarjetas_claro" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePresentacion" aria-expanded="false" aria-controls="collapsePresentacion">
                         Imagenes y texto de presentación Landing Page
