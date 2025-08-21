@@ -18,11 +18,6 @@
 
                     @foreach($tratamiento->citas as $cita)
                         <div class="border bg-green_tarjetas_claro rounded p-3 mb-3 position-relative">
-
-                            <div>
-                                <span class="text-info">{{ $cita->primera_cita == 1 ? 'Primera Cita' : '' }}</span>
-                            </div>
-
                             @php
                                 $estadoClass = match ($cita->estado) {
                                     'pendiente' => 'bg-warning text-white',
@@ -33,6 +28,7 @@
                                 };
                             @endphp
 
+                            <!-- Badge estado -->
                             <span style="cursor: pointer;"
                                 class="badge {{ $estadoClass }} position-absolute top-0 end-0 m-2 btn-abrir-modal_estado"
                                 data-cita="{{ $cita->id }}" data-estado="{{ $cita->estado }}"
@@ -40,37 +36,38 @@
                                 {{ ucfirst($cita->estado) }}
                             </span>
 
-
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <small><strong>Fecha y hora:</strong>
-                                        {{ $cita->fecha_hora->format('Y-m-d H:i') }}</small>
+                            <!-- Agrega un padding-top extra para que el contenido no quede debajo del badge -->
+                            <div class="pt-4">
+                                <div>
+                                    <span class="text-info">{{ $cita->primera_cita == 1 ? 'Primera Cita' : '' }}</span>
                                 </div>
-                                <div class="col-md-6">
-                                    <small><strong>Duración:</strong>
-                                        {{ $cita->duracion ?? '-' }} min.</small>
+
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <small><strong>Fecha y hora:</strong>
+                                            {{ $cita->fecha_hora->format('Y-m-d H:i') }}</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <small><strong>Duración:</strong> {{ $cita->duracion ?? '-' }} min.</small>
+                                    </div>
                                 </div>
+
+                                <small><strong>Personal asignado a la cita:</strong></small>
+                                <div class="d-flex flex-wrap gap-1 mb-2">
+                                    @foreach ($cita->usuarios as $usuario)
+                                        <span class="badge bg-secondary">
+                                            {{ $usuario->name }} ({{ $usuario->pivot->rol_en_cita ?? 'N/A' }})
+                                        </span>
+                                    @endforeach
+                                </div>
+
+                                <a href="{{ route('tratamientos.gestion_cita', ['cita' => $cita, 'tipo' => 1]) }}"
+                                    class="btn btn-sm btn-dark mt-1">
+                                    <i class="fas fa-pencil-alt me-1"></i> Empezar Gestión
+                                </a>
                             </div>
-
-                            <small><strong>Personal asignado a la cita:</strong></small>
-                            <div class="d-flex flex-wrap gap-1 mb-2">
-                                @foreach ($cita->usuarios as $usuario)
-                                    <span class="badge bg-secondary">
-                                        {{ $usuario->name }} ({{ $usuario->pivot->rol_en_cita ?? 'N/A' }})
-                                    </span>
-                                @endforeach
-                            </div>
-
-
-
-                            <a href="{{ route('tratamientos.gestion_cita', ['cita' => $cita, 'tipo' => 1]) }}"
-                                class="btn btn-sm btn-dark mt-1">
-                                <i class="fas fa-pencil-alt me-1"></i> Empezar Gestión
-                            </a>
-
-
-
                         </div>
+
                     @endforeach
 
                 </div>
