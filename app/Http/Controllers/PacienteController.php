@@ -23,6 +23,7 @@ class PacienteController extends Controller
             ['name' => 'Pacientes', 'url' => route('pacientes.index')],
         ];
         $pacientes = Paciente::orderBy('created_at', 'desc')->paginate(15);
+
         return view('pacientes.index', compact('breadcrumb', 'pacientes'));
     }
 
