@@ -15,32 +15,36 @@ class ConfiguracionSeeder extends Seeder
     public function run(): void
     {
         Configuracion::create([
-            'doble_factor_autenticacion' => false,
-            'limite_de_sesiones' => 1,
             'GROQ_API_KEY' => null,
-            'mantenimiento' => false,
-            'firma' => '',
-            'hoja_export' => '',
-            'dias_atencion' => '',
-            'titulo_servicio' => '',
-            'descripcion_servicio' => '',
-            'titulo_acercade' => '',
-            'descripcion_acercade' => '',
-            'roles_landing' => '',
-            'titulo_presentacion' => '',
-            'descripcion_presentacion' => '',
-            'direccion' => '',
-            'celular' => '',
-            'geolocalizacion' => '',
+            'doble_factor_autenticacion' => 0,
+            'mantenimiento' => 0,
+            'firma' => 1,
+            'hoja_export' => 'default.xlsx',
+            'limite_de_sesiones' => 1,
+            'roles_landing' => json_encode(['admin']),
+            'dias_atencion' => json_encode(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']),
 
-            'imagen_fondo' => '',
-            'logo_empresa' => '',
-            'titulo_cabecera' => '',
-            'descripcion_cabecera' => '',
-            'imagen_cabecera' => '',
+            'titulo_servicio' => 'Nuestros Servicios',
+            'descripcion_servicio' => 'Ofrecemos soluciones innovadoras adaptadas a tus necesidades.',
 
-            'titulo_emergencia' => '',
-            'descripcion_emergencia' => '',
+            'titulo_acercade' => 'Acerca de Nosotros',
+            'descripcion_acercade' => 'Somos una clínica dedicada a brindar atención de calidad.',
+
+            'titulo_presentacion' => 'Bienvenido a Nuestra Clínica',
+            'descripcion_presentacion' => 'Conoce nuestros servicios y especialistas.',
+
+            'direccion' => 'Av. Siempre Viva 123',
+            'celular' => '+59170000000',
+            'geolocalizacion' => '-17.3936,-66.1570',
+
+            'imagen_fondo' => 'imagenes/fondo.jpg',
+            'logo_empresa' => 'imagenes/logo.png',
+            'titulo_cabecera' => 'Clínica Salud Total',
+            'descripcion_cabecera' => 'Cuidando tu salud, siempre.',
+            'imagen_cabecera' => 'imagenes/cabecera.jpg',
+
+            'titulo_emergencia' => 'Emergencias 24/7',
+            'descripcion_emergencia' => 'Llámanos en caso de urgencia médica.',
         ]);
     }
 }
