@@ -13,35 +13,33 @@ class ConfiguracionSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('configuracion')->insert([
-            Configuracion::create([
-                'doble_factor_autenticacion' => false,
-                'limite_de_sesiones' => 1,
-                'GROQ_API_KEY' => null,
-                'mantenimiento' => false,
-                'firma' => '',
-                'hoja_export' => '',
-                'dias_atencion' => '',
-                'titulo_servicio' => '',
-                'descripcion_servicio' => '',
-                'titulo_acercade' => '',
-                'descripcion_acercade' => '',
-                'roles_landing' => '',
-                'titulo_presentacion' => '',
-                'descripcion_presentacion' => '',
-                'direccion' => '',
-                'celular' => '',
-                'geolocalizacion' => '',
-    
-                'imagen_fondo' => '',
-                'logo_empresa' => '',
-                'titulo_cabecera' => '',
-                'descripcion_cabecera' => '',
-                'imagen_cabecera' => '',
-    
-                'titulo_emergencia' => '',
-                'descripcion_emergencia' => '',
-            ]);
+        Configuracion::create([
+            'doble_factor_autenticacion' => false,
+            'limite_de_sesiones' => 1,
+            'GROQ_API_KEY' => null,
+            'mantenimiento' => false,
+            'firma' => '',
+            'hoja_export' => '',
+            'dias_atencion' => '',
+            'titulo_servicio' => '',
+            'descripcion_servicio' => '',
+            'titulo_acercade' => '',
+            'descripcion_acercade' => '',
+            'roles_landing' => '',
+            'titulo_presentacion' => '',
+            'descripcion_presentacion' => '',
+            'direccion' => '',
+            'celular' => '',
+            'geolocalizacion' => '',
+
+            'imagen_fondo' => '',
+            'logo_empresa' => '',
+            'titulo_cabecera' => '',
+            'descripcion_cabecera' => '',
+            'imagen_cabecera' => '',
+
+            'titulo_emergencia' => '',
+            'descripcion_emergencia' => '',
         ]);
     }
 }
